@@ -13,15 +13,19 @@ require("reflect-metadata");
 const apollo_server_1 = require("apollo-server");
 const type_graphql_1 = require("type-graphql");
 const MintResolver_1 = require("./resolvers/MintResolver");
-function bootstrap() {
+function startServer() {
     return __awaiter(this, void 0, void 0, function* () {
         const schema = yield (0, type_graphql_1.buildSchema)({
             resolvers: [MintResolver_1.MintResolver],
         });
-        const server = new apollo_server_1.ApolloServer({ schema });
-        server.listen({ port: 4002 }).then(({ url }) => {
+        const server = new apollo_server_1.ApolloServer({
+            schema,
+            introspection: true, // Enables introspection of the schema
+            plugins: [],
+        });
+        server.listen({ port: 4001 }).then(({ url }) => {
             console.log(`Server ready at ${url}`);
         });
     });
 }
-bootstrap();
+startServer();
