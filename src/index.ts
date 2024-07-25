@@ -1,7 +1,10 @@
 import "reflect-metadata";
+import * as dotenv from 'dotenv';
 import { ApolloServer } from "apollo-server";
 import { buildSchema } from "type-graphql";
 import { MintResolver } from "./resolvers/MintResolver";
+
+dotenv.config();
 
 async function startServer() {
   const schema = await buildSchema({

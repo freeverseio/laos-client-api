@@ -13,3 +13,4 @@ export interface AssetAttributes {
 export const getAssetAttributesJson = (assetMetadata: AssetMetadata): string => {
   return JSON.stringify(assetMetadata.attributes, null, 2);
 }
+

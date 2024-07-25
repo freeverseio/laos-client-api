@@ -1,35 +1,24 @@
+// src/resolvers/MintResolver.ts
 import { Resolver, Query, Mutation, Arg } from "type-graphql";
-import { MintInput } from "../inputs/MintInput";
+import { MintingService } from "../services/MintingService";
+import { MintInput } from "../types/graphql/inputs/MintInput";
+import { MintResponse } from "../types/graphql/outputs/MintOutput";
 
 @Resolver()
 export class MintResolver {
+  private mintingService: MintingService;
+
+  constructor() {
+    this.mintingService = new MintingService();
+  }
+
   @Query(() => String)
-  hello() {
+  test() {
     return "Hello World!";
   }
 
-  @Mutation(() => String)
-  mint(@Arg("input") input: MintInput) {
-    const { mintTo, name, description, properties, image } = input;
-
-    if (image?.startsWith("ipfs://")) {
-      // Handle IPFS URL
-      console.log("IPFS URL provided:", image);
-    } else if (image?.startsWith("data:image/")) {
-      // Handle base64 encoded image
-      console.log("Encoded image provided");
-      // You can decode the image here if needed
-    } else {
-      throw new Error("Invalid image format");
-    }
-
-    // Logic to mint with the provided arguments
-    console.log("Minting to:", mintTo);
-    console.log("Name:", name);
-    console.log("Description:", description);
-    console.log("Properties:", properties);
-    console.log("Image:", image);
-
-    return "Minted!";
+  @Mutation(() => MintResponse)
+  async mint(@Arg("input") input: MintInput): Promise<MintResponse> {
+    return this.mintingService.mint(input);
   }
 }

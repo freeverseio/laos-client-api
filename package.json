@@ -18,6 +18,7 @@
     "@subsquid/evm-codec": "^0.3.0",
     "apollo-server": "^3.13.0",
     "class-validator": "^0.14.1",
+    "dotenv": "^16.4.5",
     "ethers": "^6.13.1",
     "graphql": "^16.9.0",
     "type-graphql": "^2.0.0-rc.2",
@@ -25,6 +26,7 @@
   },
   "devDependencies": {
     "@jest/types": "^29.6.3",
+    "@types/dotenv": "^8.2.0",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.12",
     "@types/supertest": "^6.0.2",

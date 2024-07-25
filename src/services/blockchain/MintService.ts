@@ -4,19 +4,26 @@ import { IPFSService } from "../ipfs/IPFSService";
 import * as EvolutionCollection from "../../abi/EvolutionCollection";
 import EvolutionCollectionAbi from '../../abi/contracts/EvolutionCollection.json';
 
+export type MintConfig = {
+  minterPvk: string;
+  rpcMinter: string;
+  minterLaosCollection: string;
+};
+
 export class MintService {
   private provider: ethers.JsonRpcProvider;
   private wallet: ethers.Wallet;
   private contract: ethers.Contract;
   private ipfsService: IPFSService;
 
-  constructor(privateKey: string, rpcUrl: string, contractAddress: string, ipfsService: IPFSService) {
-    if (!privateKey) {
+  constructor(config: MintConfig, ipfsService: IPFSService) {
+    const { minterPvk, rpcMinter, minterLaosCollection } = config;
+    if (!minterPvk) {
       throw new Error('Private key not found in environment variables');
     }
-    this.provider = new ethers.JsonRpcProvider(rpcUrl);
-    this.wallet = new ethers.Wallet(privateKey, this.provider);
-    this.contract = new ethers.Contract(contractAddress, EvolutionCollectionAbi, this.wallet);
+    this.provider = new ethers.JsonRpcProvider(rpcMinter);
+    this.wallet = new ethers.Wallet(minterPvk, this.provider);
+    this.contract = new ethers.Contract(minterLaosCollection, EvolutionCollectionAbi, this.wallet);
     this.ipfsService = ipfsService;
   }
 
