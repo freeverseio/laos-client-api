@@ -1,0 +1,24 @@
+repositories:
+  - name: stable
+    url: https://charts.helm.sh/stable
+
+environments:
+  default:
+    values:
+      - ./environments/dev/values.yaml
+  development:
+    values:
+      - ./environments/dev/values.yaml
+  staging:
+    values:
+      - ./environments/staging/values.yaml
+  production:
+    values:
+      - ./environments/production/values.yaml
+
+helmfiles:  
+  - path: 'charts/api/helmfile.yaml'
+    values:
+      - namespace: {{ .Values.namespace }}
+      - imageTag: {{ requiredEnv "CIRCLE_SHA1" }}
+      - host: {{ .Values.host }}

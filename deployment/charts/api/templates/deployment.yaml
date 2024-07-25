@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: laos-client-api
+  labels:
+    app.kubernetes.io/app: laos-client-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/app: laos-client-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/app: laos-client-api
+    spec:
+      containers:
+        - name: laos-client-api
+          #image: freeverseio/laos-client:{{ .Values.imageTag }}
+          image: laos-client
+          #imagePullPolicy: Always
+          imagePullPolicy: Never
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '1'
+            limits:
+              memory: '512Mi'
+              cpu: '2'
+          env:             
+            - name: GQL_PORT
+              value: "4001"
+            - name: MINTER_PVK
+              valueFrom:
+                secretKeyRef:
+                  name: protostar-private-config
+                  key: minterPvk
+            - name: RPC_MINTER
+              valueFrom:
+                secretKeyRef:
+                  name: protostar-private-config
+                  key: rpcMinter
+            - name: PINATA_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: protostar-private-config
+                  key: pinataApiKey
+            - name: PINATA_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: protostar-private-config
+                  key: pinataApiSecret
+            - name: MINTER_LAOS_COLLECTION
+              valueFrom:
+                secretKeyRef:
+                  name: protostar-private-config
+                  key: minterLaosCollection
+          ports:
+            - containerPort: 4001
