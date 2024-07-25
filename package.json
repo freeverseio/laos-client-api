@@ -13,8 +13,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@pinata/sdk": "^2.1.0",
+    "@subsquid/evm-abi": "^0.3.0",
+    "@subsquid/evm-codec": "^0.3.0",
     "apollo-server": "^3.13.0",
     "class-validator": "^0.14.1",
+    "ethers": "^6.13.1",
     "graphql": "^16.9.0",
     "type-graphql": "^2.0.0-rc.2",
     "typeorm": "^0.3.20"
