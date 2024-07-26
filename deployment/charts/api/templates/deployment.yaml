@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: laos-client-api
-          image: freeverseio/laos-client:{{ .Values.imageTag }}
+          image: freeverseio/laos-client-api:{{ .Values.imageTag }}
           imagePullPolicy: Always
           resources:
             requests:
