@@ -19,19 +19,13 @@ export class MintingService {
   public async mint(input: MintInput): Promise<MintResponse> {
     const { mintTo, name, description, attributes, image } = input;
 
-    if (!image || 
-        (!image.startsWith("ipfs://") && 
-         !image.startsWith("data:image/") && 
-         !image.startsWith("https://ipfs.io/ipfs/"))) {
-      throw new Error("Invalid image format");
-    }
-
+    const imageUrl = await this.serviceHelper.handleImageUpload(image || '');
     const parsedAttributes = this.serviceHelper.parseAssetAttributes(attributes || '[]');
 
     const assetMetadata: AssetMetadata = {
       name: name || '',
       description: description || '',
-      image: image,
+      image: imageUrl,
       attributes: parsedAttributes,
     };
 

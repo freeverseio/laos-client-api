@@ -44,4 +44,13 @@ export class ServiceHelper {
       throw new Error(`Failed to parse JSON string: ${error}`);
     }
   }
+
+  public async handleImageUpload(image: string): Promise<string> {
+    if (image.startsWith("data:image/")) {
+      // Upload to IPFS
+      const ipfsHash = await this.ipfsService.uploadImageToIPFS(image);
+      return `ipfs://${ipfsHash}`;
+    }
+    return image;
+  }
 }

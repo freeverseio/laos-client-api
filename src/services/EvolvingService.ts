@@ -19,19 +19,14 @@ export class EvolvingService {
   public async evolve(input: EvolveInput): Promise<EvolveResponse> {
     const { tokenId, name, description, attributes, image } = input;
 
-    if (!image || 
-        (!image.startsWith("ipfs://") && 
-         !image.startsWith("data:image/") && 
-         !image.startsWith("https://ipfs.io/ipfs/"))) {
-      throw new Error("Invalid image format");
-    }
+    const imageUrl = await this.serviceHelper.handleImageUpload(image || '');
 
     const parsedAttributes = this.serviceHelper.parseAssetAttributes(attributes || '[]'); // Ensure attributes is an array
 
     const assetMetadata: AssetMetadata = {
       name: name || '',
       description: description || '',
-      image: image,
+      image: imageUrl,
       attributes: parsedAttributes, 
     };
     try {
