@@ -27,7 +27,7 @@ export class LaosService {
     this.ipfsService = ipfsService;
   }
 
-  public async mintSingleNFT(params: MintSingleNFTParams): Promise<MintResult> {
+  public async mint(params: MintSingleNFTParams): Promise<MintResult> {
     let tx: any;
 
     const assetJson: AssetMetadata = {

@@ -12,7 +12,7 @@ export class EvolveInput {
   description?: string;
 
   @Field({ nullable: true })
-  properties?: string;
+  attributes?: string;
 
   @Field({ nullable: true })
   image?: string;

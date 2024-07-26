@@ -17,7 +17,7 @@ export class EvolvingService {
   }
 
   public async evolve(input: EvolveInput): Promise<EvolveResponse> {
-    const { tokenId, name, description, properties, image } = input;
+    const { tokenId, name, description, attributes, image } = input;
 
     if (!image || 
         (!image.startsWith("ipfs://") && 
@@ -26,13 +26,13 @@ export class EvolvingService {
       throw new Error("Invalid image format");
     }
 
-    const attributes = this.serviceHelper.parseAssetAttributes(properties || '[]'); // Ensure attributes is an array
+    const parsedAttributes = this.serviceHelper.parseAssetAttributes(attributes || '[]'); // Ensure attributes is an array
 
     const assetMetadata: AssetMetadata = {
       name: name || '',
       description: description || '',
       image: image,
-      attributes: attributes, // Correctly assign the parsed attributes
+      attributes: parsedAttributes, 
     };
     try {
       const result: EvolveResult = await this.serviceHelper.laosService.evolve({tokenId: tokenId!, assetMetadata});

@@ -17,7 +17,7 @@ export class MintingService {
   }
 
   public async mint(input: MintInput): Promise<MintResponse> {
-    const { mintTo, name, description, properties, image } = input;
+    const { mintTo, name, description, attributes, image } = input;
 
     if (!image || 
         (!image.startsWith("ipfs://") && 
@@ -26,13 +26,13 @@ export class MintingService {
       throw new Error("Invalid image format");
     }
 
-    const attributes = this.serviceHelper.parseAssetAttributes(properties || '[]');
+    const parsedAttributes = this.serviceHelper.parseAssetAttributes(attributes || '[]');
 
     const assetMetadata: AssetMetadata = {
       name: name || '',
       description: description || '',
       image: image,
-      attributes: attributes,
+      attributes: parsedAttributes,
     };
 
     const params: MintSingleNFTParams = {
@@ -41,7 +41,7 @@ export class MintingService {
     };
 
     try {
-      const result: MintResult = await this.serviceHelper.laosService.mintSingleNFT(params);
+      const result: MintResult = await this.serviceHelper.laosService.mint(params);
       if (result.status === "success") {
         return { tokenId: result.tokenId!, success: true };
       } else {
