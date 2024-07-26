@@ -52,13 +52,26 @@ export class IPFSService {
   public async uploadImageToIPFS(base64Image: string): Promise<string> {
     try {
       await this.pinata.testAuthentication();
+  
+      // Extract MIME type and extension from base64 string
+      const matches = base64Image.match(/^data:(image\/[a-zA-Z]+);base64,/);
+      if (!matches || matches.length !== 2) {
+        throw new Error('Invalid base64 string');
+      }
+      const mimeType = matches[1];
+      const extension = mimeType.split('/')[1];
+  
+      // Remove the base64 prefix from the string
       const buffer = Buffer.from(base64Image.split(',')[1], 'base64');
+  
+      // Create form data
       const form = new FormData();
       form.append('file', buffer, {
-        filename: 'image.png',
-        contentType: 'image/png',
+        filename: `image.${extension}`,
+        contentType: mimeType,
       });
-
+  
+      // Upload image to IPFS
       const url = `https://api.pinata.cloud/pinning/pinFileToIPFS`;
       const response = await axios.post(url, form, {
         maxContentLength: Infinity,
@@ -69,7 +82,7 @@ export class IPFSService {
           'pinata_secret_api_key': this.pinataApiSecret,
         },
       });
-
+  
       return response.data.IpfsHash;
     } catch (error: any) {
       console.error('Image Upload Failed:', error.message);
