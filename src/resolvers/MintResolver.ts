@@ -8,8 +8,8 @@ export class MintResolver {
   constructor(private mintingService: MintingService) {}
 
   @Query(() => String)
-  test() {
-    return "Hello World!";
+  status() {
+    return "Up";
   }
 
   @Mutation(() => MintResponse)

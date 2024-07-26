@@ -43,5 +43,3 @@ export interface EvolveResult {
   tx?: string;
   error?: string;
 }
-
-
