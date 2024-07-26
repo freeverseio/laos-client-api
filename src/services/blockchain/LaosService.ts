@@ -10,7 +10,7 @@ export type MintConfig = {
   minterLaosCollection: string;
 };
 
-export class MintService {
+export class LaosService {
   private provider: ethers.JsonRpcProvider;
   private wallet: ethers.Wallet;
   private contract: ethers.Contract;
