@@ -8,10 +8,7 @@ import { EvolveResponse } from "../types/graphql/outputs/EvolveOutput";
 export class EvolveResolver {
   constructor(private evolvingService: EvolvingService) {}
 
-  @Query(() => String)
-  evolveStatus() {
-    return "Evolution in progress!";
-  }
+
 
   @Mutation(() => EvolveResponse)
   async evolve(@Arg("input") input: EvolveInput): Promise<EvolveResponse> {
