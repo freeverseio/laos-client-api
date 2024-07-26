@@ -1,5 +1,5 @@
 import { MintInput } from "../types/graphql/inputs/MintInput";
-import { MintConfig, MintSingleNFTParams, MintResult, AssetMetadata } from "../types";
+import { LaosConfig, MintSingleNFTParams, MintResult, AssetMetadata } from "../types";
 import { MintResponse } from "../types/graphql/outputs/MintOutput";
 import { ServiceHelper } from "./ServiceHelper";
 
@@ -7,7 +7,7 @@ export class MintingService {
   private serviceHelper: ServiceHelper;
 
   constructor() {
-    const mintConfig: MintConfig = {
+    const mintConfig: LaosConfig = {
       minterPvk: process.env.MINTER_PVK || '',
       rpcMinter: process.env.RPC_MINTER || '',
       minterLaosCollection: process.env.MINTER_LAOS_COLLECTION || '',
@@ -32,7 +32,7 @@ export class MintingService {
       name: name || '',
       description: description || '',
       image: image,
-      attributes: attributes, // Correctly assign the parsed attributes
+      attributes: attributes,
     };
 
     const params: MintSingleNFTParams = {

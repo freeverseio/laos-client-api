@@ -3,17 +3,22 @@ import * as dotenv from 'dotenv';
 import { ApolloServer } from "apollo-server";
 import { buildSchema } from "type-graphql";
 import { MintResolver } from "./resolvers/MintResolver";
-import { MintingService } from "./services/MintingService"; // Added this import
+import { MintingService } from "./services/MintingService"; 
+import { EvolveResolver } from "./resolvers/EvolveResolver";
+import { EvolvingService } from "./services/EvolvingService";
 
 dotenv.config();
 
 async function startServer() {
   const schema = await buildSchema({
-    resolvers: [MintResolver],
+    resolvers: [MintResolver, EvolveResolver],
     container: {
       get(someClass: any) {
         if (someClass === MintResolver) {
           return new MintResolver(new MintingService());
+        }
+        if (someClass === EvolveResolver) {
+          return new EvolveResolver(new EvolvingService());
         }
         return undefined;
       },

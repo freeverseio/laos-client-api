@@ -7,4 +7,10 @@ export class EvolveResponse {
 
   @Field()
   success!: boolean;
+
+  @Field()
+  tokenUri!: string;
+
+  @Field()
+  tx!: string;
 }

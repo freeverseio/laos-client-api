@@ -1,12 +1,12 @@
 import { IPFSService } from "./ipfs/IPFSService";
 import { LaosService } from "./blockchain/LaosService";
-import { MintConfig, AssetAttributes } from "../types";
+import { LaosConfig, AssetAttributes } from "../types";
 
 export class ServiceHelper {
   public ipfsService: IPFSService;
   public laosService: LaosService;
 
-  constructor(config: MintConfig) {
+  constructor(config: LaosConfig) {
     const pinataApiKey = process.env.PINATA_API_KEY || '';
     const pinataApiSecret = process.env.PINATA_API_SECRET || '';
 

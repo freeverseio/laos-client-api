@@ -1,13 +1,13 @@
 import { ServiceHelper } from './ServiceHelper';
 import { IPFSService } from './ipfs/IPFSService';
 import { LaosService } from './blockchain/LaosService';
-import { MintConfig, AssetAttributes } from '../types';
+import { LaosConfig, AssetAttributes } from '../types';
 
 jest.mock('./ipfs/IPFSService');
 jest.mock('./blockchain/LaosService');
 
 describe('ServiceHelper', () => {
-  let mockConfig: MintConfig;
+  let mockConfig: LaosConfig;
 
   beforeEach(() => {
     mockConfig = {
