@@ -22,6 +22,11 @@ export interface MintSingleNFTParams {
   assetMetadata: AssetMetadata;
 }
 
+export interface EvolveNFTParams {
+  tokenId: string;
+  assetMetadata: AssetMetadata;
+}
+
 export interface MintResult {
   status: string;
   tokenId?: string;
@@ -30,5 +35,13 @@ export interface MintResult {
   error?: string;
 }
 
+export interface EvolveResult {
+  status: string;
+  tokenId?: string;
+  tokenUri?: string;
+  contractAddress?: string;
+  tx?: string;
+  error?: string;
+}
 
 

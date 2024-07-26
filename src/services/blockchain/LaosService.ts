@@ -1,22 +1,22 @@
 import { ethers } from "ethers";
-import { MintSingleNFTParams, MintResult, AssetMetadata } from "../../types";
+import { MintSingleNFTParams, EvolveNFTParams, MintResult, EvolveResult, AssetMetadata, LaosConfig, EventName } from "../../types";
 import { IPFSService } from "../ipfs/IPFSService";
 import * as EvolutionCollection from "../../abi/EvolutionCollection";
 import EvolutionCollectionAbi from '../../abi/contracts/EvolutionCollection.json';
 
-export type MintConfig = {
-  minterPvk: string;
-  rpcMinter: string;
-  minterLaosCollection: string;
+
+const eventNameToEventTypeMap = {
+  MintedWithExternalURI: EvolutionCollection.events.MintedWithExternalURI,
+  EvolvedWithExternalURI: EvolutionCollection.events.EvolvedWithExternalURI,
 };
 
-export class MintService {
+export class LaosService {
   private provider: ethers.JsonRpcProvider;
   private wallet: ethers.Wallet;
   private contract: ethers.Contract;
   private ipfsService: IPFSService;
 
-  constructor(config: MintConfig, ipfsService: IPFSService) {
+  constructor(config: LaosConfig, ipfsService: IPFSService) {
     const { minterPvk, rpcMinter, minterLaosCollection } = config;
     if (!minterPvk) {
       throw new Error('Private key not found in environment variables');
@@ -27,10 +27,9 @@ export class MintService {
     this.ipfsService = ipfsService;
   }
 
-  public async mintSingleNFT(params: MintSingleNFTParams): Promise<MintResult> {
+  public async mint(params: MintSingleNFTParams): Promise<MintResult> {
     let tx: any;
 
-    // Generate Asset Metadata
     const assetJson: AssetMetadata = {
       name: `${params.assetMetadata.name} `,
       description: `${params.assetMetadata.description}`,
@@ -60,10 +59,11 @@ export class MintService {
         () => this.provider.waitForTransaction(tx.hash, 1, 14000),
         20
       );
-      const tokenId = this.extractTokenId(receipt, this.contract);
+      const tokenId = this.extractTokenId(receipt, this.contract, 'MintedWithExternalURI');
       return {
         status: "success",
         tokenId: tokenId.toString(),
+        tx: tx?.hash,
       };
     } catch (error: any) {
       console.error("Minting Failed:", error.message);
@@ -75,9 +75,59 @@ export class MintService {
     }
   }
 
-  private extractTokenId(receipt: ethers.TransactionReceipt, contract: ethers.Contract): bigint {
+  public async evolve(params: EvolveNFTParams): Promise<EvolveResult> {
+    let tx: any;
+
+    // Generate Asset Metadata
+    const assetJson: AssetMetadata = {
+      name: `${params.assetMetadata.name}`,
+      description: `${params.assetMetadata.description}`,
+      image: `${params.assetMetadata.image}`,
+      attributes: params.assetMetadata.attributes,
+    };
+    const nonce = await this.wallet.getNonce();
+
+    const ipfsCid = await this.ipfsService.uploadAssetMetadataToIPFS(assetJson, params.assetMetadata.name);
+    try {
+      const tokenUri = `ipfs://${ipfsCid}`;
+      console.log('tokenUri:', tokenUri);
+      console.log("Evolving NFT with tokenId:", params.tokenId, "nonce:", nonce);
+      tx = await this.contract
+        .evolveWithExternalURI(params.tokenId, tokenUri, { nonce, gasLimit: 1000000 })
+        .catch((error: Error) => {
+          console.error(
+            "Evolve Failed, nonce:",
+            nonce,
+            "error: ",
+            error.message
+          );
+          throw error;
+        });
+
+      const receipt = await this.retryOperation(
+        () => this.provider.waitForTransaction(tx.hash, 1, 14000),
+        20
+      );
+      const tokenId = this.extractTokenId(receipt, this.contract, 'EvolvedWithExternalURI');
+      return {
+        status: "success",
+        tokenId: tokenId.toString(),
+        tokenUri: tokenUri,
+        tx: tx?.hash,
+      };
+    } catch (error: any) {
+      console.error("Evolving Failed:", error.message);
+      return {
+        status: "failed",
+        tx: tx?.hash,
+        error: error.message,
+      };
+    }
+  }
+
+  private extractTokenId(receipt: ethers.TransactionReceipt, contract: ethers.Contract, eventName: EventName): bigint {
     const log = receipt.logs[0] as any;
-    const logDecoded = EvolutionCollection.events.MintedWithExternalURI.decode(log);
+    const logDecoded = eventNameToEventTypeMap[eventName].decode(log);
     const { _tokenId } = logDecoded;
     return _tokenId;
   }

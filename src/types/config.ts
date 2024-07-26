@@ -1,4 +1,4 @@
-export type MintConfig = {
+export type LaosConfig = {
   minterPvk: string;
   rpcMinter: string;
   minterLaosCollection: string;

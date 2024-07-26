@@ -1,9 +1,9 @@
 import { InputType, Field } from "type-graphql";
 
 @InputType()
-export class MintInput {
+export class EvolveInput {
   @Field({ nullable: true })
-  mintTo?: string;
+  tokenId?: string;
 
   @Field({ nullable: true })
   name?: string;
