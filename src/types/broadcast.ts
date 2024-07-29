@@ -1,5 +1,7 @@
 export interface BroadcastParams {
   tokenId: string;
+  chainId: string;
+  ownershipContractAddress: string;
 }
 
 export interface BroadcastResult {

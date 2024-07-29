@@ -3,28 +3,30 @@ import { BroadcastResult, OwnershipChainConfig, BroadcastParams } from "../../ty
 import ERC721UniversalAbi from '../../abi/contracts/ERC721Universal.json';
 
 export class OwnershipChainService {
-  private provider: ethers.JsonRpcProvider;
-  private wallet: ethers.Wallet;
-  private contract: ethers.Contract;
+  private minterPvk: string = '';
 
   constructor(config: OwnershipChainConfig) {
-    const { minterPvk, rpcOwnershipChain, ownershipChainContract } = config;
+    const { minterPvk} = config;
     if (!minterPvk) {
       throw new Error('Private key not found in environment variables');
     }
-    this.provider = new ethers.JsonRpcProvider(rpcOwnershipChain);
-    this.wallet = new ethers.Wallet(minterPvk, this.provider);
-    this.contract = new ethers.Contract(ownershipChainContract, ERC721UniversalAbi, this.wallet);
+    this.minterPvk = minterPvk;
   }
 
   public async broadcast(params: BroadcastParams): Promise<BroadcastResult> {
     let tx: any;
 
-    const nonce = await this.wallet.getNonce();
+    const rpcOwnershipChain = this.getChainRpcbyChainId(params.chainId);
+    const ownershipChainContract = params.ownershipContractAddress;
+    const provider = new ethers.JsonRpcProvider(rpcOwnershipChain);
+    const wallet = new ethers.Wallet(this.minterPvk, provider);
+    const contract = new ethers.Contract(ownershipChainContract, ERC721UniversalAbi, wallet);
+
+    const nonce = await wallet.getNonce();
 
     try {     
       console.log("Broadcasting tokenId:", params.tokenId);
-      tx = await this.contract
+      tx = await contract
         .broadcastSelfTransfer(params.tokenId, { nonce, gasLimit: 1000000 })
         .catch((error: Error) => {
           console.error(
@@ -37,7 +39,7 @@ export class OwnershipChainService {
         });
 
       const receipt = await this.retryOperation(
-        () => this.provider.waitForTransaction(tx.hash, 1, 14000),
+        () => provider.waitForTransaction(tx.hash, 1, 14000),
         20
       );
 
@@ -66,6 +68,22 @@ export class OwnershipChainService {
       } else {
         return this.retryOperation(operation, maxRetries - 1);
       }
+    }
+  }
+
+  private getChainRpcbyChainId(chainId: string): string {
+    // TOOD envVar
+    const chains = [
+        { chainID: "1", rpcUrl: "https://ethereum-rpc.publicnode.com" },
+        { chainID: "137", rpcUrl: "https://polygon-rpc.com/" },
+    ];
+
+    const chain = chains.find(c => c.chainID === chainId);
+    if (chain) {
+      return chain.rpcUrl;
+    } else {
+      console.error('Chain ID not supported:', chainId);
+      throw new Error("Chain ID not supported");
     }
   }
 

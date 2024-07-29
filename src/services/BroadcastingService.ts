@@ -17,10 +17,12 @@ export class BroadcastingService {
   }
 
   public async broadcast(input: BroadcastInput): Promise<BroadcastResponse> {
-    const { tokenId } = input;
+    const { tokenId, chainId, ownershipContractAddress } = input;
     
     const params: BroadcastParams = {
-      tokenId: tokenId || '',      
+      tokenId: tokenId!,
+      chainId: chainId!,
+      ownershipContractAddress: ownershipContractAddress!,
     };
 
     try {
