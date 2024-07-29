@@ -35,6 +35,9 @@ describe("LaosService", () => {
   let laosService: LaosService;
 
   beforeEach(() => {
+    jest.spyOn(console, "log").mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => {});
+
     mockProvider = new ethers.JsonRpcProvider() as jest.Mocked<ethers.JsonRpcProvider>;
     mockWallet = new ethers.Wallet("mockPrivateKey", mockProvider) as jest.Mocked<ethers.Wallet>;
     
@@ -208,5 +211,4 @@ describe("LaosService", () => {
     });
   });
 
-  // Add more tests for the helper methods if necessary
 });

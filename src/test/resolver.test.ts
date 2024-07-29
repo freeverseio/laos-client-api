@@ -12,6 +12,8 @@ describe('GraphQL API', () => {
   let mockMintingService: MintingService;
 
   beforeAll(async () => {
+    jest.spyOn(console, "log").mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => {});
     mockMintingService = new MintingService();
     const testServer = await startTestServer(mockMintingService);
     url = testServer.url;
@@ -26,11 +28,11 @@ describe('GraphQL API', () => {
     const response = await request(url)
       .post('/graphql')
       .send({
-        query: '{ test }',
+        query: '{ status }',
       });
     console.log(response.body);
     expect(response.status).toBe(200);
-    expect(response.body.data.test).toBe('Hello World!');
+    expect(response.body.data.status).toBe('Up');
   });
 
   it('should mint a token successfully', async () => {

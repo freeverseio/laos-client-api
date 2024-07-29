@@ -8,8 +8,6 @@ import { EvolveResponse } from "../types/graphql/outputs/EvolveOutput";
 export class EvolveResolver {
   constructor(private evolvingService: EvolvingService) {}
 
-
-
   @Mutation(() => EvolveResponse)
   async evolve(@Arg("input") input: EvolveInput): Promise<EvolveResponse> {
     return this.evolvingService.evolve(input);
