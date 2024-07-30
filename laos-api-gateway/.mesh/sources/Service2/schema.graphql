@@ -1,0 +1,41 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Query {
+  test: String!
+}
+
+type Mutation {
+  mint(input: MintInput!): MintResponse!
+  evolve(input: EvolveInput!): EvolveResponse!
+}
+
+type MintResponse {
+  tokenId: String!
+  success: Boolean!
+}
+
+input MintInput {
+  mintTo: String
+  name: String
+  description: String
+  attributes: String
+  image: String
+}
+
+type EvolveResponse {
+  tokenId: String!
+  success: Boolean!
+  tokenUri: String!
+  tx: String!
+}
+
+input EvolveInput {
+  tokenId: String
+  name: String
+  description: String
+  attributes: String
+  image: String
+}

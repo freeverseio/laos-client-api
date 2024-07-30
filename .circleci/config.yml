@@ -10,24 +10,22 @@ commands:
     steps:
       - run:
           name: Install helmfile
-          command: ./circleci-scripts/install-helmfile.sh
+          command: ./_circleci-scripts/install-helmfile.sh
   dockerize-and-push:
     parameters:
       image:
         type: string
+      root:
+        type: string
     steps:
       - attach_workspace:
           at: ./
-      - run:
-          name: Docker login
-          command: echo $DOCKER_PASSWD | docker login -u $DOCKER_ID --password-stdin
-      - run:
-          name: Build and push Docker image
-          command: |
-            echo "Docker images for $CIRCLE_SHA1 will be pushed"
-            docker build -t << parameters.image >>:$CIRCLE_SHA1 .
-            docker push << parameters.image >>:$CIRCLE_SHA1
-
+      - run: echo $DOCKER_PASSWD | docker login -u $DOCKER_ID --password-stdin
+      - run: |          
+          cd << parameters.root >>
+          echo "Docker images for CIRCLE_SHA1 will be pushed"
+          docker build -t << parameters.image >>:$CIRCLE_SHA1 .
+          docker push << parameters.image >>:$CIRCLE_SHA1
 jobs:
   deploy_to_cluster:
     parameters:
@@ -59,7 +57,7 @@ jobs:
       - run:
           name: Deploy to << parameters.environment >> environment
           command: |
-            cd deployment
+            cd _deployment
             helmfile sync --environment << parameters.environment >>
 
   deployment-test:
@@ -73,7 +71,7 @@ jobs:
       - run:
           name: Test Helmfile
           command: |
-            cd deployment
+            cd _deployment
             helmfile lint
 
   build-client-api:
@@ -89,6 +87,7 @@ jobs:
             npm ci
       - dockerize-and-push:
           image: freeverseio/laos-client-api
+          root: laos-client-api
 
 workflows:
   ci-workflow:

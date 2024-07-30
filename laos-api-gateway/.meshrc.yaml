@@ -1,0 +1,11 @@
+sources:
+  - name: Service1
+    handler:
+      graphql:
+        endpoint: https://indexer.gorengine.com/graphql
+  - name: Service2
+    handler:
+      graphql:
+        endpoint: https://api.laos.gorengine.com/
+
+additionalEnvelopPlugins: './src/authPlugin.ts'
