@@ -13,7 +13,6 @@ describe('ServiceHelper', () => {
     mockConfig = {
       minterPvk: 'mockPvk',
       rpcMinter: 'mockRpc',
-      minterLaosCollection: 'mockCollection',
     };
 
     process.env.PINATA_API_KEY = 'mockPinataApiKey';

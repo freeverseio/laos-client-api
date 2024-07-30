@@ -25,7 +25,7 @@ export class LaosService {
   }
 
   public async mint(params: MintSingleNFTParams): Promise<MintResult> {
-    const contract = new ethers.Contract(params.laosContractAddress, EvolutionCollectionAbi, this.wallet);
+    const contract = this.getEthersContract({laosContractAddress: params.laosContractAddress, abi: EvolutionCollectionAbi, wallet: this.wallet});
     const assetJson: AssetMetadata = {
       name: `${params.assetMetadata.name} `,
       description: `${params.assetMetadata.description}`,
@@ -71,8 +71,12 @@ export class LaosService {
     }
   }
 
+  private getEthersContract({laosContractAddress, abi, wallet}: {laosContractAddress: string, abi: any, wallet: ethers.Wallet}) {
+    return new ethers.Contract(laosContractAddress, abi, wallet);
+  }
+
   public async evolve(params: EvolveNFTParams): Promise<EvolveResult> {
-    const contract = new ethers.Contract(params.laosContractAddress, EvolutionCollectionAbi, this.wallet);
+    const contract = this.getEthersContract({laosContractAddress: params.laosContractAddress, abi: EvolutionCollectionAbi, wallet: this.wallet});
     const assetJson: AssetMetadata = {
       name: `${params.assetMetadata.name}`,
       description: `${params.assetMetadata.description}`,
