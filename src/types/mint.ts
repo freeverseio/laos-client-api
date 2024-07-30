@@ -18,11 +18,13 @@ export type MintRequestBody = {
 };
   
 export interface MintSingleNFTParams {
+  laosContractAddress: string;
   to: string;
   assetMetadata: AssetMetadata;
 }
 
 export interface EvolveNFTParams {
+  laosContractAddress: string;
   tokenId: string;
   assetMetadata: AssetMetadata;
 }

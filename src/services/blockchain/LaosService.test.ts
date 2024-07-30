@@ -52,7 +52,6 @@ describe("LaosService", () => {
     const config = {
       minterPvk: "mockPrivateKey",
       rpcMinter: "mockRpcMinter",
-      minterLaosCollection: "mockMinterLaosCollection",
     };
 
     laosService = new LaosService(config, mockIPFSService);
@@ -60,6 +59,7 @@ describe("LaosService", () => {
     (laosService as any).wallet = mockWallet;
     (laosService as any).contract = mockContract;
     (laosService as any).eventNameToEventTypeMap = mockEventNameToEventTypeMap;
+    (laosService as any).getEthersContract = jest.fn().mockReturnValue(mockContract);
   });
 
   afterEach(() => {
@@ -68,6 +68,7 @@ describe("LaosService", () => {
 
   it("should mint an NFT successfully", async () => {
     const params: MintSingleNFTParams = {
+      laosContractAddress: "mockMinterLaosCollection",
       to: "0x123",
       assetMetadata: {
         name: "Test NFT",
@@ -111,6 +112,7 @@ describe("LaosService", () => {
 
   it("should fail to mint an NFT", async () => {
     const params: MintSingleNFTParams = {
+      laosContractAddress: "mockMinterLaosCollection",
       to: "0x123",
       assetMetadata: {
         name: "Test NFT",
@@ -136,6 +138,7 @@ describe("LaosService", () => {
 
   it("should evolve an NFT successfully", async () => {
     const params: EvolveNFTParams = {
+      laosContractAddress: "mockMinterLaosCollection",
       tokenId: "0",
       assetMetadata: {
         name: "Test NFT",
@@ -188,6 +191,7 @@ describe("LaosService", () => {
 
   it("should fail to evolve an NFT", async () => {
     const params: EvolveNFTParams = {
+      laosContractAddress: "mockMinterLaosCollection",
       tokenId: "0",
       assetMetadata: {
         name: "Test NFT",

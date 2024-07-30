@@ -74,11 +74,11 @@ export class OwnershipChainService {
   private getChainRpcbyChainId(chainId: string): string {
     // TOOD envVar
     const chains = [
-        { chainID: "1", rpcUrl: "https://ethereum-rpc.publicnode.com" },
-        { chainID: "137", rpcUrl: "https://polygon-rpc.com/" },
+        { chainId: "1", rpcUrl: "https://ethereum-rpc.publicnode.com" },
+        { chainId: "137", rpcUrl: "https://polygon-rpc.com/" },
     ];
 
-    const chain = chains.find(c => c.chainID === chainId);
+    const chain = chains.find(c => c.chainId === chainId);
     if (chain) {
       return chain.rpcUrl;
     } else {

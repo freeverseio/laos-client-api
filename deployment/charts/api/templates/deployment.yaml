@@ -48,10 +48,5 @@ spec:
                 secretKeyRef:
                   name: protostar-private-config
                   key: pinataApiSecret
-            - name: MINTER_LAOS_COLLECTION
-              valueFrom:
-                secretKeyRef:
-                  name: protostar-private-config
-                  key: minterLaosCollection
           ports:
             - containerPort: 4001

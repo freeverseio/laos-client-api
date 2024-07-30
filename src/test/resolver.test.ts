@@ -41,6 +41,7 @@ describe('GraphQL API', () => {
       .send({
         query: `mutation {
           mint(input: {
+            laosContractAddress: "0x1B0b4a597C764400Ea157aB84358c8788A89cd28",
             mintTo: "0x1B0b4a597C764400Ea157aB84358c8788A89cd28",
             name: "Example Token",
             description: "This is an example token",
