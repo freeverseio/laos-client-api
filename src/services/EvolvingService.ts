@@ -11,7 +11,6 @@ export class EvolvingService {
       minterPvk: process.env.MINTER_PVK || '',
       rpcMinter: process.env.RPC_MINTER || '',
     };
-    console.log("Evolving config: ", evolveConfig);
     this.serviceHelper = new ServiceHelper(evolveConfig);
   }
 
