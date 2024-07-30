@@ -10,14 +10,13 @@ export class MintingService {
     const mintConfig: LaosConfig = {
       minterPvk: process.env.MINTER_PVK || '',
       rpcMinter: process.env.RPC_MINTER || '',
-      minterLaosCollection: process.env.MINTER_LAOS_COLLECTION || '',
     };
 
     this.serviceHelper = new ServiceHelper(mintConfig);
   }
 
   public async mint(input: MintInput): Promise<MintResponse> {
-    const { mintTo, name, description, attributes, image } = input;
+    const { laosContractAddress, mintTo, name, description, attributes, image } = input;
 
     const imageUrl = await this.serviceHelper.handleImageUpload(image || '');
     const parsedAttributes = this.serviceHelper.parseAssetAttributes(attributes || '[]');
@@ -30,6 +29,7 @@ export class MintingService {
     };
 
     const params: MintSingleNFTParams = {
+      laosContractAddress: laosContractAddress!,
       to: mintTo || '',
       assetMetadata: assetMetadata,
     };

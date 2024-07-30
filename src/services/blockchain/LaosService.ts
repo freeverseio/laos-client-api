@@ -4,7 +4,6 @@ import { IPFSService } from "../ipfs/IPFSService";
 import * as EvolutionCollection from "../../abi/EvolutionCollection";
 import EvolutionCollectionAbi from '../../abi/contracts/EvolutionCollection.json';
 
-
 const eventNameToEventTypeMap = {
   MintedWithExternalURI: EvolutionCollection.events.MintedWithExternalURI,
   EvolvedWithExternalURI: EvolutionCollection.events.EvolvedWithExternalURI,
@@ -13,37 +12,34 @@ const eventNameToEventTypeMap = {
 export class LaosService {
   private provider: ethers.JsonRpcProvider;
   private wallet: ethers.Wallet;
-  private contract: ethers.Contract;
   private ipfsService: IPFSService;
 
   constructor(config: LaosConfig, ipfsService: IPFSService) {
-    const { minterPvk, rpcMinter, minterLaosCollection } = config;
+    const { minterPvk, rpcMinter } = config;
     if (!minterPvk) {
       throw new Error('Private key not found in environment variables');
     }
     this.provider = new ethers.JsonRpcProvider(rpcMinter);
     this.wallet = new ethers.Wallet(minterPvk, this.provider);
-    this.contract = new ethers.Contract(minterLaosCollection, EvolutionCollectionAbi, this.wallet);
     this.ipfsService = ipfsService;
   }
 
   public async mint(params: MintSingleNFTParams): Promise<MintResult> {
-    let tx: any;
-
+    const contract = new ethers.Contract(params.laosContractAddress, EvolutionCollectionAbi, this.wallet);
     const assetJson: AssetMetadata = {
       name: `${params.assetMetadata.name} `,
       description: `${params.assetMetadata.description}`,
       image: `${params.assetMetadata.image}`,
       attributes: params.assetMetadata.attributes,
     };
-    const nonce = await this.wallet.getNonce();
-
+    const nonce = await this.wallet.getNonce();    
     const ipfsCid = await this.ipfsService.uploadAssetMetadataToIPFS(assetJson, params.assetMetadata.name);
+    let tx: any;
     try {
       const random = this.randomUint96();
       const tokenUri = `ipfs://${ipfsCid}`;
       console.log("Minting NFT to:", params.to, "nonce:", nonce);
-      tx = await this.contract
+      tx = await contract
         .mintWithExternalURI(params.to, random, tokenUri, { nonce, gasLimit: 1000000 })
         .catch((error: Error) => {
           console.error(
@@ -59,7 +55,7 @@ export class LaosService {
         () => this.provider.waitForTransaction(tx.hash, 1, 14000),
         20
       );
-      const tokenId = this.extractTokenId(receipt, this.contract, 'MintedWithExternalURI');
+      const tokenId = this.extractTokenId(receipt, contract, 'MintedWithExternalURI');
       return {
         status: "success",
         tokenId: tokenId.toString(),
@@ -76,9 +72,7 @@ export class LaosService {
   }
 
   public async evolve(params: EvolveNFTParams): Promise<EvolveResult> {
-    let tx: any;
-
-    // Generate Asset Metadata
+    const contract = new ethers.Contract(params.laosContractAddress, EvolutionCollectionAbi, this.wallet);
     const assetJson: AssetMetadata = {
       name: `${params.assetMetadata.name}`,
       description: `${params.assetMetadata.description}`,
@@ -86,13 +80,13 @@ export class LaosService {
       attributes: params.assetMetadata.attributes,
     };
     const nonce = await this.wallet.getNonce();
-
     const ipfsCid = await this.ipfsService.uploadAssetMetadataToIPFS(assetJson, params.assetMetadata.name);
+    let tx: any;
     try {
       const tokenUri = `ipfs://${ipfsCid}`;
       console.log('tokenUri:', tokenUri);
       console.log("Evolving NFT with tokenId:", params.tokenId, "nonce:", nonce);
-      tx = await this.contract
+      tx = await contract
         .evolveWithExternalURI(params.tokenId, tokenUri, { nonce, gasLimit: 1000000 })
         .catch((error: Error) => {
           console.error(
@@ -108,7 +102,7 @@ export class LaosService {
         () => this.provider.waitForTransaction(tx.hash, 1, 14000),
         20
       );
-      const tokenId = this.extractTokenId(receipt, this.contract, 'EvolvedWithExternalURI');
+      const tokenId = this.extractTokenId(receipt, contract, 'EvolvedWithExternalURI');
       return {
         status: "success",
         tokenId: tokenId.toString(),
