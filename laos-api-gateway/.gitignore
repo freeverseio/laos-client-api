@@ -9,3 +9,4 @@
 /.env
 # IDE files
 /.idea
+/.mesh
