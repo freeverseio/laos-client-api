@@ -2,7 +2,7 @@
 /lib
 /builds
 /dist
-/.mesh/
+/.mesh
 
 
 /**Versions.json
@@ -11,4 +11,3 @@
 /.env
 # IDE files
 /.idea
-
