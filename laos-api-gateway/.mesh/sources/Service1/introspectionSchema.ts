@@ -57,7 +57,7 @@ const schemaAST = {
               "kind": "InputValueDefinition",
               "name": {
                 "kind": "Name",
-                "value": "ownershipContractId"
+                "value": "contractAddress"
               },
               "type": {
                 "kind": "NonNullType",
@@ -274,7 +274,7 @@ const schemaAST = {
               "kind": "InputValueDefinition",
               "name": {
                 "kind": "Name",
-                "value": "ownershipContractId"
+                "value": "contractAddress"
               },
               "type": {
                 "kind": "NonNullType",

@@ -3,10 +3,10 @@ schema {
 }
 
 type Query {
-  token(tokenId: String!, ownershipContractId: String!): TokenQueryResult
+  token(tokenId: String!, contractAddress: String!): TokenQueryResult
   tokens(orderBy: TokenOrderByOptions, pagination: TokenPaginationInput! = {first: 10}, where: TokenWhereInput): TokenConnection
   transfers(orderBy: TransferOrderByOptions, pagination: TransferPaginationInput, where: TransferWhereInput): [TransferQueryResult!]
-  tokenHistory(pagination: TokenHistoryPaginationInput, tokenId: String!, ownershipContractId: String!): [TokenHistoryQueryResult!]
+  tokenHistory(pagination: TokenHistoryPaginationInput, tokenId: String!, contractAddress: String!): [TokenHistoryQueryResult!]
 }
 
 type PageInfo {

@@ -1,0 +1,10 @@
+
+{
+  "apiKeys": [
+    {
+      "apiKey": "not-a-valid-api-key",
+      "userId": 1,
+      "createdAt": "2024-08-20T12:34:56Z"
+    }
+  ]
+}

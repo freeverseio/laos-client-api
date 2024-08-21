@@ -4,11 +4,11 @@ schema {
 }
 
 type Query {
-  token(tokenId: String!, ownershipContractId: String!): TokenQueryResult
+  token(tokenId: String!, contractAddress: String!): TokenQueryResult
   tokens(orderBy: TokenOrderByOptions, pagination: TokenPaginationInput! = {first: 10}, where: TokenWhereInput): TokenConnection
   transfers(orderBy: TransferOrderByOptions, pagination: TransferPaginationInput, where: TransferWhereInput): [TransferQueryResult!]
-  tokenHistory(pagination: TokenHistoryPaginationInput, tokenId: String!, ownershipContractId: String!): [TokenHistoryQueryResult!]
-  test: String!
+  tokenHistory(pagination: TokenHistoryPaginationInput, tokenId: String!, contractAddress: String!): [TokenHistoryQueryResult!]
+  status: String!
 }
 
 type PageInfo {
@@ -148,6 +148,7 @@ enum TransferOrderByOptions {
 type Mutation {
   mint(input: MintInput!): MintResponse!
   evolve(input: EvolveInput!): EvolveResponse!
+  broadcast(input: BroadcastInput!): BroadcastResponse!
 }
 
 type MintResponse {
@@ -156,8 +157,9 @@ type MintResponse {
 }
 
 input MintInput {
-  mintTo: String
-  name: String
+  laosContractAddress: String!
+  mintTo: String!
+  name: String!
   description: String
   attributes: String
   image: String
@@ -171,9 +173,21 @@ type EvolveResponse {
 }
 
 input EvolveInput {
-  tokenId: String
-  name: String
+  laosContractAddress: String!
+  tokenId: String!
+  name: String!
   description: String
   attributes: String
   image: String
+}
+
+type BroadcastResponse {
+  tokenId: String!
+  success: Boolean!
+}
+
+input BroadcastInput {
+  tokenId: String!
+  chainId: String!
+  ownershipContractAddress: String!
 }

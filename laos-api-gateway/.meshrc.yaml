@@ -6,6 +6,7 @@ sources:
   - name: Service2
     handler:
       graphql:
-        endpoint: https://api.laos.gorengine.com/
+        endpoint: http://laos-client-api.protostar.svc.cluster.local:4001/
+        source: ./src/sources/api-client/schema.graphql
 
 additionalEnvelopPlugins: './src/authPlugin.ts'

@@ -32,7 +32,7 @@ export type Query = {
 
 export type QuerytokenArgs = {
   tokenId: Scalars['String']['input'];
-  ownershipContractId: Scalars['String']['input'];
+  contractAddress: Scalars['String']['input'];
 };
 
 
@@ -53,7 +53,7 @@ export type QuerytransfersArgs = {
 export type QuerytokenHistoryArgs = {
   pagination?: InputMaybe<TokenHistoryPaginationInput>;
   tokenId: Scalars['String']['input'];
-  ownershipContractId: Scalars['String']['input'];
+  contractAddress: Scalars['String']['input'];
 };
 
 export type PageInfo = {

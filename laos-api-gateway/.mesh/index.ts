@@ -16,11 +16,11 @@ import { getMesh, ExecuteMeshFn, SubscribeMeshFn, MeshContext as BaseMeshContext
 import { MeshStore, FsStoreStorageAdapter } from '@graphql-mesh/store';
 import { path as pathModule } from '@graphql-mesh/cross-helpers';
 import { ImportFn } from '@graphql-mesh/types';
-import type { Service1Types } from './sources/Service1/types';
 import type { Service2Types } from './sources/Service2/types';
+import type { Service1Types } from './sources/Service1/types';
 import * as importedModule$0 from "./../src/authPlugin.js";
-import * as importedModule$1 from "./sources/Service1/introspectionSchema";
-import * as importedModule$2 from "./sources/Service2/introspectionSchema";
+import * as importedModule$1 from "./sources/Service2/introspectionSchema";
+import * as importedModule$2 from "./sources/Service1/introspectionSchema";
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -48,13 +48,13 @@ export type Query = {
   tokens?: Maybe<TokenConnection>;
   transfers?: Maybe<Array<TransferQueryResult>>;
   tokenHistory?: Maybe<Array<TokenHistoryQueryResult>>;
-  test: Scalars['String']['output'];
+  status: Scalars['String']['output'];
 };
 
 
 export type QuerytokenArgs = {
   tokenId: Scalars['String']['input'];
-  ownershipContractId: Scalars['String']['input'];
+  contractAddress: Scalars['String']['input'];
 };
 
 
@@ -75,7 +75,7 @@ export type QuerytransfersArgs = {
 export type QuerytokenHistoryArgs = {
   pagination?: InputMaybe<TokenHistoryPaginationInput>;
   tokenId: Scalars['String']['input'];
-  ownershipContractId: Scalars['String']['input'];
+  contractAddress: Scalars['String']['input'];
 };
 
 export type PageInfo = {
@@ -202,6 +202,7 @@ export type TransferOrderByOptions =
 export type Mutation = {
   mint: MintResponse;
   evolve: EvolveResponse;
+  broadcast: BroadcastResponse;
 };
 
 
@@ -214,14 +215,20 @@ export type MutationevolveArgs = {
   input: EvolveInput;
 };
 
+
+export type MutationbroadcastArgs = {
+  input: BroadcastInput;
+};
+
 export type MintResponse = {
   tokenId: Scalars['String']['output'];
   success: Scalars['Boolean']['output'];
 };
 
 export type MintInput = {
-  mintTo?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
+  laosContractAddress: Scalars['String']['input'];
+  mintTo: Scalars['String']['input'];
+  name: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   attributes?: InputMaybe<Scalars['String']['input']>;
   image?: InputMaybe<Scalars['String']['input']>;
@@ -235,11 +242,23 @@ export type EvolveResponse = {
 };
 
 export type EvolveInput = {
-  tokenId?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
+  laosContractAddress: Scalars['String']['input'];
+  tokenId: Scalars['String']['input'];
+  name: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   attributes?: InputMaybe<Scalars['String']['input']>;
   image?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type BroadcastResponse = {
+  tokenId: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
+export type BroadcastInput = {
+  tokenId: Scalars['String']['input'];
+  chainId: Scalars['String']['input'];
+  ownershipContractAddress: Scalars['String']['input'];
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -356,6 +375,8 @@ export type ResolversTypes = ResolversObject<{
   MintInput: MintInput;
   EvolveResponse: ResolverTypeWrapper<EvolveResponse>;
   EvolveInput: EvolveInput;
+  BroadcastResponse: ResolverTypeWrapper<BroadcastResponse>;
+  BroadcastInput: BroadcastInput;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -385,14 +406,16 @@ export type ResolversParentTypes = ResolversObject<{
   MintInput: MintInput;
   EvolveResponse: EvolveResponse;
   EvolveInput: EvolveInput;
+  BroadcastResponse: BroadcastResponse;
+  BroadcastInput: BroadcastInput;
 }>;
 
 export type QueryResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  token?: Resolver<Maybe<ResolversTypes['TokenQueryResult']>, ParentType, ContextType, RequireFields<QuerytokenArgs, 'tokenId' | 'ownershipContractId'>>;
+  token?: Resolver<Maybe<ResolversTypes['TokenQueryResult']>, ParentType, ContextType, RequireFields<QuerytokenArgs, 'tokenId' | 'contractAddress'>>;
   tokens?: Resolver<Maybe<ResolversTypes['TokenConnection']>, ParentType, ContextType, RequireFields<QuerytokensArgs, 'pagination'>>;
   transfers?: Resolver<Maybe<Array<ResolversTypes['TransferQueryResult']>>, ParentType, ContextType, Partial<QuerytransfersArgs>>;
-  tokenHistory?: Resolver<Maybe<Array<ResolversTypes['TokenHistoryQueryResult']>>, ParentType, ContextType, RequireFields<QuerytokenHistoryArgs, 'tokenId' | 'ownershipContractId'>>;
-  test?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tokenHistory?: Resolver<Maybe<Array<ResolversTypes['TokenHistoryQueryResult']>>, ParentType, ContextType, RequireFields<QuerytokenHistoryArgs, 'tokenId' | 'contractAddress'>>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type PageInfoResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['PageInfo'] = ResolversParentTypes['PageInfo']> = ResolversObject<{
@@ -484,6 +507,7 @@ export type TokenHistoryQueryResultResolvers<ContextType = MeshContext, ParentTy
 export type MutationResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   mint?: Resolver<ResolversTypes['MintResponse'], ParentType, ContextType, RequireFields<MutationmintArgs, 'input'>>;
   evolve?: Resolver<ResolversTypes['EvolveResponse'], ParentType, ContextType, RequireFields<MutationevolveArgs, 'input'>>;
+  broadcast?: Resolver<ResolversTypes['BroadcastResponse'], ParentType, ContextType, RequireFields<MutationbroadcastArgs, 'input'>>;
 }>;
 
 export type MintResponseResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['MintResponse'] = ResolversParentTypes['MintResponse']> = ResolversObject<{
@@ -497,6 +521,12 @@ export type EvolveResponseResolvers<ContextType = MeshContext, ParentType extend
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   tokenUri?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   tx?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type BroadcastResponseResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['BroadcastResponse'] = ResolversParentTypes['BroadcastResponse']> = ResolversObject<{
+  tokenId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -514,6 +544,7 @@ export type Resolvers<ContextType = MeshContext> = ResolversObject<{
   Mutation?: MutationResolvers<ContextType>;
   MintResponse?: MintResponseResolvers<ContextType>;
   EvolveResponse?: EvolveResponseResolvers<ContextType>;
+  BroadcastResponse?: BroadcastResponseResolvers<ContextType>;
 }>;
 
 
@@ -528,10 +559,10 @@ const importFn: ImportFn = <T>(moduleId: string) => {
     case "src/authPlugin.ts":
       return Promise.resolve(importedModule$0) as T;
     
-    case ".mesh/sources/Service1/introspectionSchema":
+    case ".mesh/sources/Service2/introspectionSchema":
       return Promise.resolve(importedModule$1) as T;
     
-    case ".mesh/sources/Service2/introspectionSchema":
+    case ".mesh/sources/Service1/introspectionSchema":
       return Promise.resolve(importedModule$2) as T;
     
     default:

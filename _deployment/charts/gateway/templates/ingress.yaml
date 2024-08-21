@@ -24,6 +24,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: laos-client-api
+                name: laos-api-gateway
                 port:
-                  number: 4001
+                  number: 4000
