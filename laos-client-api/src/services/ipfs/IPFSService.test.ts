@@ -19,6 +19,10 @@ describe('IPFSService', () => {
   const mockPinFileToIPFS = jest.fn();
 
   beforeAll(() => {
+    jest.spyOn(console, "log").mockImplementation(() => {});
+    jest.spyOn(console, "warn").mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => {});
+
     // Setting up the PinataSDK mock implementation
     (PinataSDK as any).mockImplementation(() => ({
       testAuthentication: mockTestAuthentication,
