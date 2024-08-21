@@ -2,7 +2,8 @@ sources:
   - name: Service1
     handler:
       graphql:
-        endpoint: https://indexer.gorengine.com/graphql
+        endpoint: ${INDEXER_GRAPHQL_ENDPOINT}
+        source: ./src/sources/indexer/schema.graphql
   - name: Service2
     handler:
       graphql:

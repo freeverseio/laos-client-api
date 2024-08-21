@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
         - name: laos-api-gateway
-          image: freeverseio/laos-api-gateway
-          imagePullPolicy: Never
+          image: freeverseio/laos-api-gateway:{{ .Values.imageTag }}
+          imagePullPolicy: Always
           resources:
             requests:
               memory: "512Mi"
@@ -28,6 +28,8 @@ spec:
           env:             
             - name: ROOT_DIR
               value: "/app"
+            - name: INDEXER_GRAPHQL_ENDPOINT
+              value: {{ .Values.indexerGraphqlEndpoint }}
           volumeMounts:
             - name: api-keys
               mountPath: /app/config
