@@ -84,6 +84,7 @@ jobs:
       - run:
           name: Build and Deploy Node API
           command: |
+            cd laos-client-api
             npm ci
       - dockerize-and-push:
           image: freeverseio/laos-client-api
@@ -98,6 +99,7 @@ jobs:
       - run:
           name: Build and Deploy API Gateway
           command: |
+            cd laos-api-gateway
             npm ci
       - dockerize-and-push:
           image: freeverseio/laos-api-gateway
