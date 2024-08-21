@@ -108,17 +108,17 @@ workflows:
     jobs:
       - build-client-api:
           context: dockerhub
-          filters:
-            branches:
-              only:
-                - main
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
       
       - build-api-gateway:
           context: dockerhub
-          filters:
-            branches:
-              only:
-                - main
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
 
       - deployment-test
 
@@ -128,10 +128,10 @@ workflows:
           requires:
             - deployment-test
             - build-client-api
-          filters:
-            branches:
-              only:
-                - main
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
       
       - approval:
           type: approval
@@ -140,10 +140,10 @@ workflows:
             - deployment-test
             - build-client-api
             - build-api-gateway
-          filters:
-            branches:
-              only:
-                - main
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
 
       - deploy_to_cluster:
           name: deploy-to-dev
@@ -151,10 +151,10 @@ workflows:
             - deployment-test
             - approve-deploy-client-api
           environment: development
-          filters:
-            branches:
-              only:
-                - main
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
 
       - deploy_to_cluster:
           name: deploy-to-staging
