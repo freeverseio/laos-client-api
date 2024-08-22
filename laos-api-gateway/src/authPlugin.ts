@@ -28,22 +28,13 @@ const authPlugin: MeshPlugin<YamlConfig.Plugin['config']> = {
         });
       }
     });
-    // if (operation.operation === 'mutation') {
+    if (operation.operation === 'mutation') {
       if (!apiKey || !(await validateApiKey(apiKey))) {
         throw new Error('Invalid API key');
       }
-    // }
+    }
   },
-
-  onFetch(payload) {
-    console.log('Fetch started!', payload.options.body);
-    //console.log('Fetch started!', payload.options.headers);
-
-    return (result) => {
-      // Handle fetch result if needed
-      //console.log('Fetch result:', result);
-    };
-  },
+ 
 };
 
 export default authPlugin;

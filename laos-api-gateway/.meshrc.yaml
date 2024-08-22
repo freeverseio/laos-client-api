@@ -1,10 +1,25 @@
 sources:
-  - name: Service1
+  - name: polygon-indexer
     handler:
       graphql:
-        endpoint: ${INDEXER_GRAPHQL_ENDPOINT}
+        endpoint: ${POLYGON_INDEXER_GRAPHQL_ENDPOINT}
         source: ./src/sources/indexer/schema.graphql
-  - name: Service2
+    transforms:
+      - encapsulate:
+          name: polygon
+          applyTo:
+            query: true
+  - name: ethereum-indexer
+    handler:
+      graphql:
+        endpoint: ${ETHEREUM_INDEXER_GRAPHQL_ENDPOINT}
+        source: ./src/sources/indexer/schema.graphql
+    transforms:
+      - encapsulate:
+          name: ethereum
+          applyTo:
+            query: true
+  - name: api-client
     handler:
       graphql:
         endpoint: ${API_GRAPHQL_ENDPOINT}
