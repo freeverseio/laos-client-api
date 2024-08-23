@@ -1,0 +1,9 @@
+releases:
+  - name: laos-api-gateway-release
+    namespace: '{{ .Values.namespace }}'
+    createNamespace: false
+    chart: .
+    values:
+      - imageTag: {{ .Values.imageTag }}
+      - host: {{ .Values.host }}
+      - indexerGraphqlEndpoint: {{ .Values.indexerGraphqlEndpoint }}

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: laos-api-gateway
+  labels:
+    app.kubernetes.io/app: laos-api-gateway
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/app: laos-api-gateway
+  ports:
+    - port: 4000
+      targetPort: 4000
+      protocol: TCP
+      name: api
+  

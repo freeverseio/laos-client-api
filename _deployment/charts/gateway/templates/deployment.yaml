@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: laos-api-gateway
+  labels:
+    app.kubernetes.io/app: laos-api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/app: laos-api-gateway
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/app: laos-api-gateway
+    spec:
+      containers:
+        - name: laos-api-gateway
+          image: freeverseio/laos-api-gateway:{{ .Values.imageTag }}
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "2"
+          env:             
+            - name: ROOT_DIR
+              value: "/app"
+          volumeMounts:
+            - name: api-keys
+              mountPath: /app/config
+          ports:
+            - containerPort: 4000
+      volumes:
+        - name: api-keys
+          configMap:
+            name: api-keys

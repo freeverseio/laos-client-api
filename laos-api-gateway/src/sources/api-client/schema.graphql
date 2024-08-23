@@ -1,0 +1,55 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Query {
+  status: String!
+}
+
+type Mutation {
+  mint(input: MintInput!): MintResponse!
+  evolve(input: EvolveInput!): EvolveResponse!
+  broadcast(input: BroadcastInput!): BroadcastResponse!
+}
+
+type MintResponse {
+  tokenId: String!
+  success: Boolean!
+}
+
+input MintInput {
+  laosContractAddress: String!
+  mintTo: String!
+  name: String!
+  description: String
+  attributes: String
+  image: String
+}
+
+type EvolveResponse {
+  tokenId: String!
+  success: Boolean!
+  tokenUri: String!
+  tx: String!
+}
+
+input EvolveInput {
+  laosContractAddress: String!
+  tokenId: String!
+  name: String!
+  description: String
+  attributes: String
+  image: String
+}
+
+type BroadcastResponse {
+  tokenId: String!
+  success: Boolean!
+}
+
+input BroadcastInput {
+  tokenId: String!
+  chainId: String!
+  ownershipContractAddress: String!
+}
