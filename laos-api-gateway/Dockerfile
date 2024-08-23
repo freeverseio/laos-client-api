@@ -6,7 +6,7 @@ FROM base as deps
 WORKDIR /app
 
 # Install required packages for building native dependencies
-RUN apk add --no-cache libc6-compat g++ make python3
+RUN apk add --no-cache libc6-compat g++ make python3 curl
 COPY package.json package-lock.json* ./
 RUN npm ci --production
 

@@ -28,8 +28,6 @@ spec:
           env:             
             - name: ROOT_DIR
               value: "/app"
-            - name: POLYGON_INDEXER_GRAPHQL_ENDPOINT
-              value: {{ .Values.indexerGraphqlEndpoint }}
           volumeMounts:
             - name: api-keys
               mountPath: /app/config
