@@ -8,13 +8,13 @@ export class EvolvingService {
 
   constructor() {
     const evolveConfig: LaosConfig = {
-      minterPvk: process.env.MINTER_PVK || '',
+      minterPvks: process.env.MINTER_KEYS || '',
       rpcMinter: process.env.RPC_MINTER || '',
     };
     this.serviceHelper = new ServiceHelper(evolveConfig);
   }
 
-  public async evolve(input: EvolveInput): Promise<EvolveResponse> {
+  public async evolve(input: EvolveInput, apiKey: string): Promise<EvolveResponse> {
     const { laosContractAddress, tokenId, name, description, attributes, image } = input;
 
     const imageUrl = await this.serviceHelper.handleImageUpload(image || '');
@@ -28,7 +28,7 @@ export class EvolvingService {
       attributes: parsedAttributes, 
     };
     try {
-      const result: EvolveResult = await this.serviceHelper.laosService.evolve({tokenId: tokenId!, assetMetadata, laosContractAddress: laosContractAddress!});
+      const result: EvolveResult = await this.serviceHelper.laosService.evolve({tokenId: tokenId!, assetMetadata, laosContractAddress: laosContractAddress!}, apiKey);
       if (result.status === "success") {
         return { 
           tokenId: result.tokenId!, 

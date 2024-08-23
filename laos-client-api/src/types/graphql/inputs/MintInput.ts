@@ -2,8 +2,12 @@ import { InputType, Field } from "type-graphql";
 
 @InputType()
 export class MintInput {
+
   @Field({ nullable: false })
-  laosContractAddress?: string;
+  chainId?: string;
+
+  @Field({ nullable: false })
+  contractAddress?: string;
   
   @Field({ nullable: false })
   mintTo?: string;

@@ -3,7 +3,7 @@
 import { InContextSdkMethod } from '@graphql-mesh/types';
 import { MeshContext } from '@graphql-mesh/runtime';
 
-export namespace Service2Types {
+export namespace ApiClientTypes {
   export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -51,7 +51,8 @@ export type MintResponse = {
 };
 
 export type MintInput = {
-  laosContractAddress: Scalars['String']['input'];
+  chainId: Scalars['String']['input'];
+  contractAddress: Scalars['String']['input'];
   mintTo: Scalars['String']['input'];
   name: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
@@ -105,7 +106,7 @@ export type BroadcastInput = {
   };
 
   export type Context = {
-      ["Service2"]: { Query: QuerySdk, Mutation: MutationSdk, Subscription: SubscriptionSdk },
+      ["api-client"]: { Query: QuerySdk, Mutation: MutationSdk, Subscription: SubscriptionSdk },
       
     };
 }

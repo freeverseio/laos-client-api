@@ -11,7 +11,7 @@ describe('ServiceHelper', () => {
 
   beforeEach(() => {
     mockConfig = {
-      minterPvk: 'mockPvk',
+      minterPvks: 'mockPvk',
       rpcMinter: 'mockRpc',
     };
 

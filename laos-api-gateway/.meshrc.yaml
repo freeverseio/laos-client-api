@@ -87,5 +87,7 @@ sources:
       graphql:
         endpoint: ${API_GRAPHQL_ENDPOINT}
         source: ./src/sources/api-client/schema.graphql
+        operationHeaders:
+          Authorization: API-KEY {context.headers['x-api-key']}
 
 additionalEnvelopPlugins: './src/authPlugin.ts'

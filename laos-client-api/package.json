@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@apollo/client": "^3.11.4",
     "@pinata/sdk": "^2.1.0",
     "@subsquid/evm-abi": "^0.3.0",
     "@subsquid/evm-codec": "^0.3.0",
@@ -20,6 +21,7 @@
     "axios": "^1.7.2",
     "axios-mock-adapter": "^1.22.0",
     "class-validator": "^0.14.1",
+    "cross-fetch": "^4.0.0",
     "dotenv": "^16.4.5",
     "ethers": "^6.13.1",
     "graphql": "^16.9.0",

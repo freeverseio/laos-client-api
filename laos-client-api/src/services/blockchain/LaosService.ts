@@ -11,28 +11,25 @@ const eventNameToEventTypeMap = {
 
 export class LaosService {
   private provider: ethers.JsonRpcProvider;
-  private wallet: ethers.Wallet;
   private ipfsService: IPFSService;
 
   constructor(config: LaosConfig, ipfsService: IPFSService) {
-    const { minterPvk, rpcMinter } = config;
-    if (!minterPvk) {
-      throw new Error('Private key not found in environment variables');
-    }
+    const { rpcMinter } = config;
     this.provider = new ethers.JsonRpcProvider(rpcMinter);
-    this.wallet = new ethers.Wallet(minterPvk, this.provider);
     this.ipfsService = ipfsService;
   }
 
-  public async mint(params: MintSingleNFTParams): Promise<MintResult> {
-    const contract = this.getEthersContract({laosContractAddress: params.laosContractAddress, abi: EvolutionCollectionAbi, wallet: this.wallet});
+  public async mint(params: MintSingleNFTParams, apiKey: string): Promise<MintResult> {
+    const minterPvk = JSON.parse(process.env.MINTER_KEYS || '{}')[apiKey];
+    const wallet = new ethers.Wallet(minterPvk, this.provider);
+    const contract = this.getEthersContract({laosContractAddress: params.laosContractAddress, abi: EvolutionCollectionAbi, wallet});
     const assetJson: AssetMetadata = {
       name: `${params.assetMetadata.name} `,
       description: `${params.assetMetadata.description}`,
       image: `${params.assetMetadata.image}`,
       attributes: params.assetMetadata.attributes,
     };
-    const nonce = await this.wallet.getNonce();    
+    const nonce = await wallet.getNonce();    
     const ipfsCid = await this.ipfsService.uploadAssetMetadataToIPFS(assetJson, params.assetMetadata.name);
     let tx: any;
     try {
@@ -40,7 +37,7 @@ export class LaosService {
       const tokenUri = `ipfs://${ipfsCid}`;
       console.log("Minting NFT to:", params.to, "nonce:", nonce);
       tx = await contract
-        .mintWithExternalURI(params.to, random, tokenUri, { nonce, gasLimit: 1000000 })
+        .mintWithExternalURI(params.to, random, tokenUri, { nonce, gasLimit: 5000000 })
         .catch((error: Error) => {
           console.error(
             "Mint Failed, nonce:",
@@ -75,15 +72,17 @@ export class LaosService {
     return new ethers.Contract(laosContractAddress, abi, wallet);
   }
 
-  public async evolve(params: EvolveNFTParams): Promise<EvolveResult> {
-    const contract = this.getEthersContract({laosContractAddress: params.laosContractAddress, abi: EvolutionCollectionAbi, wallet: this.wallet});
+  public async evolve(params: EvolveNFTParams, apiKey: string): Promise<EvolveResult> {
+    const minterPvk = JSON.parse(process.env.MINTER_KEYS || '{}')[apiKey];
+    const wallet = new ethers.Wallet(minterPvk, this.provider);
+    const contract = this.getEthersContract({laosContractAddress: params.laosContractAddress, abi: EvolutionCollectionAbi, wallet});
     const assetJson: AssetMetadata = {
       name: `${params.assetMetadata.name}`,
       description: `${params.assetMetadata.description}`,
       image: `${params.assetMetadata.image}`,
       attributes: params.assetMetadata.attributes,
     };
-    const nonce = await this.wallet.getNonce();
+    const nonce = await wallet.getNonce();
     const ipfsCid = await this.ipfsService.uploadAssetMetadataToIPFS(assetJson, params.assetMetadata.name);
     let tx: any;
     try {

@@ -19,7 +19,8 @@ type MintResponse {
 }
 
 input MintInput {
-  laosContractAddress: String!
+  chainId: String!
+  contractAddress: String!
   mintTo: String!
   name: String!
   description: String
