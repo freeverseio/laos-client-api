@@ -39,7 +39,6 @@ export class OwnershipContracService {
 
   public async getOwnershipContract(chainId: number, contractAddress: string): Promise<OwnershipContract | null> {
     const client = this.getClient(chainId);
-
     try {
       const { data } = await client.query<OwnershipContractResponse>({
         query: GET_OWNERSHIP_CONTRACT,
