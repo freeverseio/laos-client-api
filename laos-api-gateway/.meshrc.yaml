@@ -19,6 +19,46 @@ sources:
           name: ethereum
           applyTo:
             query: true
+  - name: local-indexer
+    handler:
+      graphql:
+        endpoint: http://localhost:4350/graphql
+    transforms:
+      - rename:
+          mode: bare | wrap
+          renames:
+            - from:
+                type: OwnershipContract
+              to:
+                type: Contract
+            - from:
+                type: Contract
+                field: id
+              to:
+                type: Contract
+                field: address
+            - from:
+                type: Query
+                field: ownershipContracts
+              to:
+                type: Query
+                field: contracts
+            - from:
+                type: OwnershipContractWhereInput
+                field: id_eq
+              to:
+                type: OwnershipContractWhereInput
+                field: address_eq
+      - filterSchema:
+          mode: bare | wrap
+          filters:
+            - Type.!{ OwnershipContractsConnection, OwnershipContractEdge}
+            - Query.!{ownershipContractById, ownershipContractByUniqueInput, ownershipContractsConnection}
+      - encapsulate:
+          name: local
+          applyTo:
+            query: true
+      
   - name: api-client
     handler:
       graphql:
