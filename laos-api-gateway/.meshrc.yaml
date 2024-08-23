@@ -5,6 +5,37 @@ sources:
         endpoint: ${POLYGON_INDEXER_GRAPHQL_ENDPOINT}
         source: ./src/sources/indexer/schema.graphql
     transforms:
+      - rename:
+          mode: bare | wrap
+          renames:
+            - from:
+                type: OwnershipContract
+              to:
+                type: Contract
+            - from:
+                type: Contract
+                field: id
+              to:
+                type: Contract
+                field: address
+            - from:
+                type: Query
+                field: ownershipContracts
+              to:
+                type: Query
+                field: contracts
+            - from:
+                type: OwnershipContractWhereInput
+                field: id_eq
+              to:
+                type: OwnershipContractWhereInput
+                field: address_eq
+      - filterSchema:
+          mode: bare | wrap
+          filters:
+            - Type.!{ OwnershipContractsConnection, OwnershipContractEdge, OwnershipContractOrderByInput}
+            - Query.!{ownershipContractById, ownershipContractByUniqueInput, ownershipContractsConnection}
+            - Query.contracts.!orderBy
       - encapsulate:
           name: polygon
           applyTo:
@@ -14,15 +45,6 @@ sources:
       graphql:
         endpoint: ${ETHEREUM_INDEXER_GRAPHQL_ENDPOINT}
         source: ./src/sources/indexer/schema.graphql
-    transforms:
-      - encapsulate:
-          name: ethereum
-          applyTo:
-            query: true
-  - name: local-indexer
-    handler:
-      graphql:
-        endpoint: http://localhost:4350/graphql
     transforms:
       - rename:
           mode: bare | wrap
@@ -52,10 +74,11 @@ sources:
       - filterSchema:
           mode: bare | wrap
           filters:
-            - Type.!{ OwnershipContractsConnection, OwnershipContractEdge}
+            - Type.!{ OwnershipContractsConnection, OwnershipContractEdge, OwnershipContractOrderByInput}
             - Query.!{ownershipContractById, ownershipContractByUniqueInput, ownershipContractsConnection}
+            - Query.contracts.!orderBy
       - encapsulate:
-          name: local
+          name: ethereum
           applyTo:
             query: true
       

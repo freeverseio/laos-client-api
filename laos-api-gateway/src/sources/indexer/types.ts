@@ -3,7 +3,7 @@
 import { InContextSdkMethod } from '@graphql-mesh/types';
 import { MeshContext } from '@graphql-mesh/runtime';
 
-export namespace Service1Types {
+export namespace LocalIndexerTypes {
   export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -23,10 +23,41 @@ export type Scalars = {
 };
 
 export type Query = {
+  ownershipContracts: Array<OwnershipContract>;
+  ownershipContractById?: Maybe<OwnershipContract>;
+  /** @deprecated Use ownershipContractById */
+  ownershipContractByUniqueInput?: Maybe<OwnershipContract>;
+  ownershipContractsConnection: OwnershipContractsConnection;
   token?: Maybe<TokenQueryResult>;
   tokens?: Maybe<TokenConnection>;
   transfers?: Maybe<Array<TransferQueryResult>>;
   tokenHistory?: Maybe<Array<TokenHistoryQueryResult>>;
+};
+
+
+export type QueryownershipContractsArgs = {
+  where?: InputMaybe<OwnershipContractWhereInput>;
+  orderBy?: InputMaybe<Array<OwnershipContractOrderByInput>>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryownershipContractByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryownershipContractByUniqueInputArgs = {
+  where: WhereIdInput;
+};
+
+
+export type QueryownershipContractsConnectionArgs = {
+  orderBy: Array<OwnershipContractOrderByInput>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<OwnershipContractWhereInput>;
 };
 
 
@@ -56,11 +87,84 @@ export type QuerytokenHistoryArgs = {
   contractAddress: Scalars['String']['input'];
 };
 
+export type OwnershipContract = {
+  id: Scalars['String']['output'];
+  laosContract?: Maybe<Scalars['String']['output']>;
+};
+
+export type OwnershipContractWhereInput = {
+  id_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_eq?: InputMaybe<Scalars['String']['input']>;
+  id_not_eq?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_startsWith?: InputMaybe<Scalars['String']['input']>;
+  id_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  id_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  laosContract_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  laosContract_eq?: InputMaybe<Scalars['String']['input']>;
+  laosContract_not_eq?: InputMaybe<Scalars['String']['input']>;
+  laosContract_gt?: InputMaybe<Scalars['String']['input']>;
+  laosContract_gte?: InputMaybe<Scalars['String']['input']>;
+  laosContract_lt?: InputMaybe<Scalars['String']['input']>;
+  laosContract_lte?: InputMaybe<Scalars['String']['input']>;
+  laosContract_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  laosContract_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  laosContract_contains?: InputMaybe<Scalars['String']['input']>;
+  laosContract_not_contains?: InputMaybe<Scalars['String']['input']>;
+  laosContract_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  laosContract_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  laosContract_startsWith?: InputMaybe<Scalars['String']['input']>;
+  laosContract_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  laosContract_endsWith?: InputMaybe<Scalars['String']['input']>;
+  laosContract_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  AND?: InputMaybe<Array<OwnershipContractWhereInput>>;
+  OR?: InputMaybe<Array<OwnershipContractWhereInput>>;
+};
+
+export type OwnershipContractOrderByInput =
+  | 'id_ASC'
+  | 'id_DESC'
+  | 'id_ASC_NULLS_FIRST'
+  | 'id_ASC_NULLS_LAST'
+  | 'id_DESC_NULLS_FIRST'
+  | 'id_DESC_NULLS_LAST'
+  | 'laosContract_ASC'
+  | 'laosContract_DESC'
+  | 'laosContract_ASC_NULLS_FIRST'
+  | 'laosContract_ASC_NULLS_LAST'
+  | 'laosContract_DESC_NULLS_FIRST'
+  | 'laosContract_DESC_NULLS_LAST';
+
+export type WhereIdInput = {
+  id: Scalars['String']['input'];
+};
+
+export type OwnershipContractsConnection = {
+  edges: Array<OwnershipContractEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type OwnershipContractEdge = {
+  node: OwnershipContract;
+  cursor: Scalars['String']['output'];
+};
+
 export type PageInfo = {
-  endCursor?: Maybe<Scalars['String']['output']>;
-  hasNextPage?: Maybe<Scalars['Boolean']['output']>;
-  hasPreviousPage?: Maybe<Scalars['Boolean']['output']>;
-  startCursor?: Maybe<Scalars['String']['output']>;
+  hasNextPage: Scalars['Boolean']['output'];
+  hasPreviousPage: Scalars['Boolean']['output'];
+  startCursor: Scalars['String']['output'];
+  endCursor: Scalars['String']['output'];
 };
 
 export type TokenQueryResult = {
@@ -179,6 +283,14 @@ export type TransferOrderByOptions =
 
   export type QuerySdk = {
       /** null **/
+  ownershipContracts: InContextSdkMethod<Query['ownershipContracts'], QueryownershipContractsArgs, MeshContext>,
+  /** null **/
+  ownershipContractById: InContextSdkMethod<Query['ownershipContractById'], QueryownershipContractByIdArgs, MeshContext>,
+  /** null **/
+  ownershipContractByUniqueInput: InContextSdkMethod<Query['ownershipContractByUniqueInput'], QueryownershipContractByUniqueInputArgs, MeshContext>,
+  /** null **/
+  ownershipContractsConnection: InContextSdkMethod<Query['ownershipContractsConnection'], QueryownershipContractsConnectionArgs, MeshContext>,
+  /** null **/
   token: InContextSdkMethod<Query['token'], QuerytokenArgs, MeshContext>,
   /** null **/
   tokens: InContextSdkMethod<Query['tokens'], QuerytokensArgs, MeshContext>,
@@ -197,7 +309,7 @@ export type TransferOrderByOptions =
   };
 
   export type Context = {
-      ["Service1"]: { Query: QuerySdk, Mutation: MutationSdk, Subscription: SubscriptionSdk },
+      ["local-indexer"]: { Query: QuerySdk, Mutation: MutationSdk, Subscription: SubscriptionSdk },
       
     };
 }
