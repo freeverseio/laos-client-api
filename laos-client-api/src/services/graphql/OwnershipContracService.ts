@@ -1,5 +1,4 @@
-import { ApolloClient, InMemoryCache, gql, NormalizedCacheObject } from '@apollo/client';
-import { HttpLink } from '@apollo/client/link/http';
+import { ApolloClient, InMemoryCache, gql, NormalizedCacheObject, HttpLink } from '@apollo/client/core'
 import fetch from 'cross-fetch';
 import { OwnershipContractResponse, OwnershipContract } from '../../types/graphql/outputs/OwnershipContractOutput';
 
