@@ -48,5 +48,10 @@ spec:
                 secretKeyRef:
                   name: protostar-private-config
                   key: pinataApiSecret
+            - name: MINTER_KEYS
+              valueFrom:
+                secretKeyRef:
+                  name: protostar-private-config
+                  key: clientApiMinterKeys
           ports:
             - containerPort: 4001
