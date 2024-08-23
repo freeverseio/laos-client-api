@@ -14,8 +14,8 @@ RUN npm ci --production
 COPY . .
 
 ENV ROOT_DIR=/app
-ENV POLYGON_INDEXER_GRAPHQL_ENDPOINT=http://laos-indexer-polygon-api.protostar.svc.cluster.local:4000
-ENV ETHEREUM_INDEXER_GRAPHQL_ENDPOINT=http://laos-indexer-ethereum-api.protostar.svc.cluster.local:4000
+ENV POLYGON_INDEXER_GRAPHQL_ENDPOINT=http://laos-indexer-polygon-api.protostar.svc.cluster.local:4000/graphql
+ENV ETHEREUM_INDEXER_GRAPHQL_ENDPOINT=http://laos-indexer-ethereum-api.protostar.svc.cluster.local:4000/graphql
 ENV API_GRAPHQL_ENDPOINT=http://laos-client-api.protostar.svc.cluster.local:4001/
 
 # Build the TypeScript code
