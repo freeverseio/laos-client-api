@@ -35,6 +35,11 @@ async function startServer() {
     introspection: true, // Enables introspection of the schema
     plugins: [
     ],
+    context: ({ req }) => {
+      return {
+        headers: req.headers,
+      };
+    },
   });
 
   server.listen({ port: 4001 }).then(({ url }) => {

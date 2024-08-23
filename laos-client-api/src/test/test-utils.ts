@@ -16,7 +16,7 @@ export async function startTestServer(mockMintingService: any) {
     },
   });
 
-  const server = new ApolloServer({ schema });
+  const server = new ApolloServer({ schema, context: ({ req }) => ({ headers: req.headers }) });
 
   const { url } = await server.listen({ port: 0 }); // Use port 0 to get a random available port
   return { server, url };

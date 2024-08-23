@@ -50,7 +50,7 @@ describe("LaosService", () => {
     mockIPFSService = new IPFSService("mockApiKey", "mockApiSecret") as jest.Mocked<IPFSService>;
 
     const config = {
-      minterPvk: "mockPrivateKey",
+      minterPvks: "mockPrivateKey",
       rpcMinter: "mockRpcMinter",
     };
 
@@ -101,7 +101,7 @@ describe("LaosService", () => {
     });
     (EvolutionCollection.events.MintedWithExternalURI.decode as jest.Mock).mockReturnValue({ _tokenId: BigInt(0) });
 
-    const result = await laosService.mint(params);
+    const result = await laosService.mint(params, '550e8400-e29b-41d4-a716-446655440001');
 
     expect(result).toEqual({
       status: "success",
@@ -127,7 +127,7 @@ describe("LaosService", () => {
     mockContract.mintWithExternalURI.mockRejectedValue(new Error("Mint failed"));
     mockProvider.waitForTransaction = jest.fn();
 
-    const result = await laosService.mint(params);
+    const result = await laosService.mint(params, '550e8400-e29b-41d4-a716-446655440001');
 
     expect(result).toEqual({
       status: "failed",
@@ -179,7 +179,7 @@ describe("LaosService", () => {
     });
     (EvolutionCollection.events.EvolvedWithExternalURI.decode as jest.Mock).mockReturnValue({ _tokenId: BigInt(0) });
 
-    const result = await laosService.evolve(params);
+    const result = await laosService.evolve(params, '550e8400-e29b-41d4-a716-446655440001');
 
     expect(result).toEqual({
       status: "success",
@@ -206,7 +206,7 @@ describe("LaosService", () => {
     mockContract.evolveWithExternalURI.mockRejectedValue(new Error("Evolve failed"));
     mockProvider.waitForTransaction = jest.fn();
 
-    const result = await laosService.evolve(params);
+    const result = await laosService.evolve(params, '550e8400-e29b-41d4-a716-446655440001');
 
     expect(result).toEqual({
       status: "failed",

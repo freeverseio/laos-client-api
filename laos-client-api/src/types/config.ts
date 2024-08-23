@@ -1,5 +1,5 @@
 export type LaosConfig = {
-  minterPvk: string;
+  minterPvks: string;
   rpcMinter: string;
 };
 
