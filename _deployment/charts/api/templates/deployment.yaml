@@ -28,6 +28,10 @@ spec:
           env:             
             - name: GQL_PORT
               value: "4001"
+            - name: INDEXER_POLYGON_ENDPOINT
+              value: "http://indexer-laos-polygon-api.protostar.svc.cluster.local:4000/graphql"
+            - name: INDEXER_ETHEREUM_ENDPOINT
+              value: "http://indexer-laos-ethereum-api.protostar.svc.cluster.local:4000/graphql"
             - name: MINTER_PVK
               valueFrom:
                 secretKeyRef:
