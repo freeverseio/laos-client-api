@@ -36,7 +36,8 @@ type EvolveResponse {
 }
 
 input EvolveInput {
-  laosContractAddress: String!
+  chainId: String!
+  contractAddress: String!
   tokenId: String!
   name: String!
   description: String
