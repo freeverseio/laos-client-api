@@ -1,5 +1,5 @@
 
-import { Resolver, Query, Mutation, Arg, Ctx } from "type-graphql";
+import { Resolver, Mutation, Arg, Ctx } from "type-graphql";
 import { EvolvingService } from "../services/EvolvingService";
 import { EvolveInput } from "../types/graphql/inputs/EvolveInput";
 import { EvolveResponse } from "../types/graphql/outputs/EvolveOutput";
@@ -13,7 +13,8 @@ export class EvolveResolver {
 
   @Mutation(() => EvolveResponse)
   async evolve(@Arg("input") input: EvolveInput, @Ctx() context: Context): Promise<EvolveResponse> {
-    let apiKey = context.headers['api-key'];
+    let apiKey = context.headers['authorization'];
+    //remove the API-KEY prefix
     apiKey = apiKey.replace('API-KEY ', '');
     return this.evolvingService.evolve(input, apiKey);
   }
