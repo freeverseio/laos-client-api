@@ -68,7 +68,8 @@ export type EvolveResponse = {
 };
 
 export type EvolveInput = {
-  laosContractAddress: Scalars['String']['input'];
+  chainId: Scalars['String']['input'];
+  contractAddress: Scalars['String']['input'];
   tokenId: Scalars['String']['input'];
   name: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
