@@ -10,26 +10,25 @@ const authPlugin: MeshPlugin<YamlConfig.Plugin['config']> = {
       (def: any) => def.kind === 'OperationDefinition'
     );
 
-    operation.selectionSet.selections.forEach((selection: any) => {
-      if (selection.arguments) {
-        console.log('selection.arguments started!', selection.arguments);
-        selection.arguments.forEach((arg: any) => {
-          if (arg.name.value === 'where') {
-            const contractAddressField = arg.value.fields.find(
-              (field: any) =>
-                field.name.value === 'contractAddress' &&
-                field.value.value === '0x21e999b6f9be90448b8de0578ef708018df90009'
-            );
-
-            if (contractAddressField) {
-              console.log('contractAddressField started!', contractAddressField);
-            }
-          }
-        });
-      }
-    });
+    
     if (operation.operation === 'mutation') {
-      if (!apiKey || !(await validateApiKey(apiKey))) {
+      const mutationName = operation.selectionSet.selections[0].name.value;
+      let contractAddress = '';
+      if (mutationName === 'mint' || mutationName === 'evolve') {
+        const mintArguments = operation.selectionSet.selections[0].arguments;
+        const inputArg = mintArguments.find(
+          (arg: any) => arg.name.value === 'input'
+        );
+        if (inputArg) {
+          const contractAddressField = inputArg.value.fields.find(
+            (field: any) => field.name.value === 'contractAddress'
+          );
+          if (contractAddressField) {
+            contractAddress = contractAddressField.value.value;
+          }
+        }
+      }
+      if (!apiKey || !(await validateApiKey(apiKey, contractAddress))) {
         throw new Error('Invalid API key');
       }
     }
