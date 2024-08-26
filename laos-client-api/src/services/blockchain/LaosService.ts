@@ -29,14 +29,12 @@ export class LaosService {
   ): Promise<any> {
     let nonce = await wallet.getNonce();
     let gasLimit = initialGasLimit;
+    const random = this.randomUint96();
+    const tokenUri = `ipfs://${ipfsCid}`;
   
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const random = this.randomUint96();
-        console.log("random:", random);
-        const tokenUri = `ipfs://${ipfsCid}`;
         console.log("Minting NFT to:", params.to, "nonce:", nonce);
-  
         const tx = await contract.mintWithExternalURI(params.to, random, tokenUri, {
           nonce: nonce,
           gasLimit: gasLimit
@@ -93,6 +91,7 @@ export class LaosService {
         () => this.provider.waitForTransaction(tx.hash, 1, 14000),
         20
       );
+      
       const tokenId = this.extractTokenId(receipt, contract, 'MintedWithExternalURI');
       return {
         status: "success",
@@ -164,6 +163,9 @@ export class LaosService {
   }
 
   private extractTokenId(receipt: ethers.TransactionReceipt, contract: ethers.Contract, eventName: EventName): bigint {
+    if (!receipt || !receipt.status || receipt.status !== 1) {
+        throw new Error("Receipt status is not 1");
+    }
     const log = receipt.logs[0] as any;
     const logDecoded = eventNameToEventTypeMap[eventName].decode(log);
     const { _tokenId } = logDecoded;
