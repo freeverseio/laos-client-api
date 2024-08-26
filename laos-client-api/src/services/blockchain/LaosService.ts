@@ -19,6 +19,61 @@ export class LaosService {
     this.ipfsService = ipfsService;
   }
 
+  private async mintNFTWithRetries(
+    contract: any,
+    params: { to: string },
+    ipfsCid: string,
+    wallet: ethers.Wallet,
+    initialGasLimit: number,
+    maxRetries: number
+  ): Promise<any> {
+    let nonce = await wallet.getNonce();
+    let gasLimit = initialGasLimit;
+  
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const random = this.randomUint96();
+        console.log("random:", random);
+        const tokenUri = `ipfs://${ipfsCid}`;
+        console.log("Minting NFT to:", params.to, "nonce:", nonce);
+  
+        const tx = await contract.mintWithExternalURI(params.to, random, tokenUri, {
+          nonce: nonce,
+          gasLimit: gasLimit
+        });
+  
+        console.log(`Mint successful on attempt ${attempt}`);
+        return tx;
+      } catch (error) {
+        const errorMessage = (error as Error).message;
+        if (errorMessage.includes("nonce too low") || errorMessage.includes("NONCE_EXPIRED")) {
+          console.log(`Nonce error detected [${nonce}], retrieveing new nonce`);
+          nonce = await wallet.getNonce();
+
+        } else if (errorMessage.includes("replacement transaction underpriced") || errorMessage.includes("REPLACEMENT_UNDERPRICED") || errorMessage.includes("intrinsic gas too low")) {
+          console.log(`Underpriced error detected [${gasLimit}], increasing gas limit [${gasLimit*2}]`);
+          gasLimit *= 2;
+
+        } else {
+          console.error(
+            `Mint Failed, attempt: ${attempt}, nonce:`,
+            nonce,
+            "gasLimit:",
+            gasLimit,
+            "error: ",
+            errorMessage
+          );
+          throw error;
+        }
+  
+        if (attempt === maxRetries) {
+          console.error("Max retries reached, throwing last error");
+          throw error;
+        }
+      }
+    }
+  }
+
   public async mint(params: MintSingleNFTParams, apiKey: string): Promise<MintResult> {
     const minterPvk = JSON.parse(process.env.MINTER_KEYS || '{}')[apiKey];
     const wallet = new ethers.Wallet(minterPvk, this.provider);
@@ -29,25 +84,11 @@ export class LaosService {
       image: `${params.assetMetadata.image}`,
       attributes: params.assetMetadata.attributes,
     };
-    const nonce = await wallet.getNonce();    
     const ipfsCid = await this.ipfsService.uploadAssetMetadataToIPFS(assetJson, params.assetMetadata.name);
     let tx: any;
     try {
-      const random = this.randomUint96();
-      const tokenUri = `ipfs://${ipfsCid}`;
-      console.log("Minting NFT to:", params.to, "nonce:", nonce);
-      tx = await contract
-        .mintWithExternalURI(params.to, random, tokenUri, { nonce, gasLimit: 5000000 })
-        .catch((error: Error) => {
-          console.error(
-            "Mint Failed, nonce:",
-            nonce,
-            "error: ",
-            error.message
-          );
-          throw error;
-        });
-
+      tx = await this.mintNFTWithRetries(contract, params, ipfsCid, wallet, 500000, 5);
+      
       const receipt = await this.retryOperation(
         () => this.provider.waitForTransaction(tx.hash, 1, 14000),
         20
