@@ -9,7 +9,7 @@ export default async function validateApiKey(apiKey: string, contractAddress: st
     const apiKeysData = JSON.parse(fs.readFileSync(apiKeysFilePath, 'utf-8'));
 
     // Find the entry with the matching apiKey
-    const apiKeyEntry = apiKeysData.apiKeys.find((entry: { apiKey: string; contracts: string[] }) => entry.apiKey === apiKey);
+    const apiKeyEntry = apiKeysData.apiKeys.find((entry: { apiKey: string; contracts: { contractAddress: string; batchMinterContract: string }[] }) => entry.apiKey === apiKey);
 
     if (!apiKeyEntry) {
       console.error('API key not found');
@@ -17,7 +17,7 @@ export default async function validateApiKey(apiKey: string, contractAddress: st
     }
 
     // Check if the contractAddress is in the list of contracts for this apiKey
-    const hasContract = apiKeyEntry.contracts.includes(contractAddress);
+    const hasContract = apiKeyEntry.contracts.some((contract: { contractAddress: string; batchMinterContract: string }) => contract.contractAddress === contractAddress);
 
     if (!hasContract) {
       console.error('Contract address not authorized for this API key');
