@@ -2,6 +2,8 @@ import PinataSDK from '@pinata/sdk';
 import axios from 'axios';
 import FormData from 'form-data';
 import { AssetMetadata } from '../../types/asset';
+import { CID } from 'multiformats/cid'
+import * as Hash from 'typestub-ipfs-only-hash'
 
 export class IPFSService {
   private pinata: PinataSDK;
@@ -53,6 +55,12 @@ export class IPFSService {
     });
     return this.retry(operation, 2, 1000); // 2 retries with 1 second delay
   }
+
+  public async getCid(assetJson: AssetMetadata): Promise<string> {
+    const json = JSON.stringify(assetJson);
+    return Hash.of(Buffer.from(json));;
+  }
+
 
   public async uploadImageToIPFS(base64Image: string): Promise<string> {
     try {

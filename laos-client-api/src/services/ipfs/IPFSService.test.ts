@@ -87,4 +87,18 @@ describe('IPFSService', () => {
       await expect(service.uploadImageToIPFS(validBase64Image)).rejects.toThrow();
     });
   });
+
+
+  describe('getCid', () => {
+    it('should return the CID of the asset metadata', async () => {
+      const result = await service.getCid(assetJson);
+      expect(result).toBe('QmRjcEzmghGAoCG5y1kfhjpHCEbvsSgDUEtidS2MXS4AzF');
+    });
+
+    it('should return the CID of the asset metadata', async () => {
+      const assetJsonTest: AssetMetadata = { name: 'Example Token ', description: 'This is an example token', image: 'https://ipfs.io/ipfs/QmS326uhnQp5PsnznQvHhkzqKLfB7ieWz3onmFXsRvERig', attributes: [ { trait_type: 'health', value: '11' } ] };
+      const result = await service.getCid(assetJsonTest);
+      expect(result).toBe('QmQBqscaTTKKh3br2tqyWjwBFbfsQpFjKDqrjY64jR57jG');
+    });
+  });
 });
