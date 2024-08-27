@@ -1,8 +1,9 @@
 import { ethers } from "ethers";
-import { MintSingleNFTParams, EvolveNFTParams, MintResult, EvolveResult, AssetMetadata, LaosConfig, EventName } from "../../types";
+import { MintSingleNFTParams, EvolveNFTParams, MintResult, EvolveResult, AssetMetadata, LaosConfig, EventName, BatchMintNFTParams, BatchMintResult } from "../../types";
 import { IPFSService } from "../ipfs/IPFSService";
 import * as EvolutionCollection from "../../abi/EvolutionCollection";
 import EvolutionCollectionAbi from '../../abi/contracts/EvolutionCollection.json';
+import BatchMinterAbi from '../../abi/contracts/BatchMinter.json';
 
 const eventNameToEventTypeMap = {
   MintedWithExternalURI: EvolutionCollection.events.MintedWithExternalURI,
@@ -112,6 +113,95 @@ export class LaosService {
     return new ethers.Contract(laosContractAddress, abi, wallet);
   }
 
+
+  private async batchMintNFTWithRetries(
+    contract: any,
+    tokens: {tokenUri: string, mintTo: string}[],    
+    wallet: ethers.Wallet,
+    initialGasLimit: number,
+    maxRetries: number
+  ): Promise<any> {
+    let nonce = await wallet.getNonce();
+    let gasLimit = initialGasLimit;
+    const randoms = Array.from({ length: tokens.length }, () => this.randomUint96());
+
+    const { tokenUris, recipients } = tokens.reduce<{ tokenUris: string[], recipients: string[] }>((acc, token) => {
+      acc.tokenUris.push(token.tokenUri);
+      acc.recipients.push(token.mintTo);
+      return acc;
+    }, { tokenUris: [], recipients: [] });
+  
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log("Minting NFT to:", recipients, "nonce:", nonce);
+        // recipients, randoms, uris, options
+        const tx = await contract.mintWithExternalURIBatch(recipients, randoms, tokenUris, {
+          nonce: nonce,
+          gasLimit: gasLimit
+        });
+  
+        console.log(`Mint successful on attempt ${attempt}`);
+        return tx;
+      } catch (error) {
+        const errorMessage = (error as Error).message;
+        if (errorMessage.includes("nonce too low") || errorMessage.includes("NONCE_EXPIRED")) {
+          console.log(`Nonce error detected [${nonce}], retrieveing new nonce`);
+          nonce = await wallet.getNonce();
+
+        } else if (errorMessage.includes("replacement transaction underpriced") || errorMessage.includes("REPLACEMENT_UNDERPRICED") || errorMessage.includes("intrinsic gas too low")) {
+          console.log(`Underpriced error detected [${gasLimit}], increasing gas limit [${gasLimit*2}]`);
+          gasLimit *= 2;
+
+        } else {
+          console.error(
+            `Mint Failed, attempt: ${attempt}, nonce:`,
+            nonce,
+            "gasLimit:",
+            gasLimit,
+            "error: ",
+            errorMessage
+          );
+          throw error;
+        }
+  
+        if (attempt === maxRetries) {
+          console.error("Max retries reached, throwing last error");
+          throw error;
+        }
+      }
+    }
+  }
+
+  public async batchMint(params: BatchMintNFTParams, apiKey: string): Promise<BatchMintResult> {
+    const minterPvk = JSON.parse(process.env.MINTER_KEYS || '{}')[apiKey];
+    const wallet = new ethers.Wallet(minterPvk, this.provider);
+    const contract = this.getEthersContract({laosContractAddress: params.laosBatchMinterContractAddress, abi: BatchMinterAbi, wallet});
+    let tx: any;
+    try {
+      tx = await this.batchMintNFTWithRetries(contract, params.tokens, wallet, 500000, 5);
+      
+      const receipt = await this.retryOperation(
+        () => this.provider.waitForTransaction(tx.hash, 1, 14000),
+        20
+      );
+      
+      const tokenIds = this.extractTokenIds(receipt, contract, 'MintedWithExternalURI');
+      return {
+        status: "success",
+        tokenIds: tokenIds.map(bigintValue => bigintValue.toString()),
+        tx: tx?.hash,
+      };
+    } catch (error: any) {
+      console.error("Minting Failed:", error.message);
+      return {
+        status: "failed",
+        tokenIds: [],
+        tx: tx?.hash,
+        error: error.message,
+      };
+    }
+  }
+
   public async evolve(params: EvolveNFTParams, apiKey: string): Promise<EvolveResult> {
     const minterPvk = JSON.parse(process.env.MINTER_KEYS || '{}')[apiKey];
     const wallet = new ethers.Wallet(minterPvk, this.provider);
@@ -170,6 +260,25 @@ export class LaosService {
     const logDecoded = eventNameToEventTypeMap[eventName].decode(log);
     const { _tokenId } = logDecoded;
     return _tokenId;
+  }
+
+  private extractTokenIds(receipt: ethers.TransactionReceipt, contract: ethers.Contract, eventName: EventName): bigint[] {
+    if (!receipt || !receipt.status || receipt.status !== 1) {
+      console.error("Receipt: ", receipt);
+      throw new Error("Receipt status is not 1");
+    }
+  
+    return receipt.logs
+      .map(log => {
+        try {
+          const logDecoded = eventNameToEventTypeMap[eventName].decode(log as any);
+          return logDecoded._tokenId;
+        } catch (error) {
+          // If decoding fails, it's likely not the event we're looking for
+          return null;
+        }
+      })
+      .filter((tokenId): tokenId is bigint => tokenId !== null);
   }
 
   private async retryOperation(operation: () => Promise<any>, maxRetries: number): Promise<any> {
