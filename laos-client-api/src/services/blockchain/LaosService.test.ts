@@ -83,6 +83,7 @@ describe("LaosService", () => {
     mockContract.mintWithExternalURI.mockResolvedValue({
       hash: "mockHash",
       wait: jest.fn().mockResolvedValue({
+        status: 1,
         logs: [
           {
             topics: ["0xMockTopic"],
@@ -92,7 +93,8 @@ describe("LaosService", () => {
       }),
     });
     mockProvider.waitForTransaction = jest.fn().mockResolvedValue({
-      logs: [
+        status: 1,
+        logs: [
         {
           topics: ["0xMockTopic"],
           data: "0xMockData",
@@ -153,6 +155,7 @@ describe("LaosService", () => {
     mockContract.evolveWithExternalURI.mockResolvedValue({
       hash: "mockHash",
       wait: jest.fn().mockResolvedValue({
+        status: 1,
         logs: [
           {
             topics: ["0xMockTopic"],
@@ -162,6 +165,7 @@ describe("LaosService", () => {
       }),
     });
     mockProvider.waitForTransaction = jest.fn().mockResolvedValue({
+      status: 1,
       logs: [
         {
           topics: ["0xMockTopic"],
@@ -170,7 +174,8 @@ describe("LaosService", () => {
       ],
     });
     mockProvider.waitForTransaction = jest.fn().mockResolvedValue({
-      logs: [
+        status: 1,
+        logs: [
         {
           topics: ["0xMockTopic"],
           data: "0xMockData",

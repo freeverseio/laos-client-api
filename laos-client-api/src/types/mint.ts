@@ -16,11 +16,21 @@ export type MintRequestBody = {
   image: string;
   properties: Property[];
 };
-  
+
 export interface MintSingleNFTParams {
   laosContractAddress: string;
   to: string;
   assetMetadata: AssetMetadata;
+}
+
+export interface BatchMintNFTParams {
+  laosBatchMinterContractAddress: string;
+  tokens: BatchMintTokenInput[];
+}
+
+export interface BatchMintTokenInput {
+  tokenUri: string;
+  mintTo: string;
 }
 
 export interface EvolveNFTParams {
@@ -32,6 +42,14 @@ export interface EvolveNFTParams {
 export interface MintResult {
   status: string;
   tokenId?: string;
+  contractAddress?: string;
+  tx?: string;
+  error?: string;
+}
+
+export interface BatchMintResult {
+  status: string;
+  tokenIds: string[];
   contractAddress?: string;
   tx?: string;
   error?: string;
