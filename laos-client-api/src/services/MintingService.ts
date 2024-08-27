@@ -84,14 +84,10 @@ export class MintingService {
         };
       }));
     }));
-  
-    // Flatten the array of arrays into a single array
     const flatTokens = expandedTokens.flat();
   
-    // TODO get from configMap instead of indexer
     const apiKeyService = new ApiKeyService();
     const batchMinterContractAddress = apiKeyService.getBatchMinterContract(apiKey, contractAddress!);
-    
     const params: BatchMintNFTParams = {
       laosBatchMinterContractAddress: batchMinterContractAddress!,
       tokens: flatTokens,
