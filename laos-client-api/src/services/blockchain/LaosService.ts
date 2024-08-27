@@ -185,7 +185,7 @@ export class LaosService {
         20
       );
       
-      const tokenIds = this.extractTokenIds(receipt, contract, 'MintedWithExternalURI');
+      const tokenIds = this.extractTokenIds(receipt, 'MintedWithExternalURI');
       return {
         status: "success",
         tokenIds: tokenIds.map(bigintValue => bigintValue.toString()),
@@ -262,7 +262,7 @@ export class LaosService {
     return _tokenId;
   }
 
-  private extractTokenIds(receipt: ethers.TransactionReceipt, contract: ethers.Contract, eventName: EventName): bigint[] {
+  private extractTokenIds(receipt: ethers.TransactionReceipt, eventName: EventName): bigint[] {
     if (!receipt || !receipt.status || receipt.status !== 1) {
       console.error("Receipt: ", receipt);
       throw new Error("Receipt status is not 1");
