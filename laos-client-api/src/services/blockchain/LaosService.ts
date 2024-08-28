@@ -149,8 +149,8 @@ export class LaosService {
           console.log(`Nonce error detected [${nonce}], retrieveing new nonce`);
           nonce = await wallet.getNonce();
         } else if (errorMessage.includes("replacement transaction underpriced") || errorMessage.includes("REPLACEMENT_UNDERPRICED") || errorMessage.includes("intrinsic gas too low")) {
-          console.log(`Underpriced error detected [${gasLimit}], increasing gas limit [${gasLimit*2}]`);
-          gasLimit *= 2;
+          console.log(`Underpriced error detected [${gasLimit}], increasing gas limit [${gasLimit+20_000}]`);
+          gasLimit += 20_000;
         } else {
           console.error(
             `Mint Failed, attempt: ${attempt}, nonce:`,
