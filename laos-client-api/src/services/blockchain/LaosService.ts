@@ -50,8 +50,8 @@ export class LaosService {
           nonce = await wallet.getNonce();
 
         } else if (errorMessage.includes("replacement transaction underpriced") || errorMessage.includes("REPLACEMENT_UNDERPRICED") || errorMessage.includes("intrinsic gas too low")) {
-          console.log(`Underpriced error detected [${gasLimit}], increasing gas limit [${gasLimit*2}]`);
-          gasLimit *= 2;
+          console.log(`Underpriced error detected [${gasLimit}], increasing gas limit [${gasLimit+20_000}]`);
+          gasLimit += 20_000;
 
         } else {
           console.error(
@@ -130,7 +130,8 @@ export class LaosService {
       acc.recipients.push(token.mintTo);
       return acc;
     }, { tokenUris: [], recipients: [] });
-  
+
+    gasLimit = 20_000 * tokenUris.length + initialGasLimit;
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         console.log("Minting NFT to:", recipients, "nonce:", nonce);
@@ -147,11 +148,9 @@ export class LaosService {
         if (errorMessage.includes("nonce too low") || errorMessage.includes("NONCE_EXPIRED")) {
           console.log(`Nonce error detected [${nonce}], retrieveing new nonce`);
           nonce = await wallet.getNonce();
-
         } else if (errorMessage.includes("replacement transaction underpriced") || errorMessage.includes("REPLACEMENT_UNDERPRICED") || errorMessage.includes("intrinsic gas too low")) {
-          console.log(`Underpriced error detected [${gasLimit}], increasing gas limit [${gasLimit*2}]`);
-          gasLimit *= 2;
-
+          console.log(`Underpriced error detected [${gasLimit}], increasing gas limit [${gasLimit+20_000}]`);
+          gasLimit += 20_000;
         } else {
           console.error(
             `Mint Failed, attempt: ${attempt}, nonce:`,
@@ -178,7 +177,7 @@ export class LaosService {
     const contract = this.getEthersContract({laosContractAddress: params.laosBatchMinterContractAddress, abi: BatchMinterAbi, wallet});
     let tx: any;
     try {
-      tx = await this.batchMintNFTWithRetries(contract, params.tokens, wallet, 500000, 5);
+      tx = await this.batchMintNFTWithRetries(contract, params.tokens, wallet, 50_000, 5);
       
       const receipt = await this.retryOperation(
         () => this.provider.waitForTransaction(tx.hash, 1, 14000),
