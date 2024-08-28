@@ -59,5 +59,12 @@ spec:
                 secretKeyRef:
                   name: protostar-private-config
                   key: clientApiMinterKeys
+          volumeMounts:
+            - name: api-keys
+              mountPath: /app/config
           ports:
             - containerPort: 4001
+      volumes:
+        - name: api-keys
+          configMap:
+            name: api-keys
