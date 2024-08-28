@@ -25,7 +25,9 @@ spec:
             limits:
               memory: '512Mi'
               cpu: '2'
-          env:             
+          env:  
+            - name: ROOT_DIR
+              value: "/app"
             - name: GQL_PORT
               value: "4001"
             - name: INDEXER_POLYGON_ENDPOINT
