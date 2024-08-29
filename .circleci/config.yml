@@ -121,7 +121,7 @@ workflows:
       - build-app:
           name: build-playground
           image: freeverseio/laos-graphql-playground
-          root: laos-graphql-playground
+          root: graphql-playground
           context: dockerhub
           filters:
             branches:
