@@ -1,0 +1,80 @@
+repositories:
+  - name: stable
+    url: https://charts.helm.sh/stable
+
+environments:
+  default:
+    values:
+      - ./environments/dev/values.yaml
+  development:
+    values:
+      - ./environments/dev/values.yaml
+  staging:
+    values:
+      - ./environments/staging/values.yaml
+
+helmfiles:
+  {{- range .Values.indexerInstances }}
+  - path: 'charts/db/helmfile.yaml'
+    values:
+      - namespace: {{ $.Values.namespace }}
+      - postgresDb: {{ .postgresDb }}
+      - postgresPassword: {{ .postgresPassword }}
+      - postgresUser: {{ .postgresUser }}
+      - pvcName: {{ .pvcName }}
+      - podName: {{ .dbPodName }}
+      - servicePort: {{ .servicePort }}
+      - containerPort: {{ .containerPort }}
+      - mountPath: {{ .mountPath }}
+      - mountName: {{ .mountName }}
+  - path: 'charts/processor/helmfile.yaml'
+    values:
+      - name: {{ .ownershipProcessor }}
+      - namespace: {{ $.Values.namespace }}
+      - imageTag: {{ requiredEnv "CIRCLE_SHA1" }}
+      - postgresDb: {{ .postgresDb }}
+      - postgresDbHost: {{ .dbPodName }}
+      - postgresPassword: {{ .postgresPassword }}
+      - postgresUser: {{ .postgresUser }}
+      - postgresPort: {{ .servicePort }}
+      - gatewayEndpoint: {{ .gatewayEndpoint }}
+      - rpcEndpointSecretKey: {{ .rpcEndpointSecretKey }}
+      - laosGlobalConsensus: {{ $.Values.laosGlobalConsensus }}
+      - laosParachain: {{ $.Values.laosParachain }}
+      - laosPalletInstance: {{ $.Values.laosPalletInstance }}
+      - startingBlockOwnership: {{ .startingBlockOwnership }}
+      - startingBlockLaos: {{ .startingBlockLaos }}
+      - command: "process:prod:ownership_chain"
+  - path: 'charts/processor/helmfile.yaml'
+    values:
+      - name: {{ .laosProcessor }}
+      - namespace: {{ $.Values.namespace }}
+      - imageTag: {{ requiredEnv "CIRCLE_SHA1" }}
+      - postgresDb: {{ .postgresDb }}
+      - postgresDbHost: {{ .dbPodName }}
+      - postgresPassword: {{ .postgresPassword }}
+      - postgresUser: {{ .postgresUser }}
+      - postgresPort: {{ .servicePort }}
+      - gatewayEndpoint: ""
+      - rpcEndpointSecretKey: {{ .rpcEndpointSecretKey }}
+      - laosGlobalConsensus: {{ $.Values.laosGlobalConsensus }}
+      - laosParachain: {{ $.Values.laosParachain }}
+      - laosPalletInstance: {{ $.Values.laosPalletInstance }}
+      - startingBlockOwnership: {{ .startingBlockOwnership }}
+      - startingBlockLaos: {{ .startingBlockLaos }}
+      - command: "process:prod:laos"
+  - path: 'charts/api/helmfile.yaml'
+    values:
+      - name: {{ .apiProcessor }}
+      - namespace: {{ $.Values.namespace }}
+      - imageTag: {{ requiredEnv "CIRCLE_SHA1" }}
+      - postgresDb: {{ .postgresDb }}
+      - postgresDbHost: {{ .dbPodName }}
+      - postgresPort: {{ .servicePort }}
+      - postgresPassword: {{ .postgresPassword }}
+      - postgresUser: {{ .postgresUser }}
+      - host: {{ .host }}
+      - gqlPort: {{ .gqlPort }}
+{{- end }}
+  
+
