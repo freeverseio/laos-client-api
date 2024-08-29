@@ -1,3 +1,4 @@
 namespace: protostar
 host: api.laos.gorengine.com
+playgroundHost: playground.laos.gorengine.com
 graphqlEndpoint: https://api.laos.gorengine.com/graphql

@@ -6,3 +6,4 @@ releases:
     values:
       - graphqlEndpoint: {{ .Values.graphqlEndpoint }}
       - imageTag: {{ .Values.imageTag }}
+      - host: {{ .Values.host }}
