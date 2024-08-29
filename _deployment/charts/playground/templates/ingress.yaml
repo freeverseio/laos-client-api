@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: client-ingress
+  name: laos-graphql-playground-ingress
   annotations:
     kubernetes.io/ingress.class: 'nginx'
     nginx.ingress.kubernetes.io/auth-tls-verify-client: 'on'
@@ -15,7 +15,7 @@ spec:
   tls:
     - hosts:
         - {{ .Values.host }}
-      secretName: client-tls
+      secretName: laos-graphql-playground-tls
   rules:
     - host: {{ .Values.host }}
       http:
@@ -24,6 +24,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: laos-api-gateway
+                name: laos-graphql-playground
                 port:
-                  number: 4000
+                  number: 8080
