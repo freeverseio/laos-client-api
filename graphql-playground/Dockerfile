@@ -22,8 +22,8 @@ FROM nginx:stable-alpine
 # Step 8: Copy the built app from the build stage
 COPY --from=build /app/build /usr/share/nginx/html
 
-# Step 9: Copy a custom NGINX config file that will serve the app on /playground
-COPY nginx.conf /etc/nginx/nginx.conf
+# Step 9: Copy a custom NGINX config file to conf.d/ directory
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Step 10: Expose the port Nginx will serve the app on
 EXPOSE 80
