@@ -11,6 +11,7 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-freeverse
     nginx.ingress.kubernetes.io/client-max-body-size: 6M
     nginx.ingress.kubernetes.io/proxy-body-size: 6M
+    nginx.ingress.kubernetes.io/rewrite-target: /  # This line is critical for rewriting the /playground path
 spec:
   tls:
     - hosts:
@@ -20,13 +21,6 @@ spec:
     - host: {{ .Values.host }}
       http:
         paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: laos-api-gateway
-                port:
-                  number: 4000
           - path: /playground
             pathType: Prefix
             backend:
@@ -34,3 +28,10 @@ spec:
                 name: laos-graphql-playground
                 port:
                   number: 8080
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: laos-api-gateway
+                port:
+                  number: 4000
