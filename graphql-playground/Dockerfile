@@ -22,6 +22,8 @@ FROM nginx:stable-alpine
 # Step 8: Copy the built app from the build stage
 COPY --from=build /app/build /usr/share/nginx/html
 
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Step 9: Expose the port Nginx will serve the app on
 EXPOSE 80
 
