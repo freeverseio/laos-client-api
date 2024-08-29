@@ -27,7 +27,7 @@ spec:
               cpu: "2"
           env:             
             - name: API_ENDPOINT
-              value: "https://api.laos.gorengine.com/graphql"
+              value: {{ .Values.graphqlEndpoint }}
           ports:
             - containerPort: 80
       volumes:
