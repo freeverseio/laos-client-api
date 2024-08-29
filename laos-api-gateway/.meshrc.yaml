@@ -13,6 +13,10 @@ sources:
               to:
                 type: Contract
             - from:
+                type: OwnershipContractWhereInput
+              to:
+                type: ContractWhereInput
+            - from:
                 type: Contract
                 field: id
               to:
@@ -25,10 +29,10 @@ sources:
                 type: Query
                 field: contracts
             - from:
-                type: OwnershipContractWhereInput
+                type: ContractWhereInput
                 field: id_eq
               to:
-                type: OwnershipContractWhereInput
+                type: ContractWhereInput
                 field: address_eq
       - filterSchema:
           mode: bare | wrap
@@ -54,6 +58,10 @@ sources:
               to:
                 type: Contract
             - from:
+                type: OwnershipContractWhereInput
+              to:
+                type: ContractWhereInput
+            - from:
                 type: Contract
                 field: id
               to:
@@ -66,10 +74,10 @@ sources:
                 type: Query
                 field: contracts
             - from:
-                type: OwnershipContractWhereInput
+                type: ContractWhereInput
                 field: id_eq
               to:
-                type: OwnershipContractWhereInput
+                type: ContractWhereInput
                 field: address_eq
       - filterSchema:
           mode: bare | wrap
