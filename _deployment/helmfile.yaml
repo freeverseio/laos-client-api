@@ -30,5 +30,5 @@ helmfiles:
   - path: 'charts/playground/helmfile.yaml'
     values:
       - namespace: {{ .Values.namespace }}
+      - imageTag: {{ requiredEnv "CIRCLE_SHA1" }}
       - graphqlEndpoint: {{ .Values.graphqlEndpoint }}
-      - imageTag: {{ .Values.imageTag }}
