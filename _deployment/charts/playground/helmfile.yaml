@@ -1,8 +1,8 @@
 releases:
-  - name: laos-api-gateway-release
+  - name: laos-graphql-playground-release
     namespace: '{{ .Values.namespace }}'
     createNamespace: false
     chart: .
     values:
+      - graphqlEndpoint: {{ .Values.graphqlEndpoint }}
       - imageTag: {{ .Values.imageTag }}
-      - host: {{ .Values.host }}

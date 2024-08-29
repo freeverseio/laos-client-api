@@ -74,7 +74,12 @@ jobs:
             cd _deployment
             helmfile lint
 
-  build-client-api:
+  build-app:
+    parameters:
+      image:
+        type: string
+      root:
+        type: string
     docker:
       - image: cimg/node:lts
     steps:
@@ -84,38 +89,39 @@ jobs:
       - run:
           name: Build and Deploy Node API
           command: |
-            cd laos-client-api
-            npm ci
+            cd << parameters.root >>
       - dockerize-and-push:
-          image: freeverseio/laos-client-api
-          root: laos-client-api
-  build-api-gateway:
-    docker:
-      - image: cimg/node:lts
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Build and Deploy API Gateway
-          command: |
-            cd laos-api-gateway
-            npm ci
-      - dockerize-and-push:
-          image: freeverseio/laos-api-gateway
-          root: laos-api-gateway
+          image: << parameters.image >>
+          root: << parameters.root >>
+
 
 workflows:
   ci-workflow:
     jobs:
-      - build-client-api:
+      - build-app:
+          name: build-client-api
+          image: freeverseio/laos-client-api
+          root: laos-client-api
           context: dockerhub
           filters:
             branches:
               only:
                 - main
       
-      - build-api-gateway:
+      - build-app:
+          name: build-api-gateway
+          image: freeverseio/laos-api-gateway
+          root: laos-api-gateway
+          context: dockerhub
+          filters:
+            branches:
+              only:
+                - main
+
+      - build-app:
+          name: build-playground
+          image: freeverseio/laos-graphql-playground
+          root: laos-graphql-playground
           context: dockerhub
           filters:
             branches:
@@ -131,6 +137,7 @@ workflows:
             - deployment-test
             - build-client-api
             - build-api-gateway
+            - build-playground
           filters:
             branches:
               only:
@@ -143,6 +150,7 @@ workflows:
             - deployment-test
             - build-client-api
             - build-api-gateway
+            - build-playground
           filters:
             branches:
               only:

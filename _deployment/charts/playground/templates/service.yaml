@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: laos-graphql-playground
+  labels:
+    app.kubernetes.io/app: laos-graphql-playground
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/app: laos-graphql-playground
+  ports:
+    - port: 8080          # The port on which the service is exposed
+      targetPort: 80    # The port on which the container listens inside the pod
+      protocol: TCP
+      name: playground
+  
