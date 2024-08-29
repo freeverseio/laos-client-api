@@ -27,3 +27,10 @@ spec:
                 name: laos-api-gateway
                 port:
                   number: 4000
+          - path: /playground
+            pathType: Prefix
+            backend:
+              service:
+                name: laos-graphql-playground
+                port:
+                  number: 8080

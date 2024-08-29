@@ -27,4 +27,8 @@ helmfiles:
       - namespace: {{ .Values.namespace }}
       - imageTag: {{ requiredEnv "CIRCLE_SHA1" }}
       - host: {{ .Values.host }}
-      - indexerGraphqlEndpoint: {{ .Values.indexerGraphqlEndpoint }}
+  - path: 'charts/playground/helmfile.yaml'
+    values:
+      - namespace: {{ .Values.namespace }}
+      - graphqlEndpoint: {{ .Values.graphqlEndpoint }}
+      - imageTag: {{ .Values.imageTag }}
