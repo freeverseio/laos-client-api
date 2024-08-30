@@ -3,18 +3,18 @@ CREATE TABLE api_client (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     key VARCHAR(255) UNIQUE,
-    active BOOLEAN NOT NULL
+    active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 
 -- Create the api_contract table
 CREATE TABLE api_contract (
-    id VARCHAR(255) PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     client_id INTEGER NOT NULL,
     chain_id VARCHAR(255) NOT NULL,
     contract_address VARCHAR(255) NOT NULL,
-    laos_contract BOOLEAN,
-    batch_minter_contract BOOLEAN,
+    laos_contract VARCHAR(255) NOT NULL,
+    batch_minter_contract VARCHAR(255),
     FOREIGN KEY (client_id) REFERENCES api_client(id)
 );
 

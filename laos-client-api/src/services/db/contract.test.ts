@@ -25,7 +25,7 @@ describe('Contract Service', () => {
       
       (query as jest.Mock).mockResolvedValue({ rows: [mockContract] });
 
-      const result = await getClientContract('client1', 'chain1', '0x123');
+      const result = await getClientContract({clientId:'client1', chainId:'chain1', contract:'0x123'});
 
       expect(query).toHaveBeenCalledWith(
         'SELECT * FROM contract WHERE client_id = $1 AND chain_id = $2 AND contract_address = $3',
@@ -37,7 +37,7 @@ describe('Contract Service', () => {
     it('should return null when contract is not found', async () => {
       (query as jest.Mock).mockResolvedValue({ rows: [] });
 
-      const result = await getClientContract('client1', 'chain1', '0x456');
+      const result = await getClientContract({clientId:'client1', chainId:'chain1', contract:'0x456'});
 
       expect(query).toHaveBeenCalledWith(
         'SELECT * FROM contract WHERE client_id = $1 AND chain_id = $2 AND contract_address = $3',
@@ -50,7 +50,7 @@ describe('Contract Service', () => {
       const errorMessage = 'Database error';
       (query as jest.Mock).mockRejectedValue(new Error(errorMessage));
 
-      await expect(getClientContract('client1', 'chain1', '0x123')).rejects.toThrow(errorMessage);
+      await expect(getClientContract({clientId:'client1', chainId:'chain1', contract:'0x123'})).rejects.toThrow(errorMessage);
 
       expect(query).toHaveBeenCalledWith(
         'SELECT * FROM contract WHERE client_id = $1 AND chain_id = $2 AND contract_address = $3',
@@ -82,7 +82,7 @@ describe('Contract Service', () => {
       
       (query as jest.Mock).mockResolvedValue({ rows: mockContracts });
 
-      const result = await getClientContracts('client1');
+      const result = await getClientContracts({clientId:'client1'});
 
       expect(query).toHaveBeenCalledWith('SELECT * FROM contract WHERE client_id = $1', ['client1']);
       expect(result).toEqual(mockContracts);
@@ -91,7 +91,7 @@ describe('Contract Service', () => {
     it('should return an empty array when no contracts are found', async () => {
       (query as jest.Mock).mockResolvedValue({ rows: [] });
 
-      const result = await getClientContracts('client2');
+      const result = await getClientContracts({clientId:'client2'});
 
       expect(query).toHaveBeenCalledWith('SELECT * FROM contract WHERE client_id = $1', ['client2']);
       expect(result).toEqual([]);
@@ -101,7 +101,7 @@ describe('Contract Service', () => {
       const errorMessage = 'Database error';
       (query as jest.Mock).mockRejectedValue(new Error(errorMessage));
 
-      await expect(getClientContracts('client1')).rejects.toThrow(errorMessage);
+      await expect(getClientContracts({clientId:'client1'})).rejects.toThrow(errorMessage);
 
       expect(query).toHaveBeenCalledWith('SELECT * FROM contract WHERE client_id = $1', ['client1']);
     });

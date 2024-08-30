@@ -22,7 +22,7 @@ describe('getClientById', () => {
     
     (query as jest.Mock).mockResolvedValue({ rows: [mockClient] });
 
-    const result = await getClientById('1');
+    const result = await getClientById({clientId:'1'});
 
     expect(query).toHaveBeenCalledWith('SELECT * FROM client WHERE id = $1', ['1']);
     expect(result).toEqual(mockClient);
@@ -31,7 +31,7 @@ describe('getClientById', () => {
   it('should return undefined when client is not found', async () => {
     (query as jest.Mock).mockResolvedValue({ rows: [] });
 
-    const result = await getClientById('999');
+    const result = await getClientById({clientId:'999'});
 
     expect(query).toHaveBeenCalledWith('SELECT * FROM client WHERE id = $1', ['999']);
     expect(result).toBeUndefined();
@@ -41,7 +41,7 @@ describe('getClientById', () => {
     const errorMessage = 'Database error';
     (query as jest.Mock).mockRejectedValue(new Error(errorMessage));
 
-    await expect(getClientById('1')).rejects.toThrow(errorMessage);
+    await expect(getClientById({clientId:'1'})).rejects.toThrow(errorMessage);
 
     expect(query).toHaveBeenCalledWith('SELECT * FROM client WHERE id = $1', ['1']);
   });
@@ -56,7 +56,7 @@ describe('getClientById', () => {
     
     (query as jest.Mock).mockResolvedValue({ rows: [mockClient] });
 
-    const result = await getClientById(1 as unknown as string);
+    const result = await getClientById({clientId:1 as unknown as string});
 
     expect(query).toHaveBeenCalledWith('SELECT * FROM client WHERE id = $1', [1]);
     expect(result).toEqual(mockClient);
