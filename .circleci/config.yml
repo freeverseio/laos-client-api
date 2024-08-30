@@ -110,40 +110,40 @@ workflows:
           image: freeverseio/laos-client-api
           root: laos-client-api
           context: dockerhub
-          # filters:
-          #   branches:
-          #     only:
-          #       - main
+          filters:
+            branches:
+              only:
+                - main
 
       - build-app:
           name: build-api-gateway
           image: freeverseio/laos-api-gateway
           root: laos-api-gateway
           context: dockerhub
-          # filters:
-          #   branches:
-          #     only:
-          #       - main
+          filters:
+            branches:
+              only:
+                - main
 
       - build-app:
           name: build-playground
           image: freeverseio/laos-graphql-playground
           root: graphql-playground
           context: dockerhub
-          # filters:
-          #   branches:
-          #     only:
-          #       - main
+          filters:
+            branches:
+              only:
+                - main
 
       - build-app:
           name: build-indexer
           image: freeverseio/laos-indexer
           root: laos-indexer
           context: dockerhub
-          # filters:
-          #   branches:
-          #     only:
-          #       - main
+          filters:
+            branches:
+              only:
+                - main
 
       - deployment-test
 
@@ -155,10 +155,10 @@ workflows:
             - build-client-api
             - build-api-gateway
             - build-playground
-          # filters:
-          #   branches:
-          #     only:
-          #       - main
+          filters:
+            branches:
+              only:
+                - main
 
       - approval:
           type: approval
@@ -168,10 +168,10 @@ workflows:
             - build-client-api
             - build-api-gateway
             - build-playground
-          # filters:
-          #   branches:
-          #     only:
-          #       - main
+          filters:
+            branches:
+              only:
+                - main
 
       - approval:
           type: approval
@@ -179,10 +179,10 @@ workflows:
           requires:
             - deployment-test
             - build-indexer
-          # filters:
-          #   branches:
-          #     only:
-          #       - main
+          filters:
+            branches:
+              only:
+                - main
       
       - approval:
           type: approval
@@ -190,10 +190,10 @@ workflows:
           requires:
             - deployment-test
             - build-indexer
-          # filters:
-          #   branches:
-          #     only:
-          #       - main
+          filters:
+            branches:
+              only:
+                - main
 
       - deploy_to_cluster:
           name: deploy-to-dev-api
@@ -203,10 +203,10 @@ workflows:
 
           environment: development
           root: _deployment
-          # filters:
-          #   branches:
-          #     only:
-          #       - main
+          filters:
+            branches:
+              only:
+                - main
       
       - deploy_to_cluster:
           name: deploy-to-dev-indexer
@@ -216,10 +216,10 @@ workflows:
 
           environment: development
           root: _deployment/indexer
-          # filters:
-          #   branches:
-          #     only:
-          #       - main
+          filters:
+            branches:
+              only:
+                - main
 
       - deploy_to_cluster:
           name: deploy-to-staging-api
@@ -228,10 +228,10 @@ workflows:
             - approve-deploy-client-api-staging
           environment: staging
           root: _deployment
-          # filters:
-          #   branches:
-          #     only:
-          #       - main
+          filters:
+            branches:
+              only:
+                - main
 
       - deploy_to_cluster:
           name: deploy-to-staging-indexer
@@ -240,7 +240,7 @@ workflows:
             - approve-deploy-indexer-staging
           environment: staging
           root: _deployment/indexer
-          # filters:
-          #   branches:
-          #     only:
-          #       - main
+          filters:
+            branches:
+              only:
+                - main
