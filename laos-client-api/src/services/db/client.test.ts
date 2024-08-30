@@ -24,7 +24,7 @@ describe('getClientById', () => {
 
     const result = await getClientById({clientId:'1'});
 
-    expect(query).toHaveBeenCalledWith('SELECT * FROM client WHERE id = $1', ['1']);
+    expect(query).toHaveBeenCalledWith('SELECT * FROM api_client WHERE id = $1', ['1']);
     expect(result).toEqual(mockClient);
   });
 
@@ -33,7 +33,7 @@ describe('getClientById', () => {
 
     const result = await getClientById({clientId:'999'});
 
-    expect(query).toHaveBeenCalledWith('SELECT * FROM client WHERE id = $1', ['999']);
+    expect(query).toHaveBeenCalledWith('SELECT * FROM api_client WHERE id = $1', ['999']);
     expect(result).toBeUndefined();
   });
 
@@ -43,7 +43,7 @@ describe('getClientById', () => {
 
     await expect(getClientById({clientId:'1'})).rejects.toThrow(errorMessage);
 
-    expect(query).toHaveBeenCalledWith('SELECT * FROM client WHERE id = $1', ['1']);
+    expect(query).toHaveBeenCalledWith('SELECT * FROM api_client WHERE id = $1', ['1']);
   });
 
   it('should handle non-string client IDs', async () => {
@@ -58,7 +58,7 @@ describe('getClientById', () => {
 
     const result = await getClientById({clientId:1 as unknown as string});
 
-    expect(query).toHaveBeenCalledWith('SELECT * FROM client WHERE id = $1', [1]);
+    expect(query).toHaveBeenCalledWith('SELECT * FROM api_client WHERE id = $1', [1]);
     expect(result).toEqual(mockClient);
   });
 });

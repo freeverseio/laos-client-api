@@ -22,16 +22,25 @@ describe('Contract Service', () => {
         laos_contract: 'true',
         batch_minter_contract: 'false'
       };
+
+      const resultContract = {
+        id: '1',
+        clientId: 'client1',
+        chainId: 'chain1',
+        contractAddress: '0x123',
+        laosContract: 'true',
+        batchMinterContract: 'false'
+      };
       
       (query as jest.Mock).mockResolvedValue({ rows: [mockContract] });
 
       const result = await getClientContract({clientId:'client1', chainId:'chain1', contract:'0x123'});
 
       expect(query).toHaveBeenCalledWith(
-        'SELECT * FROM contract WHERE client_id = $1 AND chain_id = $2 AND contract_address = $3',
+        'SELECT * FROM api_contract WHERE client_id = $1 AND chain_id = $2 AND contract_address = $3',
         ['client1', 'chain1', '0x123']
       );
-      expect(result).toEqual(mockContract);
+      expect(result).toEqual(resultContract);
     });
 
     it('should return null when contract is not found', async () => {
@@ -40,7 +49,7 @@ describe('Contract Service', () => {
       const result = await getClientContract({clientId:'client1', chainId:'chain1', contract:'0x456'});
 
       expect(query).toHaveBeenCalledWith(
-        'SELECT * FROM contract WHERE client_id = $1 AND chain_id = $2 AND contract_address = $3',
+        'SELECT * FROM api_contract WHERE client_id = $1 AND chain_id = $2 AND contract_address = $3',
         ['client1', 'chain1', '0x456']
       );
       expect(result).toBeNull();
@@ -53,14 +62,14 @@ describe('Contract Service', () => {
       await expect(getClientContract({clientId:'client1', chainId:'chain1', contract:'0x123'})).rejects.toThrow(errorMessage);
 
       expect(query).toHaveBeenCalledWith(
-        'SELECT * FROM contract WHERE client_id = $1 AND chain_id = $2 AND contract_address = $3',
+        'SELECT * FROM api_contract WHERE client_id = $1 AND chain_id = $2 AND contract_address = $3',
         ['client1', 'chain1', '0x123']
       );
     });
   });
 
   describe('getClientContracts', () => {
-    it('should return an array of contracts when found', async () => {
+    it('should return an array of contracts when found', async () => {      
       const mockContracts = [
         {
           id: '1',
@@ -79,13 +88,31 @@ describe('Contract Service', () => {
           batch_minter_contract: 'true'
         }
       ];
-      
+
+      const resultContracts = [
+        {
+          id: '1',
+          clientId: 'client1',
+          chainId: 'chain1',
+          contractAddress: '0x123',
+          laosContract: 'true',
+          batchMinterContract: 'false'
+        },
+        {
+          id: '2',
+          clientId: 'client1',
+          chainId: 'chain2',
+          contractAddress: '0x456',
+          laosContract: 'false',
+          batchMinterContract: 'true'
+        }
+      ];
       (query as jest.Mock).mockResolvedValue({ rows: mockContracts });
 
       const result = await getClientContracts({clientId:'client1'});
 
-      expect(query).toHaveBeenCalledWith('SELECT * FROM contract WHERE client_id = $1', ['client1']);
-      expect(result).toEqual(mockContracts);
+      expect(query).toHaveBeenCalledWith('SELECT * FROM api_contract WHERE client_id = $1', ['client1']);
+      expect(result).toEqual(resultContracts);
     });
 
     it('should return an empty array when no contracts are found', async () => {
@@ -93,7 +120,7 @@ describe('Contract Service', () => {
 
       const result = await getClientContracts({clientId:'client2'});
 
-      expect(query).toHaveBeenCalledWith('SELECT * FROM contract WHERE client_id = $1', ['client2']);
+      expect(query).toHaveBeenCalledWith('SELECT * FROM api_contract WHERE client_id = $1', ['client2']);
       expect(result).toEqual([]);
     });
 
@@ -103,7 +130,7 @@ describe('Contract Service', () => {
 
       await expect(getClientContracts({clientId:'client1'})).rejects.toThrow(errorMessage);
 
-      expect(query).toHaveBeenCalledWith('SELECT * FROM contract WHERE client_id = $1', ['client1']);
+      expect(query).toHaveBeenCalledWith('SELECT * FROM api_contract WHERE client_id = $1', ['client1']);
     });
   });
 });

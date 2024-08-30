@@ -2,7 +2,8 @@ import { EvolveInput } from "../types/graphql/inputs/EvolveInput";
 import { LaosConfig, AssetMetadata, EvolveResult } from "../types";
 import { EvolveResponse } from "../types/graphql/outputs/EvolveOutput";
 import { ServiceHelper } from "./ServiceHelper";
-import { OwnershipContracService } from "./graphql/OwnershipContracService";
+import { getClientByKey } from "./db/client";
+import { getClientContract } from "./db/contract";
 
 export class EvolvingService {
   private serviceHelper: ServiceHelper;
@@ -17,13 +18,29 @@ export class EvolvingService {
 
   public async evolve(input: EvolveInput, apiKey: string): Promise<EvolveResponse> {
     const { contractAddress, tokenId, name, description, attributes, image, chainId } = input;
+    if (!contractAddress) {
+      throw new Error('Contract address is required');
+    }
+    if(!chainId) {
+      throw new Error('Chain id is required');
+    }
 
     const imageUrl = await this.serviceHelper.handleImageUpload(image || '');
 
     const parsedAttributes = this.serviceHelper.parseAssetAttributes(attributes || '[]'); // Ensure attributes is an array
 
-    const ownershipService = new OwnershipContracService();
-    const ownershipContract = await ownershipService.getOwnershipContract(Number(chainId), contractAddress!);
+    // retrieve contract from db
+    const client = await getClientByKey({ key: apiKey });
+    if (!client) {
+      throw new Error('Client not found');
+    }
+    if (!client.active) {
+      throw new Error('Client not active');
+    }
+    const contract = await getClientContract({clientId: client?.id, chainId: chainId, contract: contractAddress});
+    if (!contract) {
+      throw new Error('Contract not found');
+    }
 
     const assetMetadata: AssetMetadata = {
       name: name || '',
@@ -35,7 +52,7 @@ export class EvolvingService {
       const result: EvolveResult = await this.serviceHelper.laosService.evolve({
         tokenId: tokenId!, 
         assetMetadata, 
-        laosContractAddress: ownershipContract?.laosContract!
+        laosContractAddress: contract.laosContract,
       }, apiKey);
       if (result.status === "success") {
         return { 

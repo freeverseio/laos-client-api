@@ -1,3 +1,8 @@
 namespace: protostar
 host: testnet.api.laosnetwork.io
 graphqlEndpoint: https://api.laos.gorengine.com/graphql
+postgresHost: db-postgresql-ams3-38929-do-user-4813238-0.b.db.ondigitalocean.com
+postgresDb: protostardb
+postgresPort: "25060"
+postgresUser: "protostar"
+rewardsHost: crowdloan.staging.gorengine.com
