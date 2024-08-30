@@ -9,4 +9,4 @@ releases:
       - postgresUser: {{ .Values.postgresUser }}
       - postgresHost: {{ .Values.postgresHost }}
       - postgresDb: {{ .Values.postgresDb }}
-      - postgresPort: {{ .Values.postgresPort }
+      - postgresPort: {{ .Values.postgresPort }}
