@@ -102,20 +102,6 @@ jobs:
           image: << parameters.image >>
           root: << parameters.root >>
 
-  build-indexer:
-    docker:
-      - image: cimg/node:lts
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Build and Deploy Node API
-          command: |
-            npm ci
-      - dockerize-and-push:
-          image: freeverseio/laos-indexer
-          root: laos-indexer
 workflows:
   ci-workflow:
     jobs:
@@ -149,7 +135,10 @@ workflows:
           #     only:
           #       - main
 
-      - build-indexer:
+      - build-app:
+          name: build-indexer
+          image: freeverseio/laos-indexer
+          root: laos-indexer
           context: dockerhub
           # filters:
           #   branches:
