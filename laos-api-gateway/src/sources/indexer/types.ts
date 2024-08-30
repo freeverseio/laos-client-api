@@ -206,6 +206,7 @@ export type TokenEdge = {
 export type TokenConnection = {
   edges: Array<TokenEdge>;
   pageInfo: PageInfo;
+  totalCount: Scalars['Float']['output'];
 };
 
 export type TransferQueryResult = {
