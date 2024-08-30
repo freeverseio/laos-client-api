@@ -98,7 +98,8 @@ describe('TokenResolver', () => {
         hasNextPage: false,
         hasPreviousPage: true,
         startCursor: Buffer.from(`${mockData[0].createdAt}:${mockData[0].logIndex}:${mockData[0].contractAddress}`).toString('base64')
-      })
+      }),
+      1
     ));
   });
 
@@ -141,7 +142,8 @@ describe('TokenResolver', () => {
         hasNextPage: false,
         hasPreviousPage: true,
         startCursor: Buffer.from(`${mockData[0].createdAt}:${mockData[0].logIndex}:${mockData[0].contractAddress}`).toString('base64')
-      })
+      }),
+      1
     ));
   });
 
@@ -162,12 +164,14 @@ describe('TokenResolver', () => {
 
     expect(result).toEqual(new TokenConnection(
       [],
+  
       new PageInfo({
         endCursor: undefined,
         hasNextPage: false,
         hasPreviousPage: true,
         startCursor: undefined
-      })
+      }),
+      0
     ));
 
     expect(manager.query).toHaveBeenCalledWith(
