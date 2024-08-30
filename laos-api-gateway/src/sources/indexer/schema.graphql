@@ -108,6 +108,7 @@ type TokenEdge {
 type TokenConnection {
   edges: [TokenEdge!]!
   pageInfo: PageInfo!
+  totalCount: Float!
 }
 
 type TransferQueryResult {
