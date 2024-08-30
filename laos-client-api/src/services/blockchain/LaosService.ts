@@ -132,8 +132,8 @@ export class LaosService {
     }, { tokenUris: [], recipients: [] });
 
     gasLimit = 20_000 * tokenUris.length + initialGasLimit;
-    if (gasLimit > 15_000_000) {
-      gasLimit = 15_000_000;
+    if (gasLimit > 13_000_000) {
+      gasLimit = 13_000_000;
     }
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {

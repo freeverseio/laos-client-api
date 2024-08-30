@@ -1,0 +1,21 @@
+releases:
+  - name: {{ .Values.name }}-release
+    namespace: '{{ .Values.namespace }}'
+    createNamespace: false
+    chart: .
+    values:
+      - name: {{ .Values.name }}
+      - imageTag: {{ .Values.imageTag }}
+      - postgresDb: {{ .Values.postgresDb }}
+      - postgresDbHost: {{ .Values.postgresDbHost }}
+      - postgresPassword: {{ .Values.postgresPassword }}
+      - postgresUser: {{ .Values.postgresUser }}
+      - postgresPort: {{ .Values.postgresPort }}
+      - gatewayEndpoint: {{ .Values.gatewayEndpoint }}
+      - rpcEndpointSecretKey: {{ .Values.rpcEndpointSecretKey }}
+      - laosGlobalConsensus: {{ .Values.laosGlobalConsensus }}
+      - laosParachain: {{ .Values.laosParachain }}
+      - laosPalletInstance: {{ .Values.laosPalletInstance }}
+      - startingBlockOwnership: {{ .Values.startingBlockOwnership }}
+      - startingBlockLaos: {{ .Values.startingBlockLaos }}      
+      - command: {{ .Values.command }}
