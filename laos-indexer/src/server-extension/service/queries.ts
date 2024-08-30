@@ -22,6 +22,15 @@ export const buildTokenQueryBase = `
   LEFT JOIN asset a ON la.token_id = a.token_id AND a.ownership_contract_id = oc.id
 `;
 
+export const buildTokenCountQueryBase = `
+  SELECT COUNT(*) as count
+  FROM laos_asset la
+  INNER JOIN ownership_contract oc ON LOWER(la.laos_contract) = LOWER(oc.laos_contract)
+  INNER JOIN metadata m ON la.metadata = m.id
+  INNER JOIN token_uri tu ON m.token_uri_id = tu.id
+  LEFT JOIN asset a ON la.token_id = a.token_id AND a.ownership_contract_id = oc.id
+`;
+
 export const buildTokenByIdQuery = `
   WITH contract_data AS (
     SELECT LOWER(laos_contract) AS laos_contract,

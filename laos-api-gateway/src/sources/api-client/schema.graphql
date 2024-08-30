@@ -30,6 +30,7 @@ input MintInput {
 }
 
 type BatchMintResponse {
+  numberOfTokens: Int!
   tokenIds: [String!]!
   success: Boolean!
 }

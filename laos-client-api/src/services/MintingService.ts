@@ -117,7 +117,11 @@ export class MintingService {
 
       const result: BatchMintResult = await this.serviceHelper.laosService.batchMint(params, apiKey);
       if (result.status === "success") {
-        return { tokenIds: result.tokenIds, success: true };
+        return { 
+          tokenIds: result.tokenIds, 
+          success: true,
+          numberOfTokens: result.numberOfTokens
+        };
       } else {
         throw new Error(result.error ?? "Minting failed");
       }

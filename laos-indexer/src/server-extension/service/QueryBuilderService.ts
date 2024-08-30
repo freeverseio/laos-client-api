@@ -1,5 +1,5 @@
 import { TokenOrderByOptions, TokenPaginationInput, TokenWhereInput } from '../../model';
-import { buildTokenQueryBase, buildTokenByIdQuery } from './queries';
+import { buildTokenQueryBase, buildTokenByIdQuery, buildTokenCountQueryBase } from './queries';
 
 interface WhereConditionsResult {
   conditions: string[];
@@ -89,6 +89,17 @@ export class QueryBuilderService {
     `;
 
     parameters.push(effectiveFirst + 1);
+    return { query, parameters };
+  }
+
+  async buildTokenQueryCount(where: TokenWhereInput): Promise<{ query: string; parameters: any[] }> {
+    const { conditions, parameters } = this.buildWhereConditions(where);
+
+     const query = `
+      ${buildTokenCountQueryBase}
+      ${conditions.length ? 'WHERE ' + conditions.join(' AND ') : ''}
+    `;
+
     return { query, parameters };
   }
 

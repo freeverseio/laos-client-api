@@ -56,8 +56,11 @@ export class TokenResolver {
     const manager = await this.tx();
 
     const { query, parameters } = await this.queryBuilderService.buildTokenQuery(where, pagination, orderBy);
+    const { query: countQuery, parameters: countParameters } = await this.queryBuilderService.buildTokenQueryCount(where);
 
     const tokens = await this.fetchTokens(manager, query, parameters);
+    const count = await manager.query(countQuery, countParameters);
+    const totalCount = count && count.length > 0 ? count[0].count : 0;
     const hasNextPage = tokens.length > pagination.first;
 
     if (hasNextPage) {
@@ -79,6 +82,6 @@ export class TokenResolver {
       startCursor: edges.length > 0 ? edges[0].cursor : undefined,
     });
 
-    return new TokenConnection(edges, pageInfo);
+    return new TokenConnection(edges, pageInfo, totalCount);
   }
 }

@@ -98,9 +98,13 @@ export class TokenConnection {
   @Field(() => PageInfo)
   pageInfo!: PageInfo;
 
-  constructor(edges: TokenEdge[], pageInfo: PageInfo) {
+  @Field(() => Number, { nullable: false })
+  totalCount!: number;
+
+  constructor(edges: TokenEdge[], pageInfo: PageInfo, totalCount: number) {
     this.edges = edges;
     this.pageInfo = pageInfo;
+    this.totalCount = totalCount;
   }
 }
 
