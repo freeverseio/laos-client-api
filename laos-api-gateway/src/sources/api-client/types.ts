@@ -67,6 +67,7 @@ export type MintInput = {
 };
 
 export type BatchMintResponse = {
+  numberOfTokens: Scalars['Int']['output'];
   tokenIds: Array<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
 };
