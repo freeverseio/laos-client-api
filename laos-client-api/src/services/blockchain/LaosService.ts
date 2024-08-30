@@ -131,6 +131,10 @@ export class LaosService {
       return acc;
     }, { tokenUris: [], recipients: [] });
 
+    if (tokenUris.length > 700) {
+      throw new Error("Cannot mint more than 700 assets at a time");
+    }
+
     gasLimit = 20_000 * tokenUris.length + initialGasLimit;
     if (gasLimit > 13_000_000) {
       gasLimit = 13_000_000;
@@ -191,6 +195,7 @@ export class LaosService {
       const tokenIds = this.extractTokenIds(receipt, 'MintedWithExternalURI');
       return {
         status: "success",
+        numberOfTokens: tokenIds.length,
         tokenIds: tokenIds.map(bigintValue => bigintValue.toString()),
         tx: tx?.hash,
       };
@@ -198,6 +203,7 @@ export class LaosService {
       console.error("Minting Failed:", error.message);
       return {
         status: "failed",
+        numberOfTokens: 0,
         tokenIds: [],
         tx: tx?.hash,
         error: error.message,
