@@ -11,6 +11,7 @@ commands:
       - run:
           name: Install helmfile
           command: ./_circleci-scripts/install-helmfile.sh
+
   dockerize-and-push:
     parameters:
       image:
@@ -20,18 +21,25 @@ commands:
     steps:
       - attach_workspace:
           at: ./
-      - run: echo $DOCKER_PASSWD | docker login -u $DOCKER_ID --password-stdin
-      - run: |          
-          cd << parameters.root >>
-          echo "Docker images for CIRCLE_SHA1 will be pushed"
-          docker build -t << parameters.image >>:$CIRCLE_SHA1 .
-          docker push << parameters.image >>:$CIRCLE_SHA1
+      - run:
+          name: Docker login
+          command: echo $DOCKER_PASSWD | docker login -u $DOCKER_ID --password-stdin
+      - run:
+          name: Build and push Docker image
+          command: |
+            cd << parameters.root >>
+            echo "Docker images for $CIRCLE_SHA1 will be pushed"
+            docker build -t << parameters.image >>:$CIRCLE_SHA1 .
+            docker push << parameters.image >>:$CIRCLE_SHA1
+
 jobs:
   deploy_to_cluster:
     parameters:
       environment:
         type: string
         default: development
+      root:
+        type: string
     description: Deploy to << parameters.environment >> environment
     docker:
       - image: cimg/deploy:2023.09
@@ -57,7 +65,7 @@ jobs:
       - run:
           name: Deploy to << parameters.environment >> environment
           command: |
-            cd _deployment
+            cd << parameters.root >>
             helmfile sync --environment << parameters.environment >>
 
   deployment-test:
@@ -94,7 +102,20 @@ jobs:
           image: << parameters.image >>
           root: << parameters.root >>
 
-
+  build-indexer:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build and Deploy Node API
+          command: |
+            npm ci
+      - dockerize-and-push:
+          image: freeverseio/laos-indexer
+          root: laos-indexer
 workflows:
   ci-workflow:
     jobs:
@@ -103,30 +124,37 @@ workflows:
           image: freeverseio/laos-client-api
           root: laos-client-api
           context: dockerhub
-          filters:
-            branches:
-              only:
-                - main
-      
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
+
       - build-app:
           name: build-api-gateway
           image: freeverseio/laos-api-gateway
           root: laos-api-gateway
           context: dockerhub
-          filters:
-            branches:
-              only:
-                - main
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
 
       - build-app:
           name: build-playground
           image: freeverseio/laos-graphql-playground
           root: graphql-playground
           context: dockerhub
-          filters:
-            branches:
-              only:
-                - main
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
+
+      - build-indexer:
+          context: dockerhub
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
 
       - deployment-test
 
@@ -138,11 +166,11 @@ workflows:
             - build-client-api
             - build-api-gateway
             - build-playground
-          filters:
-            branches:
-              only:
-                - main
-      
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
+
       - approval:
           type: approval
           name: approve-deploy-client-api-staging
@@ -151,29 +179,79 @@ workflows:
             - build-client-api
             - build-api-gateway
             - build-playground
-          filters:
-            branches:
-              only:
-                - main
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
+
+      - approval:
+          type: approval
+          name: approve-deploy-indexer
+          requires:
+            - deployment-test
+            - build-indexer
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
+      
+      - approval:
+          type: approval
+          name: approve-deploy-indexer-staging
+          requires:
+            - deployment-test
+            - build-indexer
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
 
       - deploy_to_cluster:
-          name: deploy-to-dev
+          name: deploy-to-dev-api
           requires:
             - deployment-test
             - approve-deploy-client-api
+
           environment: development
-          filters:
-            branches:
-              only:
-                - main
+          root: _deployment
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
+      
+      - deploy_to_cluster:
+          name: deploy-to-dev-indexer
+          requires:
+            - deployment-test
+            - approve-deploy-indexer
+
+          environment: development
+          root: _deployment/indexer
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
 
       - deploy_to_cluster:
-          name: deploy-to-staging
+          name: deploy-to-staging-api
           requires:
             - deployment-test
             - approve-deploy-client-api-staging
           environment: staging
-          filters:
-            branches:
-              only:
-                - main
+          root: _deployment
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
+
+      - deploy_to_cluster:
+          name: deploy-to-staging-indexer
+          requires:
+            - deployment-test
+            - approve-deploy-indexer-staging
+          environment: staging
+          root: _deployment/indexer
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
