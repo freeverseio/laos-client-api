@@ -46,13 +46,14 @@ describe('Contract Service', () => {
     it('should return null when contract is not found', async () => {
       (query as jest.Mock).mockResolvedValue({ rows: [] });
 
-      const result = await getClientContract({clientId:'client1', chainId:'chain1', contract:'0x456'});
+      const result = await expect(getClientContract({ clientId: 'client1', chainId: 'chain1', contract: '0x456' }))
+        .rejects
+        .toThrow('Contract not found');
 
       expect(query).toHaveBeenCalledWith(
         'SELECT * FROM api_contract WHERE client_id = $1 AND chain_id = $2 AND contract_address = $3',
         ['client1', 'chain1', '0x456']
       );
-      expect(result).toBeNull();
     });
 
     it('should throw an error when the query fails', async () => {
