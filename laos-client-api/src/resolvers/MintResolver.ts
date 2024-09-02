@@ -17,16 +17,16 @@ export class MintResolver {
     return "Up";
   }
 
-  // @Mutation(() => MintResponse)
-  // async mint(@Arg("input") input: MintInput, @Ctx() context: Context): Promise<MintResponse> {
-  //   let apiKey = context.headers['authorization'];
-  //   //remove the API-KEY prefix
-  //   apiKey = apiKey.replace('API-KEY ', '');
-  //   return this.mintingService.mint(input, apiKey);
-  // }
+  @Mutation(() => MintResponse)
+  async mint(@Arg("input") input: MintInput, @Ctx() context: Context): Promise<MintResponse> {
+    let apiKey = context.headers['authorization'];
+    //remove the API-KEY prefix
+    apiKey = apiKey.replace('API-KEY ', '');
+    return this.mintingService.mint(input, apiKey);
+  }
 
   @Mutation(() => BatchMintResponse)
-  async mint(@Arg("input") input: BatchMintInput, @Ctx() context: Context): Promise<BatchMintResponse> {
+  async batchMint(@Arg("input") input: BatchMintInput, @Ctx() context: Context): Promise<BatchMintResponse> {
     let apiKey = context.headers['authorization'];
     //remove the API-KEY prefix
     apiKey = apiKey.replace('API-KEY ', '');
