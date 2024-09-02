@@ -1,9 +1,12 @@
-import { ObjectType, Field } from "type-graphql";
+import { ObjectType, Field, Int } from "type-graphql";
 
 @ObjectType()
 export class MintResponse {
-  @Field()
-  tokenId!: string;
+  @Field(() => Int, { nullable: false })
+  numberOfTokens!: number;
+
+  @Field(() => [String], { nullable: false })
+  tokenIds!: string[];
 
   @Field()
   success!: boolean;
