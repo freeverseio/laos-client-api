@@ -86,7 +86,7 @@ export class LaosService {
     const ipfsCid = await this.ipfsService.uploadAssetMetadataToIPFS(assetJson, params.assetMetadata.name);
     let tx: any;
     try {
-      tx = await this.mintNFTWithRetries(contract, params, ipfsCid, wallet, 500000, 5);
+      tx = await this.mintNFTWithRetries(contract, params, ipfsCid, wallet, 500_000, 5);
       
       const receipt = await this.retryOperation(
         () => this.provider.waitForTransaction(tx.hash, 1, 14000),
