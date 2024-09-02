@@ -55,16 +55,7 @@ export class MintingService {
 
       // retrieve contract from db
       const client = await getClientByKey({ key: apiKey });
-      if (!client) {
-        throw new Error('Client not found');
-      }
-      if (!client.active) {
-        throw new Error('Client not active');
-      }
-      const contract = await getClientContract({clientId: client?.id, chainId: chainId, contract: contractAddress});
-      if (!contract) {
-        throw new Error('Contract not found');
-      }
+      const contract = await getClientContract({clientId: client?.id, chainId: chainId, contract: contractAddress});      
 
       const params: MintSingleNFTParams = {
         laosContractAddress: contract?.laosContract,

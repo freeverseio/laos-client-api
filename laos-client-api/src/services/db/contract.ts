@@ -1,3 +1,4 @@
+import { Contract, DbResult } from '../../types/contract';
 import { query } from './connection';
 
 function transformDbResultToContract(dbResult: DbResult): Contract {
@@ -11,11 +12,11 @@ function transformDbResultToContract(dbResult: DbResult): Contract {
   };
 }
 
-export async function getClientContract({clientId, chainId, contract}: {clientId: string, chainId: string, contract: string}): Promise<Contract | null> {
+export async function getClientContract({clientId, chainId, contract}: {clientId: string, chainId: string, contract: string}): Promise<Contract> {
   const res = await query('SELECT * FROM api_contract WHERE client_id = $1 AND chain_id = $2 AND contract_address = $3', [clientId, chainId, contract]);
-  if (res.rows.length === 0) {
-    return null;
-  }
+  if (!res || !res.rows || !res.rows[0]) {
+    throw new Error('Contract not found');
+  }  
   const contractData: Contract = transformDbResultToContract(res.rows[0]);
   return contractData;
 }

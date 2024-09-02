@@ -1,4 +1,4 @@
-interface DbResult {
+export interface DbResult {
   batch_minter_contract: string;
   chain_id: string;
   client_id: number;
@@ -7,7 +7,7 @@ interface DbResult {
   laos_contract: string;
 }
 
-interface Contract {
+export interface Contract {
   id: string;
   clientId: string;
   chainId: string;

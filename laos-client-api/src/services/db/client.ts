@@ -1,4 +1,5 @@
 import { query } from './connection';
+import { Client } from '../../types/client';
 
 export async function getClientById({clientId}: {clientId: string}): Promise<Client | null> {
   const res = await query('SELECT * FROM api_client WHERE id = $1', [clientId]);
