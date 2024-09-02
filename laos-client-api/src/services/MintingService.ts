@@ -34,10 +34,10 @@ export class MintingService {
   }
 
   /**
-   * Mints multiple NFTs in a batch.
-   * @param {BatchMintInput} input - The batch minting input data.
+   * Mints up to multiple NFTs in a batch.
+   * @param {MintInput} input - The minting input data.
    * @param {string} apiKey - The API key for authentication.
-   * @returns {Promise<BatchMintResponse>} - The result of the batch minting operation.
+   * @returns {Promise<MintResponse>} - The result of the minting operation.
    */
   public async mint(input: MintInput, apiKey: string): Promise<MintResponse> {
     const { contractAddress, chainId, tokens } = input;

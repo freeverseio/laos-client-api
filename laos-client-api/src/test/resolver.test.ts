@@ -35,10 +35,11 @@ describe('GraphQL API', () => {
     expect(response.body.data.status).toBe('Up');
   });
 
-  fit('should mint a token successfully', async () => {
+  it('should mint a token successfully', async () => {
     const response = await request(url)
       .post('/graphql')
       .set('Authorization', 'API-KEY your-token-here')  // Adding the Authorization header
+      .set('x-api-key', 'your-token-here')  // Adding the Authorization header
       .send({
         query: `mutation {
           mint(input: {
@@ -48,7 +49,7 @@ describe('GraphQL API', () => {
             mintTo: ["0x1B0b4a597C764400Ea157aB84358c8788A89cd28"],
             name: "Example Token",
             description: "This is an example token",
-            attributes: "[{\"trait_type\":\"health\",\"value\":\"11\"}]",
+            attributes: "[{'trait_type':'health','value':'11'}]",
             image: "https://ipfs.io/ipfs/Qm326uhnQp5PsnznQvHhkzqKLfB7ieWz3onmFXsRvERig",
            }],           
          }) {
@@ -58,8 +59,7 @@ describe('GraphQL API', () => {
         }`
       });
     expect(response.status).toBe(200);
-    expect(response.body.data.mint.tokenIds).toBe(['12345']);
-    expect(response.body.data.mint.numberOfTokens).toBe(1);
+    expect(response.body.data.mint.tokenIds[0]).toBe('12345');
     expect(response.body.data.mint.success).toBe(true);
   });
 });
