@@ -27,6 +27,7 @@
     "ethers": "^6.13.1",
     "graphql": "^16.9.0",
     "ipfs-only-hash": "^4.0.0",
+    "pg": "^8.12.0",
     "type-graphql": "^2.0.0-rc.2",
     "typeorm": "^0.3.20",
     "typestub-ipfs-only-hash": "^4.0.0"
