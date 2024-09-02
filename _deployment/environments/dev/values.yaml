@@ -6,4 +6,3 @@ postgresHost: db-postgresql-ams3-92875-do-user-4813238-0.b.db.ondigitalocean.com
 postgresDb: protostardb
 postgresPort: "25060"
 postgresUser: "protostar"
-rewardsHost: rewards.gorengine.com
