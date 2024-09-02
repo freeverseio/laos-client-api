@@ -59,6 +59,13 @@ spec:
                 secretKeyRef:
                   name: protostar-private-config
                   key: clientApiMinterKeys
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: protostar-private-config
+                  key: postgresPassword
+            - name: DATABASE_URL
+              value: "postgres://{{ .Values.postgresUser }}:$(POSTGRES_PASSWORD)@{{.Values.postgresHost}}:{{.Values.postgresPort}}/{{.Values.postgresDb}}?sslmode=require&sslrootcert=./data/ca-certificate.pem"            
           volumeMounts:
             - name: api-keys
               mountPath: /app/config

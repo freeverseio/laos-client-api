@@ -4,9 +4,9 @@ import { LaosConfig, MintSingleNFTParams, MintResult, AssetMetadata, BatchMintNF
 import { MintResponse } from "../types/graphql/outputs/MintOutput";
 import { BatchMintResponse } from "../types/graphql/outputs/BatchMintOutput";
 import { ServiceHelper } from "./ServiceHelper";
-import { OwnershipContracService } from "./graphql/OwnershipContracService";
 import { ethers } from "ethers";
-import { ApiKeyService } from './files/ApiKeyService';
+import { getClientContract } from "./db/contract";
+import { getClientByKey } from "./db/client";
 
 export class MintingService {
   private serviceHelper: ServiceHelper;
@@ -43,16 +43,22 @@ export class MintingService {
    */
   public async mint(input: MintInput, apiKey: string): Promise<MintResponse> {
     const { contractAddress, mintTo, name, description, attributes, image, chainId } = input;
-
     try {
+      if (!contractAddress) {
+        throw new Error('Contract address is required');
+      }
+      if(!chainId) {
+        throw new Error('Chain id is required');
+      }
       const imageUrl = await this.serviceHelper.handleImageUpload(image || '');
       const assetMetadata = this.prepareAssetMetadata({ name, description, attributes, image: imageUrl });
 
-      const ownershipService = new OwnershipContracService();
-      const ownershipContract = await ownershipService.getOwnershipContract(Number(chainId), contractAddress!);
+      // retrieve contract from db
+      const client = await getClientByKey({ key: apiKey });
+      const contract = await getClientContract({clientId: client?.id, chainId: chainId, contract: contractAddress});      
 
       const params: MintSingleNFTParams = {
-        laosContractAddress: ownershipContract?.laosContract!,
+        laosContractAddress: contract?.laosContract,
         to: mintTo || '',
         assetMetadata: assetMetadata,
       };
@@ -104,14 +110,15 @@ export class MintingService {
 
       const flatTokens = expandedTokens.flat();
 
-      const apiKeyService = new ApiKeyService();
-      const batchMinterContractAddress = apiKeyService.getBatchMinterContract(apiKey, contractAddress!);
-      if (!batchMinterContractAddress) {
-        throw new Error("Invalid or missing API key");
+      // retrieve contract from db
+      const client = await getClientByKey({ key: apiKey });
+      const contract = await getClientContract({clientId: client?.id, chainId: chainId, contract: contractAddress});
+      if (!contract) {
+        throw new Error('Contract not found');
       }
 
       const params: BatchMintNFTParams = {
-        laosBatchMinterContractAddress: batchMinterContractAddress!,
+        laosBatchMinterContractAddress: contract.batchMinterContract,
         tokens: flatTokens,
       };
 
