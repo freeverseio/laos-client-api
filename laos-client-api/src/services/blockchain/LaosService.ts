@@ -214,7 +214,7 @@ export class LaosService {
   public async evolve(params: EvolveNFTParams, apiKey: string): Promise<EvolveResult> {
     const minterPvk = JSON.parse(process.env.MINTER_KEYS || '{}')[apiKey];
     const wallet = new ethers.Wallet(minterPvk, this.provider);
-    const contract = this.getEthersContract({laosContractAddress: params.laosContractAddress, abi: EvolutionCollectionAbi, wallet});
+    const contract = this.getEthersContract({laosContractAddress: params.laosContractAddress, abi: BatchMinterAbi, wallet});
     const assetJson: AssetMetadata = {
       name: `${params.assetMetadata.name}`,
       description: `${params.assetMetadata.description}`,
@@ -229,7 +229,7 @@ export class LaosService {
       console.log('tokenUri:', tokenUri);
       console.log("Evolving NFT with tokenId:", params.tokenId, "nonce:", nonce);
       tx = await contract
-        .evolveWithExternalURI(params.tokenId, tokenUri, { nonce, gasLimit: 1000000 })
+        .evolveWithExternalURI(params.tokenId, tokenUri, { nonce, gasLimit: 1_000_000 })
         .catch((error: Error) => {
           console.error(
             "Evolve Failed, nonce:",
