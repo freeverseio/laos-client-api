@@ -12,7 +12,7 @@ const explorer = explorerPlugin();
 const query = `
   
 mutation MyMutation {
-  batchMint(
+  mint(
     input: {
       chainId: "137"
       contractAddress: "0xaaf54526c508d573d402bf05a9a5e54f09302adf"
