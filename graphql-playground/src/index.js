@@ -15,10 +15,10 @@ mutation MyMutation {
   mint(
     input: {
       chainId: "137"
-      contractAddress: "0xaaf54526c508d573d402bf05a9a5e54f09302adf"
+      contractAddress: "0x5c075b1bf679ab50930a94ac008742e01d77a3bb"
       tokens: [
         {
-          mintTo: ["0x8e4dfC6D56e84913FA6a901a3dF21De6e9285de8"]
+          mintTo: ["0x883FE5b3766155f075a8E1f207a9689294fE528f"]
           name: "Celestial Phoenix"
           description: "A mythical bird reborn from its ashes, representing eternal life."
           attributes: "[{\\"trait_type\\":\\"mythical creature\\",\\"value\\":\\"phoenix\\"}]",
