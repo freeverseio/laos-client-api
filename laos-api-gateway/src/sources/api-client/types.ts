@@ -26,7 +26,6 @@ export type Query = {
 
 export type Mutation = {
   mint: MintResponse;
-  batchMint: BatchMintResponse;
   evolve: EvolveResponse;
   broadcast: BroadcastResponse;
 };
@@ -34,11 +33,6 @@ export type Mutation = {
 
 export type MutationmintArgs = {
   input: MintInput;
-};
-
-
-export type MutationbatchMintArgs = {
-  input: BatchMintInput;
 };
 
 
@@ -52,27 +46,12 @@ export type MutationbroadcastArgs = {
 };
 
 export type MintResponse = {
-  tokenId: Scalars['String']['output'];
-  success: Scalars['Boolean']['output'];
-};
-
-export type MintInput = {
-  chainId: Scalars['String']['input'];
-  contractAddress: Scalars['String']['input'];
-  mintTo: Scalars['String']['input'];
-  name: Scalars['String']['input'];
-  description?: InputMaybe<Scalars['String']['input']>;
-  attributes?: InputMaybe<Scalars['String']['input']>;
-  image?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type BatchMintResponse = {
   numberOfTokens: Scalars['Int']['output'];
   tokenIds: Array<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
-export type BatchMintInput = {
+export type MintInput = {
   chainId: Scalars['String']['input'];
   contractAddress: Scalars['String']['input'];
   tokens: Array<TokenInput>;
@@ -122,8 +101,6 @@ export type BroadcastInput = {
   export type MutationSdk = {
       /** null **/
   mint: InContextSdkMethod<Mutation['mint'], MutationmintArgs, MeshContext>,
-  /** null **/
-  batchMint: InContextSdkMethod<Mutation['batchMint'], MutationbatchMintArgs, MeshContext>,
   /** null **/
   evolve: InContextSdkMethod<Mutation['evolve'], MutationevolveArgs, MeshContext>,
   /** null **/
