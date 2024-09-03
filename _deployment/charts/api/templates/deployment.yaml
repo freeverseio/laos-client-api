@@ -75,4 +75,4 @@ spec:
       volumes:
         - name: db-certificate
           secret:
-            secretName: db-certificate
+            secretName: db-cert
