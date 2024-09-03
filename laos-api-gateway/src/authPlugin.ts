@@ -14,7 +14,7 @@ const authPlugin: MeshPlugin<YamlConfig.Plugin['config']> = {
     if (operation.operation === 'mutation') {
       const mutationName = operation.selectionSet.selections[0].name.value;
       let contractAddress = '';
-      if (mutationName === 'mint' || mutationName === 'evolve' || mutationName === 'broadcast') {
+      if (mutationName === 'mint' || mutationName === 'evolve' ) {
         const mintArguments = operation.selectionSet.selections[0].arguments;
         const inputArg = mintArguments.find(
           (arg: any) => arg.name.value === 'input'
@@ -28,6 +28,21 @@ const authPlugin: MeshPlugin<YamlConfig.Plugin['config']> = {
           }
         }
       }
+      if ( mutationName === 'broadcast') {
+        const mintArguments = operation.selectionSet.selections[0].arguments;
+        const inputArg = mintArguments.find(
+          (arg: any) => arg.name.value === 'input'
+        );
+        if (inputArg) {
+          const contractAddressField = inputArg.value.fields.find(
+            (field: any) => field.name.value === 'ownershipContractAddress'
+          );
+          if (contractAddressField) {
+            contractAddress = contractAddressField.value.value;
+          }
+        }
+      }
+
       if (!apiKey || !(await validateApiKey(apiKey, contractAddress))) {
         throw new Error('Invalid API key');
       }
