@@ -14,7 +14,7 @@ const authPlugin: MeshPlugin<YamlConfig.Plugin['config']> = {
     if (operation.operation === 'mutation') {
       const mutationName = operation.selectionSet.selections[0].name.value;
       let contractAddress = '';
-      if (mutationName === 'mint' || mutationName === 'evolve' || mutationName === 'batchMint') {
+      if (mutationName === 'mint' || mutationName === 'evolve' || mutationName === 'broadcast') {
         const mintArguments = operation.selectionSet.selections[0].arguments;
         const inputArg = mintArguments.find(
           (arg: any) => arg.name.value === 'input'
