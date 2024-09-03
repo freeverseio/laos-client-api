@@ -18,6 +18,10 @@ spec:
         - name: laos-client-api
           image: freeverseio/laos-client-api:{{ .Values.imageTag }}
           imagePullPolicy: Always
+          volumeMounts:
+            - name: db-certificate
+              mountPath: "/app/data"
+              readOnly: true
           resources:
             requests:
               memory: '256Mi'
@@ -66,18 +70,9 @@ spec:
                   key: postgresPassword
             - name: DATABASE_URL
               value: "postgres://{{ .Values.postgresUser }}:$(POSTGRES_PASSWORD)@{{.Values.postgresHost}}:{{.Values.postgresPort}}/{{.Values.postgresDb}}?sslmode=require&sslrootcert=./data/ca-certificate.pem"            
-          volumeMounts:
-            - name: api-keys
-              mountPath: /app/config
-            - name: db-certificate
-              mountPath: "/app/data"
-              readOnly: true
           ports:
             - containerPort: 4001
       volumes:
-        - name: api-keys
-          configMap:
-            name: api-keys
         - name: db-certificate
           secret:
             secretName: db-certificate
