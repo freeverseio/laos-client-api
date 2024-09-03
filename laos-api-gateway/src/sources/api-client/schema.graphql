@@ -9,33 +9,17 @@ type Query {
 
 type Mutation {
   mint(input: MintInput!): MintResponse!
-  batchMint(input: BatchMintInput!): BatchMintResponse!
   evolve(input: EvolveInput!): EvolveResponse!
   broadcast(input: BroadcastInput!): BroadcastResponse!
 }
 
 type MintResponse {
-  tokenId: String!
-  success: Boolean!
-}
-
-input MintInput {
-  chainId: String!
-  contractAddress: String!
-  mintTo: String!
-  name: String!
-  description: String
-  attributes: String
-  image: String
-}
-
-type BatchMintResponse {
   numberOfTokens: Int!
   tokenIds: [String!]!
   success: Boolean!
 }
 
-input BatchMintInput {
+input MintInput {
   chainId: String!
   contractAddress: String!
   tokens: [TokenInput!]!

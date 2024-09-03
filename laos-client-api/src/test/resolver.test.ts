@@ -39,24 +39,27 @@ describe('GraphQL API', () => {
     const response = await request(url)
       .post('/graphql')
       .set('Authorization', 'API-KEY your-token-here')  // Adding the Authorization header
+      .set('x-api-key', 'your-token-here')  // Adding the Authorization header
       .send({
         query: `mutation {
           mint(input: {
-            chainId: "1",
-            contractAddress: "0x1B0b4a597C764400Ea157aB84358c8788A89cd28",
-            mintTo: "0x1B0b4a597C764400Ea157aB84358c8788A89cd28",
+           chainId: "137",
+           contractAddress: "0xaaf54526c508d573d402bf05a9a5e54f09302adf",
+           tokens: [{
+            mintTo: ["0x1B0b4a597C764400Ea157aB84358c8788A89cd28"],
             name: "Example Token",
             description: "This is an example token",
-            attributes: "[{\\"trait_type\\":\\"health\\",\\"value\\":\\"10\\"}]",
-            image: "https://ipfs.io/ipfs/QmS326uhnQp5PsnznQvHhkzqKLfB7ieWz3onmFXsRvERig"
-          }) {
-            tokenId
-            success
-          }
+            attributes: "[{'trait_type':'health','value':'11'}]",
+            image: "https://ipfs.io/ipfs/Qm326uhnQp5PsnznQvHhkzqKLfB7ieWz3onmFXsRvERig",
+           }],           
+         }) {
+           tokenIds
+           success
+         }
         }`
       });
     expect(response.status).toBe(200);
-    expect(response.body.data.mint.tokenId).toBe('12345');
+    expect(response.body.data.mint.tokenIds[0]).toBe('12345');
     expect(response.body.data.mint.success).toBe(true);
   });
 });
