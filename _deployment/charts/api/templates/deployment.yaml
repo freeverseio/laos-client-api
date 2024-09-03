@@ -69,9 +69,15 @@ spec:
           volumeMounts:
             - name: api-keys
               mountPath: /app/config
+            - name: db-certificate
+              mountPath: "/app/data"
+              readOnly: true
           ports:
             - containerPort: 4001
       volumes:
         - name: api-keys
           configMap:
             name: api-keys
+        - name: db-certificate
+          secret:
+            secretName: db-certificate
