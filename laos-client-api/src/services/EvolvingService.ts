@@ -46,7 +46,7 @@ export class EvolvingService {
         const result: EvolveResult = await this.serviceHelper.laosService.evolve({
           tokenId: tokenId!, 
           assetMetadata, 
-          laosContractAddress: contract.laosContract,
+          laosContractAddress: contract.batchMinterContract,
         }, apiKey);
         if (result.status === "success") {
           return { 
