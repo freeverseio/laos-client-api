@@ -4,7 +4,6 @@ import validateApiKey from './validateApiKey';
 const authPlugin: MeshPlugin<YamlConfig.Plugin['config']> = {
   async onExecute({ args }) {
     const { contextValue, document } = args;
-    //console.log('onExecute started!', contextValue.body);
     const apiKey = contextValue.headers['x-api-key'];
     const operation = document.definitions.find(
       (def: any) => def.kind === 'OperationDefinition'
