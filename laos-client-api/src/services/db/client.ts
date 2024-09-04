@@ -7,12 +7,18 @@ export async function getClientById({clientId}: {clientId: string}): Promise<Cli
 }
 
 export async function getClientByKey({key}: {key: string}): Promise<Client> {
-  const res = await query('SELECT * FROM api_client WHERE key = $1', [key]);
-  if (!res.rows[0]) {
-    throw new Error('Client not found');
-  }
-  if (!res.rows[0].active) {
-    throw new Error('Client not active');
+  let res;
+  try {
+    res = await query('SELECT * FROM api_client WHERE key = $1', [key]);
+    if (!res.rows[0]) {
+      throw new Error('Invalid API key');
+    }
+    if (!res.rows[0].active) {
+      throw new Error('Client deactivated');
+    }
+  } catch (error) {
+    console.error('getClientByKey error:', error);
+    throw error;
   }
   return res.rows[0];
 }

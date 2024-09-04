@@ -2,6 +2,7 @@ import { BroadcastInput } from "../types/graphql/inputs/BroadcastInput";
 import { BroadcastParams, BroadcastResult, OwnershipChainConfig } from "../types";
 import { BroadcastResponse } from "../types/graphql/outputs/BroadcastOutput";
 import { OwnershipChainService } from "./blockchain/OwnershipChainService";
+import { getClientByKey } from "./db/client";
 
 
 export class BroadcastingService {
@@ -16,16 +17,19 @@ export class BroadcastingService {
     this.ownershipChainService = new OwnershipChainService(ownershipChainConfig);
   }
 
-  public async broadcast(input: BroadcastInput): Promise<BroadcastResponse> {
+  public async broadcast(input: BroadcastInput, apiKey: string): Promise<BroadcastResponse> {
     const { tokenId, chainId, ownershipContractAddress } = input;
-    
-    const params: BroadcastParams = {
-      tokenId: tokenId!,
-      chainId: chainId!,
-      ownershipContractAddress: ownershipContractAddress!,
-    };
-
     try {
+      // Check the client exists an is active
+      const client = await getClientByKey({ key: apiKey });
+      console.log('Broadcast requested by client:', client.id);
+      
+      const params: BroadcastParams = {
+        tokenId: tokenId!,
+        chainId: chainId!,
+        ownershipContractAddress: ownershipContractAddress!,
+      };
+    
       const result: BroadcastResult = await this.ownershipChainService.broadcast(params);
       if (result.status === "success") {
         return { tokenId: result.tokenId!, success: true };
