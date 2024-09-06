@@ -12,6 +12,9 @@ environments:
   staging:
     values:
       - ./environments/staging/values.yaml
+  production:
+    values:
+      - ./environments/production/values.yaml
 
 helmfiles:
   {{- range .Values.indexerInstances }}
