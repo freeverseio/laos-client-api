@@ -1,7 +1,7 @@
 namespace: protostar
 host: testnet.api.laosnetwork.io
 playgroundHost: testnet.playground.laosnetwork.io
-graphqlEndpoint: https://api.laos.gorengine.com/graphql
+graphqlEndpoint: https://testnet.api.laosnetwork.io/graphql
 postgresHost: stg-db-do-user-4813238-0.j.db.ondigitalocean.com
 postgresDb: protostardb
 postgresPort: "25060"
