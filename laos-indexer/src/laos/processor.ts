@@ -16,7 +16,7 @@ export const processor = new EvmBatchProcessor()
     .setRpcEndpoint({
       url: process.env.RPC_LAOS_ENDPOINT!,
       capacity: 10,
-      maxBatchCallSize: 50,
+      maxBatchCallSize: 100,
       ...(process.env.RPC_RATE_LIMIT ? { rateLimit: Number(process.env.RPC_RATE_LIMIT) } : {}),
       requestTimeout: 15_000,
     })
