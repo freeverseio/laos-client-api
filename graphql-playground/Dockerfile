@@ -1,10 +1,6 @@
 # Step 1: Use an official Node.js runtime as a parent image
 FROM node:18-alpine AS build
 
-# Set environment variables
-ARG REACT_APP_GQL_URL
-ENV REACT_APP_GQL_URL=$REACT_APP_GQL_URL
-
 # Step 2: Set the working directory in the container
 WORKDIR /app
 
@@ -26,8 +22,20 @@ FROM nginx:stable-alpine
 # Step 8: Copy the built app from the build stage
 COPY --from=build /app/build /usr/share/nginx/html
 
-# Step 9: Expose the port Nginx will serve the app on
+# Step 9: Copy env-config.js to the public directory (to load environment variables at runtime)
+COPY ./public/env-config.js /usr/share/nginx/html/env-config.js
+
+# Step 10: Copy the entrypoint script
+COPY ./entrypoint.sh /entrypoint.sh
+
+# Step 11: Ensure the entrypoint script is executable
+RUN chmod +x /entrypoint.sh
+
+# Step 12: Expose the port Nginx will serve the app on
 EXPOSE 80
 
-# Step 10: Start Nginx server
+# Step 13: Run the entrypoint script, which replaces environment variables in env-config.js and starts Nginx
+ENTRYPOINT ["/entrypoint.sh"]
+
+# Step 14: Start Nginx server
 CMD ["nginx", "-g", "daemon off;"]

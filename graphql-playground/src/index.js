@@ -7,8 +7,8 @@ import 'graphiql/graphiql.css';
 import '@graphiql/plugin-explorer/dist/style.css';
 import './index.css';
 
-const graphqlEndpoint = process.env.REACT_APP_GQL_URL;
-console.log('graphqlEndpoint:', graphqlEndpoint);
+// const graphqlEndpoint = process.env.REACT_APP_GQL_URL;
+const graphqlEndpoint = window._env_.REACT_APP_GQL_URL || 'default_url';
 const fetcher = createGraphiQLFetcher({ url: graphqlEndpoint });
 const explorer = explorerPlugin();
 const query = `
