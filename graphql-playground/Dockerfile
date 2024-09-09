@@ -1,6 +1,10 @@
 # Step 1: Use an official Node.js runtime as a parent image
 FROM node:18-alpine AS build
 
+# Set environment variables
+ARG REACT_APP_GQL_URL
+ENV REACT_APP_GQL_URL=$REACT_APP_GQL_URL
+
 # Step 2: Set the working directory in the container
 WORKDIR /app
 
