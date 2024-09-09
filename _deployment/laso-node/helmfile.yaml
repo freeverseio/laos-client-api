@@ -9,7 +9,7 @@ helmDefaults:
 namespace: protostar
 
 releases:
-  - name: laos-node
+  - name: laos-node-protostar
     chart: parity/node
     version: 5.5.1
     values:
