@@ -1,0 +1,59 @@
+repositories:
+  - name: parity
+    url: https://paritytech.github.io/helm-charts/
+
+helmDefaults:
+  createNamespace: false
+  waitForJobs: true
+
+namespace: protostar
+
+releases:
+  - name: laos-node-protostar
+    chart: parity/node
+    version: 5.5.1
+    values:
+      - image:
+          repository: freeverseio/laos-node
+          tag: "v0.20.0"
+      - node:
+          chain: laos
+          command: "laos"
+          isParachain: true
+          telemetryUrls:
+            - 'wss://telemetry.polkadot.io/submit 0'
+          chainData:
+            volumeSize: 256Gi
+            pruning: false
+          flags:
+            - "--pruning=archive"
+            - "--rpc-max-connections=500"
+            - --bootnodes="/dns4/laos-boot-0.laosfoundation.io/tcp/30334/p2p/12D3KooWPwbNZK339oHX2BGrkp9UAkZ5XKaWkkejy4kj4ZU3aKM5"
+            - --bootnodes="/dns4/laos-boot-1.laosfoundation.io/tcp/30334/p2p/12D3KooWH9tUB68tBwUfP54NJkGxwx7cxKmuoLX5gpHkHiESLoeJ"
+            - --bootnodes="/dns4/laos-boot-2.laosfoundation.io/tcp/30334/p2p/12D3KooWEv926SQ6djXFEMMskZKKMuN3HwJYoCZKBHvymU8Dp5Qc"
+          perNodeServices:
+            apiService:
+              enabled: true
+            setPublicAddressToExternalIp:
+              enabled: true
+              autodiscoveryFix: true
+            paraP2pService:
+              enabled: true
+              type: NodePort
+          collatorRelayChain:
+            chainData:
+              volumeSize: 512Gi
+            flags:
+              - --sync=fast
+          enableStartupProbe: false
+      - dnsPolicy: Default
+      - affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                - key: beta.kubernetes.io/instance-type
+                  operator: NotIn
+                  values:
+                  - "s-2vcpu-4gb"

@@ -22,6 +22,7 @@ indexerInstances:
     apiProcessor: indexer-laos-polygon-api
     host: polygon-indexer.laosnetwork.io
     gqlPort: 4000
+    rpcRateLimit: 40
   - dbPodName: indexer-db-ethereum
     postgresDb: squid-ethereum
     postgresPassword: postgres
@@ -40,3 +41,4 @@ indexerInstances:
     apiProcessor: indexer-laos-ethereum-api
     host: ethereum-indexer.laosnetwork.io
     gqlPort: 4000
+    rpcRateLimit: 40

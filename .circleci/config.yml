@@ -69,6 +69,10 @@ jobs:
             helmfile sync --environment << parameters.environment >>
 
   deployment-test:
+    parameters:
+      root:
+        type: string
+        default: "" 
     docker:
       - image: cimg/base:2022.08
     steps:
@@ -79,7 +83,7 @@ jobs:
       - run:
           name: Test Helmfile
           command: |
-            cd _deployment
+            cd _deployment/<< parameters.root >>
             helmfile lint
 
   build-app:
@@ -147,6 +151,14 @@ workflows:
 
       - deployment-test
 
+      - deployment-test:
+          name: deployment-test-laos-node
+          root: laos-node
+
+      - deployment-test:
+          name: deployment-test-indexer
+          root: indexer
+
       - approval:
           type: approval
           name: approve-deploy-client-api
@@ -177,7 +189,7 @@ workflows:
           type: approval
           name: approve-deploy-indexer
           requires:
-            - deployment-test
+            - deployment-test-indexer
             - build-indexer
           filters:
             branches:
@@ -188,7 +200,7 @@ workflows:
           type: approval
           name: approve-deploy-indexer-staging
           requires:
-            - deployment-test
+            - deployment-test-indexer
             - build-indexer
           filters:
             branches:
@@ -207,11 +219,13 @@ workflows:
             branches:
               only:
                 - main
+
+
       
       - deploy_to_cluster:
           name: deploy-to-dev-indexer
           requires:
-            - deployment-test
+            - deployment-test-indexer
             - approve-deploy-indexer
 
           environment: development
@@ -236,7 +250,7 @@ workflows:
       - deploy_to_cluster:
           name: deploy-to-staging-indexer
           requires:
-            - deployment-test
+            - deployment-test-indexer
             - approve-deploy-indexer-staging
           environment: staging
           root: _deployment/indexer
@@ -244,3 +258,5 @@ workflows:
             branches:
               only:
                 - main
+
+

@@ -66,6 +66,9 @@ helmfiles:
       - startingBlockOwnership: {{ .startingBlockOwnership }}
       - startingBlockLaos: {{ .startingBlockLaos }}
       - command: "process:prod:laos"
+      {{- if hasKey . "rpcRateLimit" }}
+      - rpcRateLimit: {{ .rpcRateLimit }}
+      {{- end }}
   - path: 'charts/api/helmfile.yaml'
     values:
       - name: {{ .apiProcessor }}
