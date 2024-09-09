@@ -47,9 +47,6 @@ helmfiles:
       - laosPalletInstance: {{ $.Values.laosPalletInstance }}
       - startingBlockOwnership: {{ .startingBlockOwnership }}
       - startingBlockLaos: {{ .startingBlockLaos }}
-      {{- if .rpcRateLimit }}
-      - rpcRateLimit: {{ .rpcRateLimit }}
-      {{- end }}
       - command: "process:prod:ownership_chain"
   - path: 'charts/processor/helmfile.yaml'
     values:
@@ -69,6 +66,9 @@ helmfiles:
       - startingBlockOwnership: {{ .startingBlockOwnership }}
       - startingBlockLaos: {{ .startingBlockLaos }}
       - command: "process:prod:laos"
+      {{- if .rpcRateLimit }}
+      - rpcRateLimit: {{ .rpcRateLimit }}
+      {{- end }}
   - path: 'charts/api/helmfile.yaml'
     values:
       - name: {{ .apiProcessor }}
