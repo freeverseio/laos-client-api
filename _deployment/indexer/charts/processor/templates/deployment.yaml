@@ -63,7 +63,7 @@ spec:
               value: {{ .Values.startingBlockLaos | quote }}
             - name: STARTING_BLOCK_OWNERSHIP
               value: {{ .Values.startingBlockOwnership | quote }}
-            {{- if .Values.rpcRateLimit }}
+            {{- if hasKey .Values "rpcRateLimit" }}
             - name: RPC_RATE_LIMIT
               value: {{ .Values.rpcRateLimit | quote }}
             {{- end }}
