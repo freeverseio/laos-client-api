@@ -19,3 +19,6 @@ releases:
       - startingBlockOwnership: {{ .Values.startingBlockOwnership }}
       - startingBlockLaos: {{ .Values.startingBlockLaos }}      
       - command: {{ .Values.command }}
+      {{- if .rpcRateLimit }}
+      - rpcRateLimit: {{ .rpcRateLimit }}
+      {{- end }}

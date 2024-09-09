@@ -12,8 +12,13 @@ import * as EvolutionCollection from '../abi/EvolutionCollection';
 
 //Needs to be introduced all with LowerCase
 export const processor = new EvmBatchProcessor()
-    .setDataSource({
-        chain:  process.env.RPC_LAOS_ENDPOINT!,
+
+    .setRpcEndpoint({
+      url: process.env.RPC_LAOS_ENDPOINT!,
+      capacity: 10,
+      maxBatchCallSize: 50,
+      ...(process.env.RPC_RATE_LIMIT ? { rateLimit: Number(process.env.RPC_RATE_LIMIT) } : {}),
+      requestTimeout: 15_000,
     })
     .setFinalityConfirmation(6)
     .setBlockRange({
