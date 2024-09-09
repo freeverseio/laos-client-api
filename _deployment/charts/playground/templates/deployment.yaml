@@ -26,7 +26,7 @@ spec:
               memory: "1Gi"
               cpu: "1"
           env:             
-            - name: API_ENDPOINT
+            - name: REACT_APP_GQL_URL
               value: {{ .Values.graphqlEndpoint }}
           ports:
             - containerPort: 80
