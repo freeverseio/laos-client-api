@@ -1,4 +1,4 @@
-import { MintInput } from "../types/graphql/inputs/MintInput";
+import { AttributeInput, MintInput } from "../types/graphql/inputs/MintInput";
 import { LaosConfig, MintSingleNFTParams, MintResult, AssetMetadata, BatchMintNFTParams, BatchMintResult } from "../types";
 import { MintResponse } from "../types/graphql/outputs/MintOutput";
 import { ServiceHelper } from "./ServiceHelper";
@@ -22,9 +22,9 @@ export class MintingService {
    * @param token The token input data.
    * @returns {AssetMetadata} The prepared asset metadata.
    */
-  private prepareAssetMetadata(token: { name?: string, description?: string, attributes?: string, image?: string }): AssetMetadata {
+  private prepareAssetMetadata(token: { name?: string, description?: string, attributes?: AttributeInput[], image?: string }): AssetMetadata {
     const { name, description, attributes, image } = token;
-    const parsedAttributes = this.serviceHelper.parseAssetAttributes(attributes || '[]');
+    const parsedAttributes = attributes? attributes : [];
     return {
       name: name || '',
       description: description || '',
@@ -44,6 +44,7 @@ export class MintingService {
 
     try {
       const expandedTokens = await Promise.all(tokens.map(async token => {
+        console.log("Preparing asset metadata for:", token);
         const assetMetadata = this.prepareAssetMetadata(token);
 
         try {

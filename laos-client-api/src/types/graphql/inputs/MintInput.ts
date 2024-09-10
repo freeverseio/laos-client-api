@@ -1,6 +1,15 @@
 import { InputType, Field } from "type-graphql";
 
 @InputType()
+export class AttributeInput {
+  @Field({ nullable: false })
+  trait_type!: string;
+
+  @Field({ nullable: false })
+  value!: string;
+}
+
+@InputType()
 class TokenInput {
   @Field({ nullable: false })
   name!: string;
@@ -8,8 +17,11 @@ class TokenInput {
   @Field({ nullable: true })
   description?: string;
 
-  @Field({ nullable: true })
-  attributes?: string;
+  // @Field({ nullable: true })
+  // attributes?: string;
+
+  @Field(() => [AttributeInput], { nullable: true })
+  attributes?: AttributeInput[];
 
   @Field({ nullable: true })
   image?: string;
