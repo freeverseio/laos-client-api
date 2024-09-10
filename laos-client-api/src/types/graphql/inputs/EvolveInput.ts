@@ -1,4 +1,6 @@
 import { InputType, Field } from "type-graphql";
+import { AttributeInput } from "./MintInput";
+
 
 @InputType()
 export class EvolveInput {
@@ -17,8 +19,8 @@ export class EvolveInput {
   @Field({ nullable: true })
   description?: string;
 
-  @Field({ nullable: true })
-  attributes?: string;
+  @Field(() => [AttributeInput], { nullable: true })
+  attributes?: AttributeInput[];
 
   @Field({ nullable: true })
   image?: string;

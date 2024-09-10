@@ -27,7 +27,7 @@ export class EvolvingService {
       }
 
       const imageUrl = await this.serviceHelper.handleImageUpload(image || '');
-      const parsedAttributes = this.serviceHelper.parseAssetAttributes(attributes || '[]'); // Ensure attributes is an array
+      const parsedAttributes = attributes? attributes : [];
 
       // retrieve contract from db
       const client = await getClientByKey({ key: apiKey });
