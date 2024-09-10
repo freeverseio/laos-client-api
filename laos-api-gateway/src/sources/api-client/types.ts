@@ -83,7 +83,7 @@ export type EvolveInput = {
   tokenId: Scalars['String']['input'];
   name: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
-  attributes?: InputMaybe<Scalars['String']['input']>;
+  attributes?: InputMaybe<Array<AttributeInput>>;
   image?: InputMaybe<Scalars['String']['input']>;
 };
 

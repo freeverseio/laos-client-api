@@ -51,7 +51,7 @@ input EvolveInput {
   tokenId: String!
   name: String!
   description: String
-  attributes: String
+  attributes: [AttributeInput!]
   image: String
 }
 

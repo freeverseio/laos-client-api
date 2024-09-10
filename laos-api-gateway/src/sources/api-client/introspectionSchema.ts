@@ -668,10 +668,16 @@ const schemaAST = {
             "value": "attributes"
           },
           "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
+            "kind": "ListType",
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "AttributeInput"
+                }
+              }
             }
           },
           "directives": []
