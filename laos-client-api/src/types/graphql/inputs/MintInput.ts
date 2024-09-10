@@ -17,9 +17,6 @@ class TokenInput {
   @Field({ nullable: true })
   description?: string;
 
-  // @Field({ nullable: true })
-  // attributes?: string;
-
   @Field(() => [AttributeInput], { nullable: true })
   attributes?: AttributeInput[];
 

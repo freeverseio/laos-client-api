@@ -44,7 +44,6 @@ export class MintingService {
 
     try {
       const expandedTokens = await Promise.all(tokens.map(async token => {
-        console.log("Preparing asset metadata for:", token);
         const assetMetadata = this.prepareAssetMetadata(token);
 
         try {
