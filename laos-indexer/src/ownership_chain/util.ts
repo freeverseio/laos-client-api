@@ -30,7 +30,6 @@ export const parseBaseURI = (baseUri: string) => {
       return null
     }
 
-    //TODO get from envVar
     const laosGlobalConsensusValue: string = process.env.LAOS_GLOBAL_CONSENSUS!
     const laosParachainValue: string  = process.env.LAOS_PARACHAIN!
     const laosPalletInstanceValue: string = process.env.LAOS_PALLET_INSTANCE!
