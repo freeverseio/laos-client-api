@@ -60,9 +60,14 @@ export type MintInput = {
 export type TokenInput = {
   name: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
-  attributes?: InputMaybe<Scalars['String']['input']>;
+  attributes?: InputMaybe<Array<AttributeInput>>;
   image?: InputMaybe<Scalars['String']['input']>;
   mintTo: Array<Scalars['String']['input']>;
+};
+
+export type AttributeInput = {
+  trait_type: Scalars['String']['input'];
+  value: Scalars['String']['input'];
 };
 
 export type EvolveResponse = {
@@ -78,7 +83,7 @@ export type EvolveInput = {
   tokenId: Scalars['String']['input'];
   name: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
-  attributes?: InputMaybe<Scalars['String']['input']>;
+  attributes?: InputMaybe<Array<AttributeInput>>;
   image?: InputMaybe<Scalars['String']['input']>;
 };
 

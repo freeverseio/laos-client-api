@@ -28,9 +28,14 @@ input MintInput {
 input TokenInput {
   name: String!
   description: String
-  attributes: String
+  attributes: [AttributeInput!]
   image: String
   mintTo: [String!]!
+}
+
+input AttributeInput {
+  trait_type: String!
+  value: String!
 }
 
 type EvolveResponse {
@@ -46,7 +51,7 @@ input EvolveInput {
   tokenId: String!
   name: String!
   description: String
-  attributes: String
+  attributes: [AttributeInput!]
   image: String
 }
 
