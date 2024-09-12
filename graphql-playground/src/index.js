@@ -23,7 +23,12 @@ mutation MyMutation {
           mintTo: ["0x883FE5b3766155f075a8E1f207a9689294fE528f"]
           name: "Celestial Phoenix"
           description: "A mythical bird reborn from its ashes, representing eternal life."
-          attributes: "[{\\"trait_type\\":\\"mythical creature\\",\\"value\\":\\"phoenix\\"}]",
+          attributes: [
+            {
+              trait_type: "mythical creature"
+              value: "phoenix"
+            }
+          ]
           image: "ipfs://QmPbxeGcXhYQQNgsC6a36dDyYUcHgMLnGKnF8pVFmGsvqi"
         }
       ]
