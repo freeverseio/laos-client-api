@@ -3,8 +3,8 @@ import { LaosConfig, MintSingleNFTParams, MintResult, AssetMetadata, BatchMintNF
 import { MintResponse } from "../types/graphql/outputs/MintOutput";
 import { ServiceHelper } from "./ServiceHelper";
 import { ethers } from "ethers";
-import { getClientContract } from "./db/contract";
-import { getClientByKey } from "./db/client";
+import ContractService from "./db/ContractService";
+import ClientService from "./db/ClientService";
 
 export class MintingService {
   private serviceHelper: ServiceHelper;
@@ -49,7 +49,7 @@ export class MintingService {
         try {
           const cid = await this.serviceHelper.ipfsService.getCid(assetMetadata);
           const tokenUri = `ipfs://${cid}`;
-          this.serviceHelper.ipfsService.uploadAssetMetadataToIPFS(assetMetadata, token.name);
+          this.serviceHelper.ipfsService.uploadAssetMetadataToIPFS(assetMetadata, token.name, cid);
           return Promise.all(token.mintTo.map(async address => {
             if (!ethers.isAddress(address)) {
               throw new Error("Invalid recipient address");
@@ -69,8 +69,8 @@ export class MintingService {
       const flatTokens = expandedTokens.flat();
 
       // retrieve contract from db
-      const client = await getClientByKey({ key: apiKey });
-      const contract = await getClientContract({clientId: client?.id, chainId: chainId, contract: contractAddress});
+      const client = await ClientService.getClientByKey(apiKey);
+      const contract = await ContractService.getClientContract(client.id, chainId, contractAddress);
       if (!contract) {
         throw new Error('Contract not found');
       }

@@ -3,12 +3,14 @@ import axios from 'axios';
 import FormData from 'form-data';
 import { AssetMetadata } from '../../types/asset';
 import { CID } from 'multiformats/cid'
+import IpfsUploadService from '../db/IpfsUploadService';
 import * as Hash from 'typestub-ipfs-only-hash'
 
 export class IPFSService {
   private pinata: PinataSDK;
   private pinataApiKey: string;
   private pinataApiSecret: string;
+
 
   constructor(apiKey: string, apiSecret: string) {
     if (!apiKey || !apiSecret) {
@@ -36,13 +38,22 @@ export class IPFSService {
     throw new Error('Unexpected error in retry logic');
   }
 
-  public async uploadAssetMetadataToIPFS(assetJson: AssetMetadata, name: string | null): Promise<string> {
+  public async uploadAssetMetadataToIPFS(assetJson: AssetMetadata, name: string | null, cid?: string): Promise<string> {
     try {
+      if (cid) {
+        await IpfsUploadService.insertIpfsUpload({ ipfsHash: cid, status: 'pending' });
+      }
       await this.pinata.testAuthentication();
       const { IpfsHash } = await this.pinAssetMetadata(assetJson, name);
+      if (cid) {
+        await IpfsUploadService.deleteIpfsUpload(cid);
+      }
       return IpfsHash;
     } catch (error: any) {
       console.error('Upload Failed:', error.message);
+      if (cid) {
+        await IpfsUploadService.updateIpfsUpload(cid, 'failed');
+      }
       throw error;
     }
   }
