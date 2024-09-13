@@ -39,7 +39,8 @@ class IpfsUploadService {
   public static async getIpfsUploadsByStatus(status: string): Promise<IpfsUpload[]> {
     const res = await Database.query('SELECT id, ipfs_hash, status, created_at, asset_data FROM api_ipfs_upload WHERE status = $1', [status]);
     if (!res.rows.length) {
-      throw new Error(`No IPFS uploads found with status: ${status}`);
+      console.log(`No IPFS uploads found with status: ${status}`);
+      return [];
     }
     // Parse asset_data into AssetMetadata
     const uploads = res.rows.map(row => {
@@ -52,7 +53,7 @@ class IpfsUploadService {
           assetData: assetData as AssetMetadata
       };
     });
-    
+
     return uploads;
   }
 }

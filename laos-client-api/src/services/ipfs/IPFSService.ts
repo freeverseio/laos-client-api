@@ -11,7 +11,6 @@ export class IPFSService {
   private pinataApiKey: string;
   private pinataApiSecret: string;
 
-
   constructor(apiKey: string, apiSecret: string) {
     if (!apiKey || !apiSecret) {
       throw new Error('Pinata API key and secret are required');
