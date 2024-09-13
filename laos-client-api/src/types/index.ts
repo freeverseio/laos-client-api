@@ -4,3 +4,4 @@ export * from "./error";
 export * from "./config";
 export * from "./events";
 export * from "./broadcast";
+export * from "./ipfs";
