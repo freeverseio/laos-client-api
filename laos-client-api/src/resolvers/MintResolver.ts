@@ -15,6 +15,12 @@ export class MintResolver {
     return "Up";
   }
 
+  @Query(() => String)
+  async refresh() {
+    await this.mintingService.refresh();
+    return "Refreshed";
+  }
+
   @Mutation(() => MintResponse)
   async mint(@Arg("input") input: MintInput, @Ctx() context: Context): Promise<MintResponse> {
     let apiKey = context.headers['authorization'];

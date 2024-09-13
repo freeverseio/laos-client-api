@@ -2,8 +2,8 @@ import { EvolveInput } from "../types/graphql/inputs/EvolveInput";
 import { LaosConfig, AssetMetadata, EvolveResult } from "../types";
 import { EvolveResponse } from "../types/graphql/outputs/EvolveOutput";
 import { ServiceHelper } from "./ServiceHelper";
-import { getClientByKey } from "./db/client";
-import { getClientContract } from "./db/contract";
+import ClientService from "./db/ClientService";
+import ContractService from "./db/ContractService";
 
 export class EvolvingService {
   private serviceHelper: ServiceHelper;
@@ -30,8 +30,8 @@ export class EvolvingService {
       const parsedAttributes = attributes? attributes : [];
 
       // retrieve contract from db
-      const client = await getClientByKey({ key: apiKey });
-      const contract = await getClientContract({clientId: client?.id, chainId: chainId, contract: contractAddress});
+      const client = await ClientService.getClientByKey(apiKey);
+      const contract = await ContractService.getClientContract(client.id, chainId, contractAddress);
       if (!contract) {
         throw new Error('Contract not found');
       }

@@ -2,8 +2,8 @@ import { BroadcastInput } from "../types/graphql/inputs/BroadcastInput";
 import { BroadcastParams, BroadcastResult, OwnershipChainConfig } from "../types";
 import { BroadcastResponse } from "../types/graphql/outputs/BroadcastOutput";
 import { OwnershipChainService } from "./blockchain/OwnershipChainService";
-import { getClientByKey } from "./db/client";
-import { getClientContract } from "./db/contract";
+import ClientService from "./db/ClientService";
+import ContractService from "./db/ContractService";
 
 
 export class BroadcastingService {
@@ -22,10 +22,12 @@ export class BroadcastingService {
     const { tokenId, chainId, ownershipContractAddress } = input;
     try {
       // Check the client exists an is active
-      const client = await getClientByKey({ key: apiKey });
+      const client = await ClientService.getClientByKey(apiKey);
       console.log('Broadcast requested by client:', client.id);
-      await getClientContract({ clientId: client.id, chainId: chainId!, contract: ownershipContractAddress! });
-      
+      const contract = await ContractService.getClientContract(client.id, chainId!, ownershipContractAddress!);
+      if (!contract) {
+        throw new Error('Contract not found');
+      }
       const params: BroadcastParams = {
         tokenId: tokenId!,
         chainId: chainId!,
