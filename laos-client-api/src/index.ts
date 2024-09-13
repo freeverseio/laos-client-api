@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import * as dotenv from 'dotenv';
+import cron from 'node-cron';
 import { ApolloServer } from "apollo-server";
 import { buildSchema } from "type-graphql";
 import { MintResolver } from "./resolvers/MintResolver";
@@ -10,10 +11,12 @@ import { BroadcastResolver } from "./resolvers/BroadcastResolver";
 import { BroadcastingService } from "./services/BroadcastingService";
 import { CreateCollectionResolver } from "./resolvers/CreateCollection";
 import { CreateCollectionService } from "./services/CreateCollectionService";
+import { IPFSService } from "./services/ipfs/IPFSService";
 
 dotenv.config();
 
 async function startServer() {
+  const ipfsService = new IPFSService(process.env.PINATA_API_KEY!, process.env.PINATA_API_SECRET!);
   const schema = await buildSchema({
     resolvers: [MintResolver, EvolveResolver, BroadcastResolver, CreateCollectionResolver],
     container: {
@@ -46,6 +49,11 @@ async function startServer() {
 
   server.listen({ port: 4001 }).then(({ url }) => {
     console.log(`Server ready at ${url}`);
+
+    cron.schedule('0 * * * *', () => { 
+      console.log('Running periodic job every hour'); 
+      ipfsService.retryFailedIpfsUploads();
+    });
   });
 }
 

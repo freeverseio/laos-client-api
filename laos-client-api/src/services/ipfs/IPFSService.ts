@@ -3,6 +3,7 @@ import axios from 'axios';
 import FormData from 'form-data';
 import { AssetMetadata } from '../../types/asset';
 import { CID } from 'multiformats/cid'
+import IpfsUploadService from '../db/IpfsUploadService';
 import * as Hash from 'typestub-ipfs-only-hash'
 
 export class IPFSService {
@@ -36,15 +37,39 @@ export class IPFSService {
     throw new Error('Unexpected error in retry logic');
   }
 
-  public async uploadAssetMetadataToIPFS(assetJson: AssetMetadata, name: string | null): Promise<string> {
+  public async uploadAssetMetadataToIPFS(assetJson: AssetMetadata, name: string | null, cid?: string): Promise<string> {
     try {
+      if (cid) {
+        await IpfsUploadService.insertIpfsUpload({ ipfsHash: cid, status: 'pending', assetData: assetJson });
+      }
       await this.pinata.testAuthentication();
       const { IpfsHash } = await this.pinAssetMetadata(assetJson, name);
+      if (cid) {
+         await IpfsUploadService.deleteIpfsUpload(IpfsHash);
+      }
       return IpfsHash;
     } catch (error: any) {
       console.error('Upload Failed:', error.message);
+      if (cid) {
+        await IpfsUploadService.updateIpfsUpload(cid, 'failed');
+      }
       throw error;
     }
+  }
+
+  public async retryFailedIpfsUploads(): Promise<void> {
+    const failedUploads = await IpfsUploadService.getIpfsUploadsByStatus('failed');
+    const uploadPromises = failedUploads.map(async (upload) => {
+      try {
+        await IpfsUploadService.updateIpfsUpload(upload.ipfsHash, 'pending');
+        await this.uploadAssetMetadataToIPFS(upload.assetData, upload.assetData.name, upload.ipfsHash);
+        await IpfsUploadService.deleteIpfsUpload(upload.ipfsHash);
+      } catch (error) {
+        console.error(`Failed to upload asset ${upload.ipfsHash}:`, error);
+        await IpfsUploadService.updateIpfsUpload(upload.ipfsHash, 'failed');
+      }
+    });
+    await Promise.all(uploadPromises); // Launch all in parallel
   }
 
   private async pinAssetMetadata(assetJson: AssetMetadata, name: string | null): Promise<{ IpfsHash: string }> {
