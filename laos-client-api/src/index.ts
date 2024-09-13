@@ -48,8 +48,8 @@ async function startServer() {
   server.listen({ port: 4001 }).then(({ url }) => {
     console.log(`Server ready at ${url}`);
 
-    cron.schedule('*/5 * * * *', () => {
-      console.log('Running periodic job every 5 minutes');
+    cron.schedule('0 * * * *', () => { 
+      console.log('Running periodic job every hour'); 
       ipfsService.retryFailedIpfsUploads();
     });
   });
