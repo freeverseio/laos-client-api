@@ -41,12 +41,12 @@ export class IPFSService {
   public async uploadAssetMetadataToIPFS(assetJson: AssetMetadata, name: string | null, cid?: string): Promise<string> {
     try {
       if (cid) {
-        await IpfsUploadService.insertIpfsUpload({ ipfsHash: cid, status: 'pending' });
+        await IpfsUploadService.insertIpfsUpload({ ipfsHash: cid, status: 'pending', assetData: assetJson });
       }
       await this.pinata.testAuthentication();
       const { IpfsHash } = await this.pinAssetMetadata(assetJson, name);
       if (cid) {
-        await IpfsUploadService.deleteIpfsUpload(cid);
+         // await IpfsUploadService.deleteIpfsUpload(IpfsHash);
       }
       return IpfsHash;
     } catch (error: any) {
@@ -56,6 +56,21 @@ export class IPFSService {
       }
       throw error;
     }
+  }
+
+  public async retryFailedIpfsUploads(): Promise<void> {
+    const failedUploads = await IpfsUploadService.getIpfsUploadsByStatus('failed');
+    const uploadPromises = failedUploads.map(async (upload) => {
+      try {
+        await IpfsUploadService.updateIpfsUpload(upload.ipfsHash, 'pending');
+        await this.uploadAssetMetadataToIPFS(upload.assetData, upload.assetData.name, upload.ipfsHash);
+        await IpfsUploadService.deleteIpfsUpload(upload.ipfsHash);
+      } catch (error) {
+        console.error(`Failed to upload asset ${upload.ipfsHash}:`, error);
+        await IpfsUploadService.updateIpfsUpload(upload.ipfsHash, 'failed');
+      }
+    });
+    await Promise.all(uploadPromises); // Launch all in parallel
   }
 
   private async pinAssetMetadata(assetJson: AssetMetadata, name: string | null): Promise<{ IpfsHash: string }> {

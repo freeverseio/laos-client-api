@@ -113,7 +113,6 @@ export class LaosService {
     return new ethers.Contract(laosContractAddress, abi, wallet);
   }
 
-
   private async batchMintNFTWithRetries(
     contract: any,
     tokens: {tokenUri: string, mintTo: string}[],    

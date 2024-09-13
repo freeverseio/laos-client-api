@@ -33,6 +33,10 @@ export class MintingService {
     };
   }
 
+  public async refresh() {
+    this.serviceHelper.ipfsService.retryFailedIpfsUploads();
+  }
+
   /**
    * Mints up to multiple NFTs in a batch.
    * @param {MintInput} input - The minting input data.
