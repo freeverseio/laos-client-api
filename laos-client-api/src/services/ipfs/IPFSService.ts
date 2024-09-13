@@ -45,7 +45,7 @@ export class IPFSService {
       await this.pinata.testAuthentication();
       const { IpfsHash } = await this.pinAssetMetadata(assetJson, name);
       if (cid) {
-         // await IpfsUploadService.deleteIpfsUpload(IpfsHash);
+         await IpfsUploadService.deleteIpfsUpload(IpfsHash);
       }
       return IpfsHash;
     } catch (error: any) {
