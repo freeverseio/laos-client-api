@@ -96,7 +96,7 @@ export class OwnershipChainService {
 
     try {
       // Deploy the contract with constructor arguments
-      const tx  = await factory.deploy(ownerAddress, contractName, contractSymbol, baseURI);
+      const tx  = await factory.deploy(ownerAddress, name, symbol, baseURI);
       if(!tx){
         throw new Error("Failed to deploy contract, tx null.");
       }
