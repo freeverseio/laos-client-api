@@ -6,7 +6,6 @@ import { ServiceHelper } from "./ServiceHelper";
 import { ethers } from "ethers";
 import { getClientContract } from "./db/contract";
 import { getClientByKey } from "./db/client";
-import { useWriteContract } from 'wagmi';
 import EvolutionCollectionFactoryAbi from '../contracts/EvolutionCollectionFactory.json';
 
 
