@@ -4,8 +4,7 @@ import { LaosConfig, AssetMetadata } from "../types";
 import { CreateCollectionResponse } from "../types/graphql/outputs/CreateCollectionOutput";
 import { ServiceHelper } from "./ServiceHelper";
 import { ethers } from "ethers";
-import { getClientContract } from "./db/contract";
-import { getClientByKey } from "./db/client";
+import ClientService from "./db/ClientService";
 import EvolutionCollectionFactoryAbi from '../contracts/EvolutionCollectionFactory.json';
 
 
@@ -27,12 +26,12 @@ export class CreateCollectionService {
    * @returns {Promise<CreateCollectionResponse>} - The result of the createCollection operation.
    */
   public async createCollection(input: CreateCollectionInput, apiKey: string): Promise<CreateCollectionResponse> {
-    const { name, chainId, ownerAddress } = input; // TODO img?
+    const { name, chainId, ownerAddress } = input; // TODO symbol?
 
     try {            
 
       // retrieve contract from db
-      const client = await getClientByKey({ key: apiKey });
+      const client = await ClientService.getClientByKey(apiKey);
       
       const params = {
         name,
@@ -40,7 +39,25 @@ export class CreateCollectionService {
         ownerAddress
       };
 
-      // Create collection in LAOS
+      // Create collection in LAOS     
+
+      try {
+        const result = await this.serviceHelper.laosService.createLaosCollection(ownerAddress, apiKey);
+        console.log('result: ', result);
+        // if (result.status === "success") {
+        //   return { 
+        //     tokenId: result.tokenId!, 
+        //     success: true,
+        //     tokenUri: result.tokenUri || '',
+        //     tx: result.tx || ''
+        //   };
+        // } else {
+        //   throw new Error(result.error ?? "Evolving failed"); // Use nullish coalescing operator
+        // }
+      } catch (error) {
+        throw new Error(`Failed to evolve NFT: ${error}`);
+      }
+
       // Create Ownershipchain collection
       // Deploy BatchMinter with owner ownerAddress
       // Set owner of LaosColletion to batchMinter
