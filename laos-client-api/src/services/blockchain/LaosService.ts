@@ -351,37 +351,20 @@ export class LaosService {
         throw new Error("Receipt status is not 1");
       }
 
-
       // Define the event interface for decoding logs
       const eventInterface = new ethers.Interface(EvolutionCollectionFactoryAbi);
-      // Iterate through the logs in the receipt
       let laosCollectionAddress = '';
       receipt.logs.forEach((log:any) => {
-      try {
-          // Attempt to decode the log using the event ABI
-          const parsedLog = eventInterface.parseLog(log);
-          
-          // Check if the log corresponds to the "NewCollection" event
-          if (parsedLog?.name === "NewCollection") {
-            console.log(`New collection created by ${parsedLog.args._owner} at address ${parsedLog.args._collectionAddress}`);
-            laosCollectionAddress = parsedLog.args._collectionAddress;
-          }
-      } catch (error) {
-          // If decoding fails, skip this log
-      }
-       });
-      
-      // const log = receipt.logs[0] as any;
-      // // const logDecoded = eventNameToEventTypeMap[eventName].decode(log);
-      // // const logDecoded = event("0xa7135052b348b0b4e9943bae82d8ef1c5ac225e594ef4271d12f0744cfc98348", "MintedWithExternalURI(address,uint96,uint256,string)", {"_to": indexed(p.address), "_slot": p.uint96, "_tokenId": p.uint256, "_tokenURI": p.string}).decode(log);
-      // const logDecoded = ("0xa7135052b348b0b4e9943bae82d8ef1c5ac225e594ef4271d12f0744cfc98348", "MintedWithExternalURI(address,uint96,uint256,string)", {"_to": indexed(p.address), "_slot": p.uint96, "_tokenId": p.uint256, "_tokenURI": p.string}).decode(log);
-      // const { _tokenId } = logDecoded;
-
-      // Listen for the NewCollection event
-      // const laosCollectionAddress = await contract.on("NewCollection", (owner, collectionAddress) => {
-      //     console.log(`New collection created by ${owner} at address ${collectionAddress}`);
-      //     return collectionAddress;
-      // });
+        try {
+            const parsedLog = eventInterface.parseLog(log);
+            if (parsedLog?.name === "NewCollection") {
+              console.log(`New collection created by ${parsedLog.args._owner} at address ${parsedLog.args._collectionAddress}`);
+              laosCollectionAddress = parsedLog.args._collectionAddress;
+            }
+        } catch (error) {
+            console.log(error);
+        }
+      });      
       
       if (!laosCollectionAddress) {
         throw new Error('No NewCollection event found in transaction receipt');

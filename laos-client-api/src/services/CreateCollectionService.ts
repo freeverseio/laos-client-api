@@ -1,15 +1,16 @@
 //@TODO
 import { CreateCollectionInput } from "../types/graphql/inputs/CreateCollectionInput";
-import { LaosConfig, AssetMetadata } from "../types";
+import { LaosConfig, AssetMetadata, OwnershipChainConfig } from "../types";
 import { CreateCollectionResponse } from "../types/graphql/outputs/CreateCollectionOutput";
 import { ServiceHelper } from "./ServiceHelper";
 import { ethers } from "ethers";
 import ClientService from "./db/ClientService";
-import EvolutionCollectionFactoryAbi from '../contracts/EvolutionCollectionFactory.json';
+import { OwnershipChainService } from "./blockchain/OwnershipChainService";
 
 
 export class CreateCollectionService {
   private serviceHelper: ServiceHelper;
+  private ownershipChainService: OwnershipChainService;
 
   constructor() {
     const config: LaosConfig = {
@@ -17,6 +18,13 @@ export class CreateCollectionService {
       rpcMinter: process.env.RPC_MINTER || '',
     };
     this.serviceHelper = new ServiceHelper(config);
+
+    const ownershipChainConfig: OwnershipChainConfig = {
+      minterPvk: process.env.MINTER_PVK || '',
+      ownershipChainContract: '0xaaf54526c508d573d402bf05a9a5e54f09302adf', // TODO set ownership contract
+      rpcOwnershipChain: 'https://polygon.meowrpc.com', // TODO set ownership rpc
+    };    
+    this.ownershipChainService = new OwnershipChainService(ownershipChainConfig);
   }
 
   /**
@@ -28,40 +36,44 @@ export class CreateCollectionService {
   public async createCollection(input: CreateCollectionInput, apiKey: string): Promise<CreateCollectionResponse> {
     const { name, chainId, ownerAddress } = input; // TODO symbol?
 
-    try {            
-
-      // retrieve contract from db
+    try {
       const client = await ClientService.getClientByKey(apiKey);
-      
-      const params = {
-        name,
-        chainId,
-        ownerAddress
-      };
+      if(!client) {
+        throw new Error('Invalid API key');
+      }     
 
-      // Create collection in LAOS     
-
+      // Create collection in LAOS
+      let laosCollectionAddress;
       try {
-        const result = await this.serviceHelper.laosService.createLaosCollection(ownerAddress, apiKey);
-        console.log('result: ', result);
-        // if (result.status === "success") {
-        //   return { 
-        //     tokenId: result.tokenId!, 
-        //     success: true,
-        //     tokenUri: result.tokenUri || '',
-        //     tx: result.tx || ''
-        //   };
-        // } else {
-        //   throw new Error(result.error ?? "Evolving failed"); // Use nullish coalescing operator
-        // }
+        console.log("Creating LAOS Collection...");
+        let laosCollectionAddress = await this.serviceHelper.laosService.createLaosCollection(ownerAddress, apiKey);
+        console.log('laosCollectionAddress: ', laosCollectionAddress);
+        
       } catch (error) {
-        throw new Error(`Failed to evolve NFT: ${error}`);
+        throw new Error(`Failed to create new LAOS collection: ${error}`);
       }
 
       // Create Ownershipchain collection
+      let ownershipContractAddress; 
+      try{
+        console.log("Deploying ownershipChain contract...");      
+        const symbol = "MCOL"; // TODO add to input
+        const baseURI = "https://baseuri.com/" + laosCollectionAddress; // TODO Sigma/LAOS
+        ownershipContractAddress = await this.ownershipChainService.deployNewErc721universal(ownerAddress, chainId, name, symbol, baseURI);
+
+      } catch (error) {
+        throw new Error(`Failed to deploy ownershipChain contract: ${error}`);
+      }
+
+
       // Deploy BatchMinter with owner ownerAddress
+      // TODO
+
       // Set owner of LaosColletion to batchMinter
+      // TODO
+      
       // Set Collection address to batchMinter
+      // TODO
 
       const result = {
         status: "success",
