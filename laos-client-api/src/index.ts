@@ -8,22 +8,24 @@ import { EvolveResolver } from "./resolvers/EvolveResolver";
 import { EvolvingService } from "./services/EvolvingService";
 import { BroadcastResolver } from "./resolvers/BroadcastResolver";
 import { BroadcastingService } from "./services/BroadcastingService";
+import { CreateCollectionResolver } from "./resolvers/CreateCollection";
+import { CreateCollectionService } from "./services/CreateCollectionService";
 
 dotenv.config();
 
 async function startServer() {
   const schema = await buildSchema({
-    resolvers: [MintResolver, EvolveResolver, BroadcastResolver],
+    resolvers: [MintResolver, EvolveResolver, BroadcastResolver, CreateCollectionResolver],
     container: {
       get(someClass: any) {
         if (someClass === BroadcastResolver) {
           return new BroadcastResolver(new BroadcastingService());
-        }
-        if (someClass === MintResolver) {
+        } else if (someClass === MintResolver) {
           return new MintResolver(new MintingService());
-        }
-        if (someClass === EvolveResolver) {
+        } else if (someClass === EvolveResolver) {
           return new EvolveResolver(new EvolvingService());
+        } else if (someClass === CreateCollectionResolver) {
+          return new CreateCollectionResolver(new CreateCollectionService());
         }
         return undefined;
       },
