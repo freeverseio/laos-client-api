@@ -5,7 +5,7 @@ import * as EvolutionCollection from "../../abi/EvolutionCollection";
 import EvolutionCollectionAbi from '../../abi/contracts/EvolutionCollection.json';
 import BatchMinterAbi from '../../abi/contracts/BatchMinter.json';
 import EvolutionCollectionFactoryAbi from '../../abi/contracts/EvolutionCollectionFactory.json';
-import { ContractDeployService } from "./ContractDeployService";
+import { ContractService } from "./ContractService";
 import { BatchMinterBytecode } from "../../abi/contracts/BatchMinterBytecode";
 
 const eventNameToEventTypeMap = {
@@ -118,7 +118,7 @@ export class LaosService {
 
   public async deployBatchMinterContract(ownerAddress: string, apiKey: string): Promise<string> {
     const minterPvk = JSON.parse(process.env.MINTER_KEYS || '{}')[apiKey];
-    const deployer = new ContractDeployService(minterPvk, this.laosRpc);
+    const deployer = new ContractService(minterPvk, this.laosRpc);
     try {
       const deploymentResult: DeploymentResult = await deployer.deployContract(
         BatchMinterAbi,

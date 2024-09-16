@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { BroadcastResult, OwnershipChainConfig, BroadcastParams } from "../../types";
 import ERC721UniversalAbi from '../../abi/contracts/ERC721Universal.json';
 import { ERC721UniversalBytecode }from '../../abi/contracts/ERC721UniversalBytecode';
-import { ContractDeployService } from "./ContractDeployService";
+import { ContractService } from "./ContractService";
 import { DeploymentResult } from "../../types";
 export class OwnershipChainService {
   private minterPvk: string = '';
@@ -91,7 +91,7 @@ export class OwnershipChainService {
 
   public async deployNewErc721universal(ownerAddress: string, chainId: string, name: string, symbol: string, baseURI: string): Promise<any> {
     const rpcOwnershipChain = this.getChainRpcbyChainId(chainId);
-    const deployer = new ContractDeployService(this.minterPvk, rpcOwnershipChain);
+    const deployer = new ContractService(this.minterPvk, rpcOwnershipChain);
     try {
       const deploymentResult: DeploymentResult = await deployer.deployContract(
         ERC721UniversalAbi,
