@@ -23,7 +23,7 @@ export class CreateCollectionService {
       minterPvk: process.env.MINTER_PVK || '',
       ownershipChainContract: '0xaaf54526c508d573d402bf05a9a5e54f09302adf', // TODO set ownership contract
       rpcOwnershipChain: 'https://polygon.meowrpc.com', // TODO set ownership rpc
-    };    
+    };
     this.ownershipChainService = new OwnershipChainService(ownershipChainConfig);
   }
 
@@ -38,9 +38,9 @@ export class CreateCollectionService {
 
     try {
       const client = await ClientService.getClientByKey(apiKey);
-      if(!client) {
+      if (!client) {
         throw new Error('Invalid API key');
-      }     
+      }
 
       // Create collection in LAOS
       let laosCollectionAddress;
@@ -53,57 +53,41 @@ export class CreateCollectionService {
       }
 
       // Create Ownershipchain collection
-      let ownershipContractAddress; 
-      try{
-        console.log("Deploying ownershipChain contract...");      
-        const symbol = "MCOL"; // TODO add to input
-        // const baseURI = "https://baseuri.com/" + laosCollectionAddress; // TODO Sigma/LAOS
-        let evochainTarget = "LAOS";
-        if(process.env.RPC_MINTER?.toLocaleLowerCase().includes("sigma")) {
-          evochainTarget = "LAOS_SIGMA";
-        }
-        const baseURI = this.serviceHelper.generateBaseUri(laosCollectionAddress, evochainTarget);
+      let ownershipContractAddress;
+      let batchMinterAddress;
 
-        // ownershipContractAddress = await this.ownershipChainService.deployNewErc721universal(ownerAddress, chainId, name, symbol, baseURI);
-        // console.log("OwnershipChain contract deployed at: ", ownershipContractAddress);
-        
-        // Deploy BatchMinter with owner ownerAddress
-        const batchMinterAddress = await this.serviceHelper.laosService.deployBatchMinterContract(ownerAddress, apiKey);
-        console.log("BatchMinter contract deployed at: ", batchMinterAddress);
-       
-        // Set owner of LaosColletion to batchMinter
-        await this.serviceHelper.laosService.transferOwnership(laosCollectionAddress!, batchMinterAddress, apiKey);
-        // Set Collection address to batchMinter
-        await this.serviceHelper.laosService.setPrecompileAddress(batchMinterAddress, laosCollectionAddress!, apiKey);
-      } catch (error) {
-        throw new Error(`Failed to deploy ownershipChain contract: ${error}`);
+      console.log("Deploying ownershipChain contract...");
+      const symbol = "MCOL"; // TODO add to input
+      let evochainTarget = "LAOS";
+      if (process.env.RPC_MINTER?.toLocaleLowerCase().includes("sigma")) {
+        evochainTarget = "LAOS_SIGMA";
       }
+      const baseURI = this.serviceHelper.generateBaseUri(laosCollectionAddress, evochainTarget);
+      if (!baseURI) {
+        throw new Error("BaseURI is null");
+      }
+      ownershipContractAddress = await this.ownershipChainService.deployNewErc721universal(ownerAddress, chainId, name, symbol, baseURI);
+      console.log("OwnershipChain contract deployed at: ", ownershipContractAddress);
 
+      // Deploy BatchMinter with owner ownerAddress
+      batchMinterAddress = await this.serviceHelper.laosService.deployBatchMinterContract(ownerAddress, apiKey);
+      console.log("BatchMinter contract deployed at: ", batchMinterAddress);
 
-      const result = {
-        status: "success",
+      // Set owner of LaosColletion to batchMinter
+      await this.serviceHelper.laosService.transferOwnership(laosCollectionAddress!, batchMinterAddress, apiKey);
+      // Set Collection address to batchMinter
+      await this.serviceHelper.laosService.setPrecompileAddress(batchMinterAddress, laosCollectionAddress!, apiKey);
+
+      return {
         name: name,
         chainId: chainId,
-        contractAddress: "0x0000000000000000000000000000000000000000",
-        batchMinterAddress: "0x0000000000000000000000000000000000000000",
-        address: "0x0000000000000000000000000000000000000000",
-        success: true
-      }
-      if (result.status === "success") {
-        return { 
-          name: result.name,
-          chainId: result.chainId,
-          contractAddress: result.contractAddress,
-          batchMinterAddress: result.batchMinterAddress,
-          laosAddress: result.address,          
-          success: true,
-        };
-      } else {
-        throw new Error(result.status ?? "CreateCollection failed");
-      }
+        contractAddress: ownershipContractAddress,
+        batchMinterAddress: batchMinterAddress,
+        laosAddress: laosCollectionAddress,
+        success: true,
+      };
     } catch (error) {
-      console.error(`Error creating collection [${name}] on chainId [${chainId}]. Error:`, error);
-      throw error;
+      throw new Error(error as string);
     }
   }
 }
