@@ -74,7 +74,7 @@ export class CreateCollectionService {
       console.log("BatchMinter contract deployed at: ", batchMinterAddress);
 
       // Save contract to DB
-      await ContractService.insertContract(client.id, chainId, ownershipContractAddress, laosCollectionAddress, batchMinterAddress);
+      await ContractService.insertContract(client.id, chainId, ownershipContractAddress.toLowerCase(), laosCollectionAddress.toLowerCase(), batchMinterAddress);
       console.log("Contract saved to DB");
 
       return {
