@@ -74,7 +74,10 @@ export class CreateCollectionService {
       console.log("BatchMinter contract deployed at: ", batchMinterAddress);
 
       // Save contract to DB
-      await ContractService.insertContract(client.id, chainId, ownershipContractAddress.toLowerCase(), laosCollectionAddress.toLowerCase(), batchMinterAddress);
+      await ContractService.insertContract(client.id, chainId, 
+        ownershipContractAddress.toLowerCase(), 
+        laosCollectionAddress.toLowerCase(), 
+        batchMinterAddress.toLowerCase());
       console.log("Contract saved to DB");
 
       return {
@@ -82,7 +85,7 @@ export class CreateCollectionService {
         name: name,
         symbol: symbol,
         contractAddress: ownershipContractAddress.toLowerCase(),
-        batchMinterAddress: batchMinterAddress,
+        batchMinterAddress: batchMinterAddress.toLowerCase(),
         laosAddress: laosCollectionAddress.toLowerCase(),
         success: true,
       };
