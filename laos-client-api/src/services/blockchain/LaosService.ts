@@ -351,7 +351,23 @@ export class LaosService {
     return value < 2n ** 96n;
   }
 
-  //(params: EvolveNFTParams, apiKey: string): Promise<EvolveResult> {
+  public async setPrecompileAddress(batchMinterAddress: string, precompileAddress: string, apiKey: string): Promise<void> {
+    try {
+      // Create an instance of the contract
+      const minterPvk = JSON.parse(process.env.MINTER_KEYS || '{}')[apiKey];
+      const wallet = new ethers.Wallet(minterPvk, this.provider);
+      const contract = this.getEthersContract({laosContractAddress: batchMinterAddress, abi: BatchMinterAbi, wallet});
+      const tx = await contract.setPrecompileAddress(precompileAddress);
+      console.log('Transaction sent, waiting for confirmation...');
+      const receipt = await tx.wait();
+      console.log("Transaction successful! Hash:", receipt.hash);
+      return receipt.hash;
+    } catch (error) {
+      console.error('Error setting precompile address:', error);
+      throw error;
+    }
+  }
+
   public async createLaosCollection(ownerAddress: string, apiKey: string): Promise<string> {
     try {
       // Create an instance of the contract
@@ -399,6 +415,10 @@ export class LaosService {
       throw error;
     }
   }
+  
+
+
+
 
 }
 
