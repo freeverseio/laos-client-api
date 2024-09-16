@@ -22,12 +22,14 @@ export type Scalars = {
 
 export type Query = {
   status: Scalars['String']['output'];
+  refresh: Scalars['String']['output'];
 };
 
 export type Mutation = {
   mint: MintResponse;
   evolve: EvolveResponse;
   broadcast: BroadcastResponse;
+  createCollection: CreateCollectionResponse;
 };
 
 
@@ -43,6 +45,11 @@ export type MutationevolveArgs = {
 
 export type MutationbroadcastArgs = {
   input: BroadcastInput;
+};
+
+
+export type MutationcreateCollectionArgs = {
+  input: CreateCollectionInput;
 };
 
 export type MintResponse = {
@@ -98,9 +105,27 @@ export type BroadcastInput = {
   ownershipContractAddress: Scalars['String']['input'];
 };
 
+export type CreateCollectionResponse = {
+  chainId: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  symbol: Scalars['String']['output'];
+  contractAddress: Scalars['String']['output'];
+  laosAddress: Scalars['String']['output'];
+  batchMinterAddress: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
+export type CreateCollectionInput = {
+  chainId: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  symbol: Scalars['String']['input'];
+};
+
   export type QuerySdk = {
       /** null **/
-  status: InContextSdkMethod<Query['status'], {}, MeshContext>
+  status: InContextSdkMethod<Query['status'], {}, MeshContext>,
+  /** null **/
+  refresh: InContextSdkMethod<Query['refresh'], {}, MeshContext>
   };
 
   export type MutationSdk = {
@@ -109,7 +134,9 @@ export type BroadcastInput = {
   /** null **/
   evolve: InContextSdkMethod<Mutation['evolve'], MutationevolveArgs, MeshContext>,
   /** null **/
-  broadcast: InContextSdkMethod<Mutation['broadcast'], MutationbroadcastArgs, MeshContext>
+  broadcast: InContextSdkMethod<Mutation['broadcast'], MutationbroadcastArgs, MeshContext>,
+  /** null **/
+  createCollection: InContextSdkMethod<Mutation['createCollection'], MutationcreateCollectionArgs, MeshContext>
   };
 
   export type SubscriptionSdk = {

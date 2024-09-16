@@ -5,12 +5,14 @@ schema {
 
 type Query {
   status: String!
+  refresh: String!
 }
 
 type Mutation {
   mint(input: MintInput!): MintResponse!
   evolve(input: EvolveInput!): EvolveResponse!
   broadcast(input: BroadcastInput!): BroadcastResponse!
+  createCollection(input: CreateCollectionInput!): CreateCollectionResponse!
 }
 
 type MintResponse {
@@ -64,4 +66,20 @@ input BroadcastInput {
   tokenId: String!
   chainId: String!
   ownershipContractAddress: String!
+}
+
+type CreateCollectionResponse {
+  chainId: String!
+  name: String!
+  symbol: String!
+  contractAddress: String!
+  laosAddress: String!
+  batchMinterAddress: String!
+  success: Boolean!
+}
+
+input CreateCollectionInput {
+  chainId: String!
+  name: String!
+  symbol: String!
 }
