@@ -57,9 +57,16 @@ export class CreateCollectionService {
       try{
         console.log("Deploying ownershipChain contract...");      
         const symbol = "MCOL"; // TODO add to input
-        const baseURI = "https://baseuri.com/" + laosCollectionAddress; // TODO Sigma/LAOS
+        // const baseURI = "https://baseuri.com/" + laosCollectionAddress; // TODO Sigma/LAOS
+        let evochainTarget = "LAOS";
+        if(process.env.RPC_MINTER?.toLocaleLowerCase().includes("sigma")) {
+          evochainTarget = "LAOS_SIGMA";
+        }
+        const baseURI = this.serviceHelper.generateBaseUri(laosCollectionAddress, evochainTarget);
+
         // ownershipContractAddress = await this.ownershipChainService.deployNewErc721universal(ownerAddress, chainId, name, symbol, baseURI);
         // console.log("OwnershipChain contract deployed at: ", ownershipContractAddress);
+        
         // Deploy BatchMinter with owner ownerAddress
         const batchMinterAddress = await this.serviceHelper.laosService.deployBatchMinterContract(ownerAddress, apiKey);
         console.log("BatchMinter contract deployed at: ", batchMinterAddress);
