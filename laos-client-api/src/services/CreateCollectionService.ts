@@ -65,19 +65,13 @@ export class CreateCollectionService {
       if (!baseURI) {
         throw new Error("BaseURI is null");
       }
-      ownershipContractAddress = await this.ownershipChainService.deployNewErc721universal( chainId, name, symbol, baseURI, apiKey);
+      // Deploy OwnershipChain contract and BatchMinter in parallel
+      [ownershipContractAddress, batchMinterAddress] = await Promise.all([
+        this.ownershipChainService.deployNewErc721universal(chainId, name, symbol, baseURI, apiKey),
+        this.createBatchMinterContract(apiKey, laosCollectionAddress)
+      ]);
       console.log("OwnershipChain contract deployed at: ", ownershipContractAddress);
-
-      // Deploy BatchMinter with owner ownerAddress
-      batchMinterAddress = await this.serviceHelper.laosService.deployBatchMinterContract(apiKey);
       console.log("BatchMinter contract deployed at: ", batchMinterAddress);
-
-      // Set owner of LaosColletion to batchMinter
-      await this.serviceHelper.laosService.transferOwnership(laosCollectionAddress!, batchMinterAddress, apiKey);
-      
-      // Set Collection address to batchMinter
-      await this.serviceHelper.laosService.setPrecompileAddress(batchMinterAddress, laosCollectionAddress!, apiKey);
-      console.log("Contract properly created onchain");
 
       // Save contract to DB
       await ContractService.insertContract(client.id, chainId, ownershipContractAddress, laosCollectionAddress, batchMinterAddress);
@@ -87,13 +81,28 @@ export class CreateCollectionService {
         chainId: chainId,
         name: name,
         symbol: symbol,
-        contractAddress: ownershipContractAddress,
+        contractAddress: ownershipContractAddress.toLowerCase(),
         batchMinterAddress: batchMinterAddress,
-        laosAddress: laosCollectionAddress,
+        laosAddress: laosCollectionAddress.toLowerCase(),
         success: true,
       };
     } catch (error) {
       throw new Error(error as string);
     }
   }
+
+  private async createBatchMinterContract(apiKey: string, laosCollectionAddress: string): Promise<string> {
+     // Deploy BatchMinter with owner ownerAddress
+     const batchMinterAddress = await this.serviceHelper.laosService.deployBatchMinterContract(apiKey);
+
+     // Set owner of LaosColletion to batchMinter
+     await this.serviceHelper.laosService.transferOwnership(laosCollectionAddress!, batchMinterAddress, apiKey);
+     
+     // Set Collection address to batchMinter
+     await this.serviceHelper.laosService.setPrecompileAddress(batchMinterAddress, laosCollectionAddress!, apiKey);
+   
+     return batchMinterAddress;
+  }
+
+
 }
