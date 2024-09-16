@@ -77,7 +77,6 @@ export class OwnershipChainService {
   }
 
   private getChainRpcbyChainId(chainId: string): string {
-    // TOOD envVar
     const chains = [
         { chainId: "1", rpcUrl: process.env.API_RPC_ETHEREUM || "https://ethereum-rpc.publicnode.com" },
         { chainId: "137", rpcUrl: process.env.API_RPC_POLYGON || "https://polygon-rpc.com/" },
