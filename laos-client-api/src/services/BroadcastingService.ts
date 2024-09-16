@@ -12,8 +12,6 @@ export class BroadcastingService {
   constructor() {
     const ownershipChainConfig: OwnershipChainConfig = {
       minterPvk: process.env.MINTER_PVK || '',
-      ownershipChainContract: '0xaaf54526c508d573d402bf05a9a5e54f09302adf', // TODO set ownership contract
-      rpcOwnershipChain: 'https://polygon.meowrpc.com', // TODO set ownership rpc
     };    
     this.ownershipChainService = new OwnershipChainService(ownershipChainConfig);
   }
