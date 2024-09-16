@@ -21,14 +21,14 @@ export class ContractDeployService {
 
     try {
       // Deploy the contract with constructor arguments
-      const tx  = await factory.deploy(...constructorArgs);
-      if(!tx){
+      const contract  = await factory.deploy(...constructorArgs);
+      if(!contract){
         throw new Error("Failed to deploy contract, tx null.");
       }
-      console.log("Transaction sent:", tx);      
+      console.log("Transaction sent:", contract);      
 
-      await tx.waitForDeployment();
-      const deployTx = tx.deploymentTransaction();
+      await contract.waitForDeployment();
+      const deployTx = contract.deploymentTransaction();
       if (!deployTx) {
           throw new Error("Failed to retrieve deployment transaction, deploymentTransaction is null.");
       }
@@ -37,9 +37,8 @@ export class ContractDeployService {
       if (!receipt) {
         throw new Error("Failed to retrieve transaction receipt, receipt is null.");
       }
-      console.log("receipt:", receipt);
      
-      let contractAddress = await  tx.getAddress();
+      let contractAddress = await  contract.getAddress();
 
       console.log("Contract deployed at address:", contractAddress);
       return {
