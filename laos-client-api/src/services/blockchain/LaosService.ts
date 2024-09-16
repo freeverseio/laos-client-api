@@ -393,7 +393,7 @@ export class LaosService {
       console.log('Creating a collection with owner = ', wallet.address);
 
       // Send the transaction to create the collection
-      const tx = await contract.createCollection(wallet.address);
+      const tx = await contract.createCollection(wallet.address, {gasLimit: 500_000});
       console.log('Transaction sent, waiting for confirmation...');
 
       // Wait for the transaction to be mined
