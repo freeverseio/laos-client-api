@@ -352,18 +352,30 @@ export class LaosService {
   }
 
   public async setPrecompileAddress(batchMinterAddress: string, precompileAddress: string, apiKey: string): Promise<void> {
+    console.log('Setting precompile address:', precompileAddress, 'to batchMinter:', batchMinterAddress);
     try {
       // Create an instance of the contract
       const minterPvk = JSON.parse(process.env.MINTER_KEYS || '{}')[apiKey];
       const wallet = new ethers.Wallet(minterPvk, this.provider);
       const contract = this.getEthersContract({laosContractAddress: batchMinterAddress, abi: BatchMinterAbi, wallet});
-      const tx = await contract.setPrecompileAddress(precompileAddress);
+      
+      const tx = await contract.setPrecompileAddress(precompileAddress, {gasLimit: 1_000_000});
       console.log('Transaction sent, waiting for confirmation...');
       const receipt = await tx.wait();
       console.log("Transaction successful! Hash:", receipt.hash);
       return receipt.hash;
     } catch (error) {
       console.error('Error setting precompile address:', error);
+      throw error;
+    }
+  }
+  public async transferOwnership(contractAddress: string, newOwner: string, apiKey: string): Promise<void> {
+    const minterPvk = JSON.parse(process.env.MINTER_KEYS || '{}')[apiKey];
+    const deployer = new ContractService(minterPvk, this.laosRpc);
+    try {
+      await deployer.transferOwnership(contractAddress, EvolutionCollectionAbi, newOwner);
+    } catch (error) {
+      console.error("Error transferring ownership:", error);
       throw error;
     }
   }
@@ -414,6 +426,8 @@ export class LaosService {
       console.error('Error creating collection:', error);
       throw error;
     }
+
+    
   }
   
 

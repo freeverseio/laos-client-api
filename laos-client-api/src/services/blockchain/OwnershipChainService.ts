@@ -106,15 +106,6 @@ export class OwnershipChainService {
     }
   }
 
-  public async transferOwnership(contractAddress: string, newOwner: string, chainId: string): Promise<void> {
-    const rpcOwnershipChain = this.getChainRpcbyChainId(chainId);
-    const deployer = new ContractService(this.minterPvk, rpcOwnershipChain);
-    try {
-      await deployer.transferOwnership(contractAddress, ERC721UniversalAbi, newOwner);
-    } catch (error) {
-      console.error("Error transferring ownership:", error);
-      throw error;
-    }
-  }
+ 
 
 }

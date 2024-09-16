@@ -25,8 +25,7 @@ export class ContractService {
       if(!contract){
         throw new Error("Failed to deploy contract, tx null.");
       }
-      console.log("Transaction sent:", contract);      
-
+   
       await contract.waitForDeployment();
       const deployTx = contract.deploymentTransaction();
       if (!deployTx) {
@@ -37,9 +36,7 @@ export class ContractService {
       if (!receipt) {
         throw new Error("Failed to retrieve transaction receipt, receipt is null.");
       }
-     
       let contractAddress = await  contract.getAddress();
-
       console.log("Contract deployed at address:", contractAddress);
       return {
         contractAddress,

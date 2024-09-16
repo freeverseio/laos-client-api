@@ -46,9 +46,8 @@ export class CreateCollectionService {
       let laosCollectionAddress;
       try {
         console.log("Creating LAOS Collection...");
-        let laosCollectionAddress = await this.serviceHelper.laosService.createLaosCollection(ownerAddress, apiKey);
-        console.log('laosCollectionAddress: ', laosCollectionAddress);
-        
+        laosCollectionAddress = await this.serviceHelper.laosService.createLaosCollection(ownerAddress, apiKey);
+        console.log('laosCollectionAddress: ', laosCollectionAddress)
       } catch (error) {
         throw new Error(`Failed to create new LAOS collection: ${error}`);
       }
@@ -61,21 +60,18 @@ export class CreateCollectionService {
         const baseURI = "https://baseuri.com/" + laosCollectionAddress; // TODO Sigma/LAOS
         // ownershipContractAddress = await this.ownershipChainService.deployNewErc721universal(ownerAddress, chainId, name, symbol, baseURI);
         // console.log("OwnershipChain contract deployed at: ", ownershipContractAddress);
+        // Deploy BatchMinter with owner ownerAddress
         const batchMinterAddress = await this.serviceHelper.laosService.deployBatchMinterContract(ownerAddress, apiKey);
         console.log("BatchMinter contract deployed at: ", batchMinterAddress);
+       
+        // Set owner of LaosColletion to batchMinter
+        await this.serviceHelper.laosService.transferOwnership(laosCollectionAddress!, batchMinterAddress, apiKey);
+        // Set Collection address to batchMinter
+        await this.serviceHelper.laosService.setPrecompileAddress(batchMinterAddress, laosCollectionAddress!, apiKey);
       } catch (error) {
         throw new Error(`Failed to deploy ownershipChain contract: ${error}`);
       }
 
-
-      // Deploy BatchMinter with owner ownerAddress
-      // TODO
-
-      // Set owner of LaosColletion to batchMinter
-      // TODO
-      
-      // Set Collection address to batchMinter
-      // TODO
 
       const result = {
         status: "success",
