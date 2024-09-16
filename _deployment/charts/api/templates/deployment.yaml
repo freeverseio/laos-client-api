@@ -70,6 +70,16 @@ spec:
                   key: postgresPassword
             - name: DATABASE_URL
               value: "postgres://{{ .Values.postgresUser }}:$(POSTGRES_PASSWORD)@{{.Values.postgresHost}}:{{.Values.postgresPort}}/{{.Values.postgresDb}}?sslmode=require&sslrootcert=./data/ca-certificate.pem"            
+            - name: API_RPC_ETHEREUM
+              valueFrom:
+                secretKeyRef:
+                  name: protostar-private-config
+                  key: apiRpcEthereum
+            - name: API_RPC_POLYGON
+              valueFrom:
+                secretKeyRef:
+                  name: protostar-private-config
+                  key: apiRpcPolygon
           ports:
             - containerPort: 4001
       volumes:
