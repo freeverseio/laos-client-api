@@ -24,6 +24,14 @@ class ContractService {
     return this.transformDbResultToContract(res.rows[0]);
   }
 
+  public static async getClientContractByChain(clientId: string, chainId: string): Promise<Contract | null> {
+    const res = await Database.query('SELECT * FROM api_contract WHERE client_id = $1 AND chain_id = $2', [clientId, chainId]);
+    if (!res.rows[0]) {
+      return null; 
+    }
+    return this.transformDbResultToContract(res.rows[0]);
+  }
+
   public static async getClientContracts(clientId: string): Promise<Contract[]> {
     const res = await Database.query('SELECT * FROM api_contract WHERE client_id = $1', [clientId]);
     return res.rows.map(this.transformDbResultToContract);

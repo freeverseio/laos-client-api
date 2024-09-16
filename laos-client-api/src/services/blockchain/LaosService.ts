@@ -116,14 +116,16 @@ export class LaosService {
     }
   }
 
-  public async deployBatchMinterContract(ownerAddress: string, apiKey: string): Promise<string> {
+  public async deployBatchMinterContract(apiKey: string): Promise<string> {
     const minterPvk = JSON.parse(process.env.MINTER_KEYS || '{}')[apiKey];
     const deployer = new ContractService(minterPvk, this.laosRpc);
+    const provider = new ethers.JsonRpcProvider(this.laosRpc);
+    const wallet = new ethers.Wallet(minterPvk, provider);
     try {
       const deploymentResult: DeploymentResult = await deployer.deployContract(
         BatchMinterAbi,
         BatchMinterBytecode,
-        [ownerAddress]
+        [wallet.address]
       );
 
       return deploymentResult.contractAddress;
@@ -380,17 +382,18 @@ export class LaosService {
     }
   }
 
-  public async createLaosCollection(ownerAddress: string, apiKey: string): Promise<string> {
+  public async createLaosCollection( apiKey: string): Promise<string> {
     try {
       // Create an instance of the contract
       const minterPvk = JSON.parse(process.env.MINTER_KEYS || '{}')[apiKey];
       const wallet = new ethers.Wallet(minterPvk, this.provider);
+      
       const contract = this.getEthersContract({laosContractAddress: '0x0000000000000000000000000000000000000403', abi: EvolutionCollectionFactoryAbi, wallet});
 
-      console.log('Creating a collection with owner = ', ownerAddress);
+      console.log('Creating a collection with owner = ', wallet.address);
 
       // Send the transaction to create the collection
-      const tx = await contract.createCollection(ownerAddress);
+      const tx = await contract.createCollection(wallet.address);
       console.log('Transaction sent, waiting for confirmation...');
 
       // Wait for the transaction to be mined

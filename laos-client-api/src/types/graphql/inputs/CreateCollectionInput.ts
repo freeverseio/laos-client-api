@@ -8,6 +8,4 @@ export class CreateCollectionInput {
   @Field({ nullable: false })
   chainId!: string;
 
-  @Field({ nullable: false })
-  ownerAddress!: string;  
 }

@@ -4,6 +4,7 @@ import { LaosConfig, OwnershipChainConfig } from "../types";
 import { CreateCollectionResponse } from "../types/graphql/outputs/CreateCollectionOutput";
 import { ServiceHelper } from "./ServiceHelper";
 import ClientService from "./db/ClientService";
+import ContractService from "./db/ContractService";
 import { OwnershipChainService } from "./blockchain/OwnershipChainService";
 
 
@@ -20,8 +21,6 @@ export class CreateCollectionService {
 
     const ownershipChainConfig: OwnershipChainConfig = {
       minterPvk: process.env.MINTER_PVK || '',
-      ownershipChainContract: '0xaaf54526c508d573d402bf05a9a5e54f09302adf', // TODO set ownership contract
-      rpcOwnershipChain: 'https://polygon.meowrpc.com', // TODO set ownership rpc
     };
     this.ownershipChainService = new OwnershipChainService(ownershipChainConfig);
   }
@@ -33,19 +32,21 @@ export class CreateCollectionService {
    * @returns {Promise<CreateCollectionResponse>} - The result of the createCollection operation.
    */
   public async createCollection(input: CreateCollectionInput, apiKey: string): Promise<CreateCollectionResponse> {
-    const { name, chainId, ownerAddress } = input; // TODO symbol?
+    const { name, chainId } = input; // TODO symbol?
 
     try {
       const client = await ClientService.getClientByKey(apiKey);
       if (!client) {
         throw new Error('Invalid API key');
       }
-
+      const contract = await ContractService.getClientContractByChain(client.id, chainId);
+      if(contract){
+        console.log(`You already have a collection on this chain: ${chainId}, collection address: ${contract.contractAddress}`);
+      }
       // Create collection in LAOS
       let laosCollectionAddress;
       try {
-        console.log("Creating LAOS Collection...");
-        laosCollectionAddress = await this.serviceHelper.laosService.createLaosCollection(ownerAddress, apiKey);
+        laosCollectionAddress = await this.serviceHelper.laosService.createLaosCollection(apiKey);
         console.log('laosCollectionAddress: ', laosCollectionAddress)
       } catch (error) {
         throw new Error(`Failed to create new LAOS collection: ${error}`);
@@ -65,17 +66,22 @@ export class CreateCollectionService {
       if (!baseURI) {
         throw new Error("BaseURI is null");
       }
-      ownershipContractAddress = await this.ownershipChainService.deployNewErc721universal(ownerAddress, chainId, name, symbol, baseURI);
+      ownershipContractAddress = await this.ownershipChainService.deployNewErc721universal( chainId, name, symbol, baseURI);
       console.log("OwnershipChain contract deployed at: ", ownershipContractAddress);
 
       // Deploy BatchMinter with owner ownerAddress
-      batchMinterAddress = await this.serviceHelper.laosService.deployBatchMinterContract(ownerAddress, apiKey);
+      batchMinterAddress = await this.serviceHelper.laosService.deployBatchMinterContract(apiKey);
       console.log("BatchMinter contract deployed at: ", batchMinterAddress);
 
       // Set owner of LaosColletion to batchMinter
       await this.serviceHelper.laosService.transferOwnership(laosCollectionAddress!, batchMinterAddress, apiKey);
+      
       // Set Collection address to batchMinter
       await this.serviceHelper.laosService.setPrecompileAddress(batchMinterAddress, laosCollectionAddress!, apiKey);
+
+      // Save contract to DB
+      await ContractService.insertContract(client.id, chainId, ownershipContractAddress, laosCollectionAddress, batchMinterAddress);
+      console.log("Contract saved to DB");
 
       return {
         name: name,

@@ -89,14 +89,16 @@ export class OwnershipChainService {
     }
   }
 
-  public async deployNewErc721universal(ownerAddress: string, chainId: string, name: string, symbol: string, baseURI: string): Promise<any> {
+  public async deployNewErc721universal( chainId: string, name: string, symbol: string, baseURI: string): Promise<any> {
     const rpcOwnershipChain = this.getChainRpcbyChainId(chainId);
+    const provider = new ethers.JsonRpcProvider(rpcOwnershipChain);
+    const wallet = new ethers.Wallet(this.minterPvk, provider);
     const deployer = new ContractService(this.minterPvk, rpcOwnershipChain);
     try {
       const deploymentResult: DeploymentResult = await deployer.deployContract(
         ERC721UniversalAbi,
         ERC721UniversalBytecode,
-        [ownerAddress, name, symbol, baseURI]
+        [wallet.address, name, symbol, baseURI]
       );
 
       return deploymentResult.contractAddress;

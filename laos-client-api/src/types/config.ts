@@ -10,6 +10,5 @@ export type IpfsConfig = {
 
 export type OwnershipChainConfig = {
   minterPvk: string;
-  rpcOwnershipChain: string;
-  ownershipChainContract: string;
+
 };
