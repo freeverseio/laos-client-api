@@ -5,23 +5,26 @@ import { ERC721UniversalBytecode }from '../../abi/contracts/ERC721UniversalBytec
 import { ContractService } from "./ContractService";
 import { DeploymentResult } from "../../types";
 export class OwnershipChainService {
-  private minterPvk: string = '';
+  private pvks: string = '';
 
   constructor(config: OwnershipChainConfig) {
-    const { minterPvk} = config;
-    if (!minterPvk) {
-      throw new Error('Private key not found in environment variables');
+    const { pvks} = config;
+    if (!pvks) {
+      throw new Error('Private keys not found in environment variables');
     }
-    this.minterPvk = minterPvk;
+    this.pvks = pvks;
   }
 
-  public async broadcast(params: BroadcastParams): Promise<BroadcastResult> {
+  public async broadcast(params: BroadcastParams, apiKey: string): Promise<BroadcastResult> {
+    const pvk = JSON.parse(this.pvks || '{}')[apiKey];
+    if (!pvk) {
+      throw new Error('Private key not found for API key');
+    }
     let tx: any;
-
     const rpcOwnershipChain = this.getChainRpcbyChainId(params.chainId);
     const ownershipChainContract = params.ownershipContractAddress;
     const provider = new ethers.JsonRpcProvider(rpcOwnershipChain);
-    const wallet = new ethers.Wallet(this.minterPvk, provider);
+    const wallet = new ethers.Wallet(pvk, provider);
     const contract = new ethers.Contract(ownershipChainContract, ERC721UniversalAbi, wallet);
 
     const nonce = await wallet.getNonce();
@@ -89,11 +92,15 @@ export class OwnershipChainService {
     }
   }
 
-  public async deployNewErc721universal( chainId: string, name: string, symbol: string, baseURI: string): Promise<any> {
+  public async deployNewErc721universal( chainId: string, name: string, symbol: string, baseURI: string, apiKey: string): Promise<any> {
+    const pvk = JSON.parse(this.pvks || '{}')[apiKey];
+    if (!pvk) {
+      throw new Error('Private key not found for API key');
+    }
     const rpcOwnershipChain = this.getChainRpcbyChainId(chainId);
     const provider = new ethers.JsonRpcProvider(rpcOwnershipChain);
-    const wallet = new ethers.Wallet(this.minterPvk, provider);
-    const deployer = new ContractService(this.minterPvk, rpcOwnershipChain);
+    const wallet = new ethers.Wallet(pvk, provider);
+    const deployer = new ContractService(pvk, rpcOwnershipChain);
     try {
       const deploymentResult: DeploymentResult = await deployer.deployContract(
         ERC721UniversalAbi,

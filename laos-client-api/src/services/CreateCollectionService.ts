@@ -20,7 +20,7 @@ export class CreateCollectionService {
     this.serviceHelper = new ServiceHelper(config);
 
     const ownershipChainConfig: OwnershipChainConfig = {
-      minterPvk: process.env.MINTER_PVK || '',
+      pvks: process.env.MINTER_KEYS || '',
     };
     this.ownershipChainService = new OwnershipChainService(ownershipChainConfig);
   }
@@ -65,7 +65,7 @@ export class CreateCollectionService {
       if (!baseURI) {
         throw new Error("BaseURI is null");
       }
-      ownershipContractAddress = await this.ownershipChainService.deployNewErc721universal( chainId, name, symbol, baseURI);
+      ownershipContractAddress = await this.ownershipChainService.deployNewErc721universal( chainId, name, symbol, baseURI, apiKey);
       console.log("OwnershipChain contract deployed at: ", ownershipContractAddress);
 
       // Deploy BatchMinter with owner ownerAddress

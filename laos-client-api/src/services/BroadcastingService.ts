@@ -11,7 +11,7 @@ export class BroadcastingService {
 
   constructor() {
     const ownershipChainConfig: OwnershipChainConfig = {
-      minterPvk: process.env.MINTER_PVK || '',
+      pvks: process.env.MINTER_KEYS || '',
     };    
     this.ownershipChainService = new OwnershipChainService(ownershipChainConfig);
   }
@@ -32,7 +32,7 @@ export class BroadcastingService {
         ownershipContractAddress: ownershipContractAddress!,
       };
     
-      const result: BroadcastResult = await this.ownershipChainService.broadcast(params);
+      const result: BroadcastResult = await this.ownershipChainService.broadcast(params, apiKey);
       if (result.status === "success") {
         return { tokenId: result.tokenId!, success: true };
       } else {
