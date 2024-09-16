@@ -1,9 +1,8 @@
 //@TODO
 import { CreateCollectionInput } from "../types/graphql/inputs/CreateCollectionInput";
-import { LaosConfig, AssetMetadata, OwnershipChainConfig } from "../types";
+import { LaosConfig, OwnershipChainConfig } from "../types";
 import { CreateCollectionResponse } from "../types/graphql/outputs/CreateCollectionOutput";
 import { ServiceHelper } from "./ServiceHelper";
-import { ethers } from "ethers";
 import ClientService from "./db/ClientService";
 import { OwnershipChainService } from "./blockchain/OwnershipChainService";
 
