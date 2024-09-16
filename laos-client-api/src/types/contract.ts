@@ -15,3 +15,8 @@ export interface Contract {
   laosContract: string;
   batchMinterContract: string;
 }
+
+export interface DeploymentResult {
+  contractAddress: string;
+  transactionHash: string;
+}

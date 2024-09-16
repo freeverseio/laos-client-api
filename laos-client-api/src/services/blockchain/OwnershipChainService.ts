@@ -2,7 +2,8 @@ import { ethers } from "ethers";
 import { BroadcastResult, OwnershipChainConfig, BroadcastParams } from "../../types";
 import ERC721UniversalAbi from '../../abi/contracts/ERC721Universal.json';
 import { ERC721UniversalBytecode }from '../../abi/contracts/ERC721UniversalBytecode';
-
+import { ContractDeployService } from "./ContractDeployService";
+import { DeploymentResult } from "../../types";
 export class OwnershipChainService {
   private minterPvk: string = '';
 
@@ -90,57 +91,19 @@ export class OwnershipChainService {
 
   public async deployNewErc721universal(ownerAddress: string, chainId: string, name: string, symbol: string, baseURI: string): Promise<any> {
     const rpcOwnershipChain = this.getChainRpcbyChainId(chainId);
-    const provider = new ethers.JsonRpcProvider(rpcOwnershipChain);
-    const wallet = new ethers.Wallet(this.minterPvk, provider);
-    const factory = new ethers.ContractFactory(ERC721UniversalAbi, ERC721UniversalBytecode, wallet);
-
+    const deployer = new ContractDeployService(this.minterPvk, rpcOwnershipChain);
     try {
-      // Deploy the contract with constructor arguments
-      const tx  = await factory.deploy(ownerAddress, name, symbol, baseURI);
-      if(!tx){
-        throw new Error("Failed to deploy contract, tx null.");
-      }
-      console.log("Transaction sent:", tx);      
+      const deploymentResult: DeploymentResult = await deployer.deployContract(
+        ERC721UniversalAbi,
+        ERC721UniversalBytecode,
+        [ownerAddress, name, symbol, baseURI]
+      );
 
-      // Wait for the transaction to be mined      
-      //const receipt = await tx.deploymentTransaction().wait();
-
-      await tx.waitForDeployment();
-      const deployTx = tx.deploymentTransaction();
-      if (!deployTx) {
-          throw new Error("Failed to retrieve deployment transaction, deploymentTransaction is null.");
-      }
-
-      const receipt = await deployTx.wait();
-      if (!receipt) {
-        throw new Error("Failed to retrieve transaction receipt, receipt is null.");
-      }
-      console.log("receipt:", receipt);
-
-      let contractAddress = '';
-      const eventInterface = new ethers.Interface(ERC721UniversalAbi);      
-      receipt.logs.forEach((log) => {
-          try {
-              const parsedLog = eventInterface.parseLog(log);
-              if (parsedLog && parsedLog.args && parsedLog.args[0]) {
-                  console.log(parsedLog.args[0]);
-                  if (parsedLog.name === "NewERC721Universal") {
-                      contractAddress = parsedLog.args[0];
-                  }
-              }
-
-          } catch (error) {
-              // If decoding fails, skip this log
-              console.log(error);
-          }
-      });
-
-      console.log("Contract deployed at address:", contractAddress);
-
-      return contractAddress;
+      return deploymentResult.contractAddress;
     } catch (error) {
-      console.error("Error deploying contract:", error);
-    }    
+      console.error("Error deploying ERC721Universal contract:", error);
+      throw error;
+    }
   }
 
 }

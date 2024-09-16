@@ -10,10 +10,6 @@ interface Context {
 export class CreateCollectionResolver {
   constructor(private createCollectionService: CreateCollectionService) {}
 
-  // @Query(() => String)
-  // status() {
-  //   return "Up";
-  // }
 
   @Mutation(() => CreateCollectionResponse)
   async createCollection(@Arg("input") input: CreateCollectionInput, @Ctx() context: Context): Promise<CreateCollectionResponse> {

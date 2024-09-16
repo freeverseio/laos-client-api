@@ -1,11 +1,12 @@
 import { ethers } from "ethers";
-import { MintSingleNFTParams, EvolveNFTParams, MintResult, EvolveResult, AssetMetadata, LaosConfig, EventName, BatchMintNFTParams, BatchMintResult } from "../../types";
+import { MintSingleNFTParams, EvolveNFTParams, MintResult, EvolveResult, AssetMetadata, LaosConfig, EventName, BatchMintNFTParams, BatchMintResult, DeploymentResult } from "../../types";
 import { IPFSService } from "../ipfs/IPFSService";
 import * as EvolutionCollection from "../../abi/EvolutionCollection";
 import EvolutionCollectionAbi from '../../abi/contracts/EvolutionCollection.json';
 import BatchMinterAbi from '../../abi/contracts/BatchMinter.json';
 import EvolutionCollectionFactoryAbi from '../../abi/contracts/EvolutionCollectionFactory.json';
-
+import { ContractDeployService } from "./ContractDeployService";
+import { BatchMinterBytecode } from "../../abi/contracts/BatchMinterBytecode";
 
 const eventNameToEventTypeMap = {
   MintedWithExternalURI: EvolutionCollection.events.MintedWithExternalURI,
@@ -15,11 +16,15 @@ const eventNameToEventTypeMap = {
 export class LaosService {
   private provider: ethers.JsonRpcProvider;
   private ipfsService: IPFSService;
+  private laosRpc: string;
+
+
 
   constructor(config: LaosConfig, ipfsService: IPFSService) {
     const { rpcMinter } = config;
     this.provider = new ethers.JsonRpcProvider(rpcMinter);
     this.ipfsService = ipfsService;
+    this.laosRpc = rpcMinter;
   }
 
   private async mintNFTWithRetries(
@@ -108,6 +113,23 @@ export class LaosService {
         tx: tx?.hash,
         error: error.message,
       };
+    }
+  }
+
+  public async deployBatchMinterContract(ownerAddress: string, apiKey: string): Promise<string> {
+    const minterPvk = JSON.parse(process.env.MINTER_KEYS || '{}')[apiKey];
+    const deployer = new ContractDeployService(minterPvk, this.laosRpc);
+    try {
+      const deploymentResult: DeploymentResult = await deployer.deployContract(
+        BatchMinterAbi,
+        BatchMinterBytecode,
+        [ownerAddress]
+      );
+
+      return deploymentResult.contractAddress;
+    } catch (error) {
+      console.error("Error deploying ERC721Universal contract:", error);
+      throw error;
     }
   }
 

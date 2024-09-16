@@ -59,8 +59,10 @@ export class CreateCollectionService {
         console.log("Deploying ownershipChain contract...");      
         const symbol = "MCOL"; // TODO add to input
         const baseURI = "https://baseuri.com/" + laosCollectionAddress; // TODO Sigma/LAOS
-        ownershipContractAddress = await this.ownershipChainService.deployNewErc721universal(ownerAddress, chainId, name, symbol, baseURI);
-
+        // ownershipContractAddress = await this.ownershipChainService.deployNewErc721universal(ownerAddress, chainId, name, symbol, baseURI);
+        // console.log("OwnershipChain contract deployed at: ", ownershipContractAddress);
+        const batchMinterAddress = await this.serviceHelper.laosService.deployBatchMinterContract(ownerAddress, apiKey);
+        console.log("BatchMinter contract deployed at: ", batchMinterAddress);
       } catch (error) {
         throw new Error(`Failed to deploy ownershipChain contract: ${error}`);
       }
