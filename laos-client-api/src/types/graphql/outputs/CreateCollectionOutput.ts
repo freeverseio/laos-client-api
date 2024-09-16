@@ -3,10 +3,13 @@ import { ObjectType, Field } from "type-graphql";
 @ObjectType()
 export class CreateCollectionResponse {  
   @Field()
+  chainId!: string;
+  
+  @Field()
   name!: string;
 
   @Field()
-  chainId!: string;
+  symbol!: string;
 
   @Field()
   contractAddress!: string;

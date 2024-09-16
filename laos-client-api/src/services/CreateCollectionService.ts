@@ -32,7 +32,7 @@ export class CreateCollectionService {
    * @returns {Promise<CreateCollectionResponse>} - The result of the createCollection operation.
    */
   public async createCollection(input: CreateCollectionInput, apiKey: string): Promise<CreateCollectionResponse> {
-    const { name, chainId } = input; // TODO symbol?
+    const { chainId, name, symbol } = input;
 
     try {
       const client = await ClientService.getClientByKey(apiKey);
@@ -56,8 +56,7 @@ export class CreateCollectionService {
       let ownershipContractAddress;
       let batchMinterAddress;
 
-      console.log("Deploying ownershipChain contract...");
-      const symbol = "MCOL"; // TODO add to input
+      console.log("Deploying ownershipChain contract...");      
       let evochainTarget = "LAOS";
       if (process.env.RPC_MINTER?.toLocaleLowerCase().includes("sigma")) {
         evochainTarget = "LAOS_SIGMA";
@@ -78,14 +77,16 @@ export class CreateCollectionService {
       
       // Set Collection address to batchMinter
       await this.serviceHelper.laosService.setPrecompileAddress(batchMinterAddress, laosCollectionAddress!, apiKey);
+      console.log("Contract properly created onchain");
 
       // Save contract to DB
       await ContractService.insertContract(client.id, chainId, ownershipContractAddress, laosCollectionAddress, batchMinterAddress);
       console.log("Contract saved to DB");
 
       return {
-        name: name,
         chainId: chainId,
+        name: name,
+        symbol: symbol,
         contractAddress: ownershipContractAddress,
         batchMinterAddress: batchMinterAddress,
         laosAddress: laosCollectionAddress,
