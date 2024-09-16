@@ -1,9 +1,12 @@
 import { ethers } from "ethers";
-import { MintSingleNFTParams, EvolveNFTParams, MintResult, EvolveResult, AssetMetadata, LaosConfig, EventName, BatchMintNFTParams, BatchMintResult } from "../../types";
+import { MintSingleNFTParams, EvolveNFTParams, MintResult, EvolveResult, AssetMetadata, LaosConfig, EventName, BatchMintNFTParams, BatchMintResult, DeploymentResult } from "../../types";
 import { IPFSService } from "../ipfs/IPFSService";
 import * as EvolutionCollection from "../../abi/EvolutionCollection";
 import EvolutionCollectionAbi from '../../abi/contracts/EvolutionCollection.json';
 import BatchMinterAbi from '../../abi/contracts/BatchMinter.json';
+import EvolutionCollectionFactoryAbi from '../../abi/contracts/EvolutionCollectionFactory.json';
+import { ContractService } from "./ContractService";
+import { BatchMinterBytecode } from "../../abi/contracts/BatchMinterBytecode";
 
 const eventNameToEventTypeMap = {
   MintedWithExternalURI: EvolutionCollection.events.MintedWithExternalURI,
@@ -13,11 +16,15 @@ const eventNameToEventTypeMap = {
 export class LaosService {
   private provider: ethers.JsonRpcProvider;
   private ipfsService: IPFSService;
+  private laosRpc: string;
+
+
 
   constructor(config: LaosConfig, ipfsService: IPFSService) {
     const { rpcMinter } = config;
     this.provider = new ethers.JsonRpcProvider(rpcMinter);
     this.ipfsService = ipfsService;
+    this.laosRpc = rpcMinter;
   }
 
   private async mintNFTWithRetries(
@@ -106,6 +113,25 @@ export class LaosService {
         tx: tx?.hash,
         error: error.message,
       };
+    }
+  }
+
+  public async deployBatchMinterContract(apiKey: string): Promise<string> {
+    const minterPvk = JSON.parse(process.env.MINTER_KEYS || '{}')[apiKey];
+    const deployer = new ContractService(minterPvk, this.laosRpc);
+    const provider = new ethers.JsonRpcProvider(this.laosRpc);
+    const wallet = new ethers.Wallet(minterPvk, provider);
+    try {
+      const deploymentResult: DeploymentResult = await deployer.deployContract(
+        BatchMinterAbi,
+        BatchMinterBytecode,
+        [wallet.address]
+      );
+
+      return deploymentResult.contractAddress;
+    } catch (error) {
+      console.error("Error deploying ERC721Universal contract:", error);
+      throw error;
     }
   }
 
@@ -326,4 +352,90 @@ export class LaosService {
   private isValidUint96(value: bigint): boolean {
     return value < 2n ** 96n;
   }
+
+  public async setPrecompileAddress(batchMinterAddress: string, precompileAddress: string, apiKey: string): Promise<void> {
+    console.log('Setting precompile address:', precompileAddress, 'to batchMinter:', batchMinterAddress);
+    try {
+      // Create an instance of the contract
+      const minterPvk = JSON.parse(process.env.MINTER_KEYS || '{}')[apiKey];
+      const wallet = new ethers.Wallet(minterPvk, this.provider);
+      const contract = this.getEthersContract({laosContractAddress: batchMinterAddress, abi: BatchMinterAbi, wallet});
+      
+      const tx = await contract.setPrecompileAddress(precompileAddress, {gasLimit: 1_000_000});
+      console.log('Transaction sent, waiting for confirmation...');
+      const receipt = await tx.wait();
+      console.log("Transaction successful! Hash:", receipt.hash);
+      return receipt.hash;
+    } catch (error) {
+      console.error('Error setting precompile address:', error);
+      throw error;
+    }
+  }
+  public async transferOwnership(contractAddress: string, newOwner: string, apiKey: string): Promise<void> {
+    const minterPvk = JSON.parse(process.env.MINTER_KEYS || '{}')[apiKey];
+    const deployer = new ContractService(minterPvk, this.laosRpc);
+    try {
+      await deployer.transferOwnership(contractAddress, EvolutionCollectionAbi, newOwner);
+    } catch (error) {
+      console.error("Error transferring ownership:", error);
+      throw error;
+    }
+  }
+
+  public async createLaosCollection( apiKey: string): Promise<string> {
+    try {
+      // Create an instance of the contract
+      const minterPvk = JSON.parse(process.env.MINTER_KEYS || '{}')[apiKey];
+      const wallet = new ethers.Wallet(minterPvk, this.provider);
+      
+      const contract = this.getEthersContract({laosContractAddress: '0x0000000000000000000000000000000000000403', abi: EvolutionCollectionFactoryAbi, wallet});
+
+      console.log('Creating a collection with owner = ', wallet.address);
+
+      // Send the transaction to create the collection
+      const tx = await contract.createCollection(wallet.address);
+      console.log('Transaction sent, waiting for confirmation...');
+
+      // Wait for the transaction to be mined
+      const receipt = await tx.wait();
+      console.log("Transaction successful! Hash:", receipt.hash);
+
+      if (!receipt || !receipt.status || receipt.status !== 1) {
+        throw new Error("Receipt status is not 1");
+      }
+
+      // Define the event interface for decoding logs
+      const eventInterface = new ethers.Interface(EvolutionCollectionFactoryAbi);
+      let laosCollectionAddress = '';
+      receipt.logs.forEach((log:any) => {
+        try {
+            const parsedLog = eventInterface.parseLog(log);
+            if (parsedLog?.name === "NewCollection") {
+              console.log(`New collection created by ${parsedLog.args._owner} at address ${parsedLog.args._collectionAddress}`);
+              laosCollectionAddress = parsedLog.args._collectionAddress;
+            }
+        } catch (error) {
+            console.log(error);
+        }
+      });      
+      
+      if (!laosCollectionAddress) {
+        throw new Error('No NewCollection event found in transaction receipt');
+      }
+      console.log(`New collection created at address ${laosCollectionAddress}`);
+          
+      return laosCollectionAddress;      
+    } catch (error) {
+      console.error('Error creating collection:', error);
+      throw error;
+    }
+
+    
+  }
+  
+
+
+
+
 }
+

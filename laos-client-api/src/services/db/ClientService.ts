@@ -20,6 +20,23 @@ class ClientService {
 
     return res.rows[0];
   }
+
+  // Insert a new client into the api_client table
+  public static async insertClient(name: string, key: string, active: boolean = true): Promise<Client> {
+    const insertQuery = `
+      INSERT INTO api_client (name, key, active)
+      VALUES ($1, $2, $3)
+      RETURNING *;
+    `;
+
+    try {
+      const res = await Database.query(insertQuery, [name, key, active]);
+      return res.rows[0];
+    } catch (error) {
+      console.error('Error inserting client:', error);
+      throw new Error('Failed to insert client');
+    }
+  }
 }
 
 export default ClientService;
