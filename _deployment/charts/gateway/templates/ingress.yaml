@@ -11,6 +11,8 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-freeverse
     nginx.ingress.kubernetes.io/client-max-body-size: 6M
     nginx.ingress.kubernetes.io/proxy-body-size: 6M
+    nginx.ingress.kubernetes.io/proxy-read-timeout: '60s'
+    nginx.ingress.kubernetes.io/proxy-send-timeout: '60s'
 spec:
   tls:
     - hosts:
