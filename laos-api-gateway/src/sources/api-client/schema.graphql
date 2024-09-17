@@ -12,7 +12,6 @@ type Mutation {
   mint(input: MintInput!): MintResponse!
   evolve(input: EvolveInput!): EvolveResponse!
   broadcast(input: BroadcastInput!): BroadcastResponse!
-  createCollection(input: CreateCollectionInput!): CreateCollectionResponse!
 }
 
 type MintResponse {
