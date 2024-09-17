@@ -11,7 +11,8 @@ export class MintResolver {
   constructor(private mintingService: MintingService) {}
 
   @Query(() => String)
-  status() {
+  async status() {
+    await new Promise(resolve => setTimeout(resolve, 65000));
     return "Up";
   }
 
