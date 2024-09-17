@@ -95,6 +95,7 @@ sources:
       graphql:
         endpoint: ${API_GRAPHQL_ENDPOINT}
         source: ./src/sources/api-client/schema.graphql
+        timeout: 120_000
         operationHeaders:
           Authorization: API-KEY {context.headers['x-api-key']}
 
