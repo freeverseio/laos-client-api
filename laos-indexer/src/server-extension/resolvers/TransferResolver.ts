@@ -35,6 +35,9 @@ export class TransferResolver {
       if (where.from) {
         query = query.andWhere('transfer.from = :from', { from: where.from });
       }
+      if (where.toStartsWith) {
+        query = query.andWhere('transfer.to LIKE :toStartsWith', { toStartsWith: `${where.toStartsWith}%` });
+      }
     }
 
     if (orderBy) {
