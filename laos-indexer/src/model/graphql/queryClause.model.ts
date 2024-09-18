@@ -13,6 +13,9 @@ export class TransferWhereInput {
 
   @Field({ nullable: true })
   from?: string;
+
+  @Field({ nullable: true, name: 'to_startsWith' })
+  to_startsWith?: string;
 }
 
 @InputType()
@@ -24,4 +27,6 @@ export class TokenWhereInput {
   @Field({ nullable: true })
   owner?: string;
 
+  @Field({ nullable: true })
+  laosContract?: string;
 }

@@ -26,6 +26,9 @@ export class TokenQueryResult {
   tokenId!: string;
 
   @Field(() => String, { nullable: false })
+  laosContract!: string;
+
+  @Field(() => String, { nullable: false })
   owner!: string;
 
   @Field(() => String, { nullable: true })
