@@ -18,4 +18,5 @@ export class CreateCollectionResolver {
     apiKey = apiKey.replace('API-KEY ', '');
     return this.createCollectionService.createCollection(input, apiKey);
   }
+
 }

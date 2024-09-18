@@ -12,7 +12,6 @@ export class MintResolver {
 
   @Query(() => String)
   async status() {
-    await new Promise(resolve => setTimeout(resolve, 65000));
     return "Up";
   }
 
