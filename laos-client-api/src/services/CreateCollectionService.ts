@@ -52,10 +52,6 @@ export class CreateCollectionService {
         throw new Error(`Failed to create new LAOS collection: ${error}`);
       }
 
-      // Create Ownershipchain collection
-
-
-      console.log("Deploying ownershipChain contract...");      
       let evochainTarget = "LAOS";
       if (process.env.RPC_MINTER?.toLocaleLowerCase().includes("sigma")) {
         evochainTarget = "LAOS_SIGMA";
@@ -66,7 +62,8 @@ export class CreateCollectionService {
       }
       const batchMinterAddress =  await this.createBatchMinterContract(apiKey, laosCollectionAddress);
       console.log("BatchMinter contract deployed at: ", batchMinterAddress);
-      
+
+      console.log("Deploying ownershipChain contract...");     
       const ownershipContractAddress = await this.ownershipChainService.deployNewErc721universal(chainId, name, symbol, baseURI, apiKey)
       console.log("OwnershipChain contract deployed at: ", ownershipContractAddress);
      
@@ -88,6 +85,7 @@ export class CreateCollectionService {
         success: true,
       };
     } catch (error) {
+      console.error(error);
       throw new Error(error as string);
     }
   }
