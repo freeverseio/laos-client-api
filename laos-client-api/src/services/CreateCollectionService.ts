@@ -53,8 +53,7 @@ export class CreateCollectionService {
       }
 
       // Create Ownershipchain collection
-      let ownershipContractAddress;
-      let batchMinterAddress;
+
 
       console.log("Deploying ownershipChain contract...");      
       let evochainTarget = "LAOS";
@@ -65,13 +64,12 @@ export class CreateCollectionService {
       if (!baseURI) {
         throw new Error("BaseURI is null");
       }
-      // Deploy OwnershipChain contract and BatchMinter in parallel
-      [ownershipContractAddress, batchMinterAddress] = await Promise.all([
-        this.ownershipChainService.deployNewErc721universal(chainId, name, symbol, baseURI, apiKey),
-        this.createBatchMinterContract(apiKey, laosCollectionAddress)
-      ]);
-      console.log("OwnershipChain contract deployed at: ", ownershipContractAddress);
+      const batchMinterAddress =  await this.createBatchMinterContract(apiKey, laosCollectionAddress);
       console.log("BatchMinter contract deployed at: ", batchMinterAddress);
+      
+      const ownershipContractAddress = await this.ownershipChainService.deployNewErc721universal(chainId, name, symbol, baseURI, apiKey)
+      console.log("OwnershipChain contract deployed at: ", ownershipContractAddress);
+     
 
       // Save contract to DB
       await ContractService.insertContract(client.id, chainId, 
