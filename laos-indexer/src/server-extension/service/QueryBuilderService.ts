@@ -28,6 +28,10 @@ export class QueryBuilderService {
       conditions.push(`LOWER(oc.id) = LOWER($${paramIndex++})`);
       parameters.push(where.contractAddress.toLowerCase());
     }
+    if (where?.laosContract) {
+      conditions.push(`LOWER(la.laos_contract) = LOWER($${paramIndex++})`);
+      parameters.push(where.laosContract.toLowerCase());
+    }
 
     return { conditions, parameters, paramIndex };
   }

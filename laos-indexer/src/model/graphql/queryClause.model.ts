@@ -24,4 +24,6 @@ export class TokenWhereInput {
   @Field({ nullable: true })
   owner?: string;
 
+  @Field({ nullable: true })
+  laosContract?: string;
 }
