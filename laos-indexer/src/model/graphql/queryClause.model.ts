@@ -14,8 +14,8 @@ export class TransferWhereInput {
   @Field({ nullable: true })
   from?: string;
 
-  @Field({ nullable: true })
-  toStartsWith?: string;
+  @Field({ nullable: true, name: 'to_startsWith' })
+  to_startsWith?: string;
 }
 
 @InputType()
