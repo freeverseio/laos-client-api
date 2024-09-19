@@ -29,4 +29,22 @@ export class TokenWhereInput {
 
   @Field({ nullable: true })
   laosContract?: string;
+
+  @Field({ nullable: true })
+  tokenId?: string;
+}
+
+@InputType()
+export class TokenOwnersWhereInput {
+  @Field({ nullable: true })
+  laosContract?: string;
+
+  @Field({ nullable: true })
+  contractAddress?: string;
+
+  @Field({ nullable: true })
+  tokenId?: string;
+
+  @Field({ nullable: true })
+  owner?: string;
 }

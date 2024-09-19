@@ -1,5 +1,5 @@
-import { TokenOrderByOptions, TokenPaginationInput, TokenWhereInput } from '../../model';
-import { buildTokenQueryBase, buildTokenByIdQuery, buildTokenCountQueryBase } from './queries';
+import { TokenOrderByOptions, TokenOwnersWhereInput, TokenPaginationInput, TokenWhereInput } from '../../model';
+import { buildTokenQueryBase, buildTokenByIdQuery, buildTokenCountQueryBase, buildTokenOwnerQuery } from './queries';
 
 interface WhereConditionsResult {
   conditions: string[];
@@ -15,7 +15,7 @@ interface CursorConditionResult {
 
 export class QueryBuilderService {
   
-  private buildWhereConditions(where: TokenWhereInput): WhereConditionsResult {
+  private buildWhereConditions(where: TokenWhereInput | TokenOwnersWhereInput): WhereConditionsResult {
     let conditions = [];
     let parameters = [];
     let paramIndex = 1;
@@ -31,6 +31,10 @@ export class QueryBuilderService {
     if (where?.laosContract) {
       conditions.push(`LOWER(la.laos_contract) = LOWER($${paramIndex++})`);
       parameters.push(where.laosContract.toLowerCase());
+    }
+    if (where?.tokenId) {
+      conditions.push(`la.token_id = $${paramIndex++}`);
+      parameters.push(where.tokenId);
     }
 
     return { conditions, parameters, paramIndex };
@@ -111,5 +115,15 @@ export class QueryBuilderService {
     const normalizedOwnershipContractId = ownershipContractId.toLowerCase(); // Convert to lowercase
     const parameters = [normalizedOwnershipContractId, tokenId];
     return { query: buildTokenByIdQuery, parameters };
+  }
+
+  async buildTokenOwnerQuery(where: TokenOwnersWhereInput): Promise<{ query: string; parameters: any[] }> {
+    const { conditions, parameters } = this.buildWhereConditions(where);
+
+    const query = `
+      ${buildTokenOwnerQuery}
+      ${conditions.length ? 'WHERE ' + conditions.join(' AND ') : ''}
+    `;
+    return { query, parameters };
   }
 }

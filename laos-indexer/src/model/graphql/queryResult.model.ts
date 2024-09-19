@@ -181,3 +181,17 @@ export class TokenHistoryQueryResult {
     Object.assign(this, init);
   }
 }
+
+@ObjectType()
+export class TokenOwnersQueryResult {
+
+  @Field(() => String, { nullable: false })
+  owner!: string;
+
+  @Field(() => String, { nullable: true })
+  initialOwner?: string;
+
+  constructor(props: Partial<TokenOwnersQueryResult>) {
+    Object.assign(this, props);
+  }
+}
