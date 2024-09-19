@@ -62,3 +62,19 @@ export const buildTokenByIdQuery = `
   LEFT JOIN asset a ON (la.token_id = a.token_id AND LOWER(cd.ownership_contract) = LOWER(a.ownership_contract_id))
   WHERE la.token_id = $2 AND cd.laos_contract IS NOT null
 `;
+
+export const buildTokenOwnerQuery = `
+  SELECT DISTINCT 
+      COALESCE(a.owner, la.initial_owner) AS owner,
+      la.initial_owner AS "initialOwner"
+  FROM laos_asset la
+  INNER JOIN ownership_contract oc 
+      ON LOWER(la.laos_contract) = LOWER(oc.laos_contract)
+  INNER JOIN metadata m 
+      ON la.metadata = m.id
+  INNER JOIN token_uri tu 
+      ON m.token_uri_id = tu.id
+  LEFT JOIN asset a 
+      ON la.token_id = a.token_id 
+      AND a.ownership_contract_id = oc.id
+  `;

@@ -1,6 +1,6 @@
 import { Arg, Query, Resolver } from 'type-graphql';
 import { EntityManager } from 'typeorm';
-import { TokenOrderByOptions, TokenPaginationInput, TokenConnection, TokenQueryResult, TokenQueryResultSelect, TokenWhereInput, PageInfo } from '../../model';
+import { TokenOrderByOptions, TokenPaginationInput, TokenConnection, TokenQueryResult, TokenQueryResultSelect, TokenWhereInput, PageInfo, TokenOwnersQueryResult, TokenOwnersWhereInput } from '../../model';
 import { QueryBuilderService } from '../service/QueryBuilderService';
 
 @Resolver()
@@ -83,5 +83,17 @@ export class TokenResolver {
     });
 
     return new TokenConnection(edges, pageInfo, totalCount);
+  }
+
+  @Query(() => [TokenOwnersQueryResult], { nullable: true })
+  async tokenOwners(
+    @Arg('where', () => TokenOwnersWhereInput, { nullable: true }) where: TokenOwnersWhereInput
+  ): Promise<TokenOwnersQueryResult | null> {
+    const manager = await this.tx();
+    const { query, parameters } = await this.queryBuilderService.buildTokenOwnerQuery(where);
+    const result = await manager.query(query, parameters);
+    console.log(result);
+
+    return result.map((result: any) => new TokenOwnersQueryResult(result));
   }
 }
