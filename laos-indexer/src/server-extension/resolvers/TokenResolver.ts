@@ -92,8 +92,6 @@ export class TokenResolver {
     const manager = await this.tx();
     const { query, parameters } = await this.queryBuilderService.buildTokenOwnerQuery(where);
     const result = await manager.query(query, parameters);
-    console.log(result);
-
     return result.map((result: any) => new TokenOwnersQueryResult(result));
   }
 }

@@ -123,6 +123,7 @@ export class QueryBuilderService {
     const query = `
       ${buildTokenOwnerQuery}
       ${conditions.length ? 'WHERE ' + conditions.join(' AND ') : ''}
+      GROUP BY COALESCE(a.owner, la.initial_owner), la.initial_owner
     `;
     return { query, parameters };
   }

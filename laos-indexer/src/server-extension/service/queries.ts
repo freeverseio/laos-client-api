@@ -65,8 +65,9 @@ export const buildTokenByIdQuery = `
 
 export const buildTokenOwnerQuery = `
   SELECT DISTINCT 
-      COALESCE(a.owner, la.initial_owner) AS owner,
-      la.initial_owner AS "initialOwner"
+    COALESCE(a.owner, la.initial_owner) AS owner,
+    la.initial_owner AS "initialOwner",
+    MIN(la.token_id) AS "randomTokenId"
   FROM laos_asset la
   INNER JOIN ownership_contract oc 
       ON LOWER(la.laos_contract) = LOWER(oc.laos_contract)

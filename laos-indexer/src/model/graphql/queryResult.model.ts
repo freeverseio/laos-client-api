@@ -191,6 +191,9 @@ export class TokenOwnersQueryResult {
   @Field(() => String, { nullable: true })
   initialOwner?: string;
 
+  @Field(() => String, { nullable: false })
+  randomTokenId!: string;
+
   constructor(props: Partial<TokenOwnersQueryResult>) {
     Object.assign(this, props);
   }
