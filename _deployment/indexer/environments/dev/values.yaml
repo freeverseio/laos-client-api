@@ -58,3 +58,4 @@ indexerInstances:
     apiProcessor: indexer-laos-arbitrum-api
     host: indexer-arbitrum.gorengine.com
     gqlPort: 4000
+    rcpRateLimit: 10
