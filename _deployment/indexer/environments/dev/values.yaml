@@ -40,3 +40,21 @@ indexerInstances:
     apiProcessor: indexer-laos-ethereum-api
     host: indexer-ethereum.gorengine.com
     gqlPort: 4000
+  - dbPodName: indexer-db-arbitrum
+    postgresDb: squid-arbitrum
+    postgresPassword: postgres
+    postgresUser: postgres
+    pvcName: pvc-squid-arbitrum-1
+    servicePort: 5434
+    containerPort: 5434
+    mountPath: /var/lib/postgresql/pvdata2
+    mountName: indexer-pvc-arbitrum
+    ownershipProcessor: indexer-arbitrum-processor
+    gatewayEndpoint: https://v2.archive.subsquid.io/network/arbitrum-one
+    startingBlockOwnership: "254168565"
+    startingBlockLaos: "372000"
+    rpcEndpointSecretKey: "indexerEthereumRpcEndpoint"
+    laosProcessor: indexer-laos-processor-arbitrum
+    apiProcessor: indexer-laos-arbitrum-api
+    host: indexer-arbitrum.gorengine.com
+    gqlPort: 4000
