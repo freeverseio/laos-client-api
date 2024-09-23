@@ -53,7 +53,7 @@ indexerInstances:
     gatewayEndpoint: https://v2.archive.subsquid.io/network/arbitrum-one
     startingBlockOwnership: "254168565"
     startingBlockLaos: "372000"
-    rpcEndpointSecretKey: "indexerEthereumRpcEndpoint"
+    rpcEndpointSecretKey: "indexerArbitrumRpcEndpoint"
     laosProcessor: indexer-laos-processor-arbitrum
     apiProcessor: indexer-laos-arbitrum-api
     host: indexer-arbitrum.gorengine.com
