@@ -22,7 +22,6 @@ export type Scalars = {
 
 export type Query = {
   status: Scalars['String']['output'];
-  refresh: Scalars['String']['output'];
 };
 
 export type Mutation = {
@@ -123,9 +122,7 @@ export type CreateCollectionInput = {
 
   export type QuerySdk = {
       /** null **/
-  status: InContextSdkMethod<Query['status'], {}, MeshContext>,
-  /** null **/
-  refresh: InContextSdkMethod<Query['refresh'], {}, MeshContext>
+  status: InContextSdkMethod<Query['status'], {}, MeshContext>
   };
 
   export type MutationSdk = {
