@@ -395,6 +395,7 @@ export class LaosService {
       // Send the transaction to create the collection
       const tx = await contract.createCollection(wallet.address, {gasLimit: 500_000});
       console.log('Transaction sent, waiting for confirmation...');
+      console.log('Transaction hash:', tx.hash);
 
       // Wait for the transaction to be mined
       const receipt = await tx.wait();
