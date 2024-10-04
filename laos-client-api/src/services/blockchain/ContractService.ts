@@ -21,7 +21,7 @@ export class ContractService {
 
     try {
       // Deploy the contract with constructor arguments
-      const contract  = await factory.deploy(...constructorArgs, {gasLimit: 3_000_000});
+      const contract  = await factory.deploy(...constructorArgs, {gasLimit: 10_000_000});
       if(!contract){
         throw new Error("Failed to deploy contract, tx null.");
       }
