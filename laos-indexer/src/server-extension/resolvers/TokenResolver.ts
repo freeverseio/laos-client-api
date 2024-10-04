@@ -76,10 +76,10 @@ export class TokenResolver {
     }));
 
     const pageInfo = new PageInfo({
-      endCursor: edges.length > 0 ? edges[edges.length - 1].cursor : undefined,
+      endCursor: edges.length > 0 ? edges[edges.length - 1].cursor : "",
       hasNextPage: hasNextPage,
       hasPreviousPage: Boolean(pagination.after),
-      startCursor: edges.length > 0 ? edges[0].cursor : undefined,
+      startCursor: edges.length > 0 ? edges[0].cursor : "",
     });
 
     return new TokenConnection(edges, pageInfo, totalCount);
