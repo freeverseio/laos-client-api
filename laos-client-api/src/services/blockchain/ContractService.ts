@@ -56,7 +56,7 @@ export class ContractService {
     const contract = new ethers.Contract(contractAddress, abi, this.wallet);
 
     try {
-      const tx = await contract.transferOwnership(newOwnerAddress);
+      const tx = await contract.transferOwnership(newOwnerAddress, {gasLimit: 1_000_000});
       console.log(`Ownership transfer transaction sent: ${tx.hash}`);
 
       // Wait for the transaction to be mined
