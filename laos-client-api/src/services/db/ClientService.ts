@@ -37,6 +37,17 @@ class ClientService {
       throw new Error('Failed to insert client');
     }
   }
+
+  public static async updateClientLock(id: string, lock: Date | null): Promise<Client> {
+    let res;
+    if (lock) {
+      res = await Database.query('UPDATE api_client SET lock = $1 WHERE id = $2 RETURNING *', [lock, id]);      
+    }else{
+      res = await Database.query('UPDATE api_client SET lock = NULL WHERE id = $1 RETURNING *', [id]);
+    }
+    return res.rows[0];
+  }
+
 }
 
 export default ClientService;
