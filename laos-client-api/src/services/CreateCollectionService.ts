@@ -44,9 +44,9 @@ export class CreateCollectionService {
       if (client.lock && new Date(client.lock).getTime() > currentDate.getTime()) {
         throw new Error(`Collection creation is locked until [${client.lock}]`);
       }else{
-        // update with current date + 3minutes
+        // update with current date + 5minutes
         client.lock = new Date();
-        client.lock.setMinutes(client.lock.getMinutes() + 3);        
+        client.lock.setMinutes(client.lock.getMinutes() + 5);        
         await ClientService.updateClientLock(client.id, client.lock);
       }
 
