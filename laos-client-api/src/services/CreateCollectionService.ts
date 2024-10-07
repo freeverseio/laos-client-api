@@ -7,7 +7,6 @@ import ClientService from "./db/ClientService";
 import ContractService from "./db/ContractService";
 import { OwnershipChainService } from "./blockchain/OwnershipChainService";
 
-
 export class CreateCollectionService {
   private serviceHelper: ServiceHelper;
   private ownershipChainService: OwnershipChainService;
@@ -39,6 +38,18 @@ export class CreateCollectionService {
       if (!client) {
         throw new Error('Invalid API key');
       }
+
+      // Check if creation is locked
+      const currentDate = new Date();
+      if (client.lock && new Date(client.lock).getTime() > currentDate.getTime()) {
+        throw new Error(`Collection creation is locked until [${client.lock}]`);
+      }else{
+        // update with current date + 3minutes
+        client.lock = new Date();
+        client.lock.setMinutes(client.lock.getMinutes() + 3);        
+        await ClientService.updateClientLock(client.id, client.lock);
+      }
+
       const contract = await ContractService.getClientContractByChain(client.id, chainId);
       if(contract){
         console.log(`You already have a collection on this chain: ${chainId}, collection address: ${contract.contractAddress}`);
@@ -74,6 +85,9 @@ export class CreateCollectionService {
         laosCollectionAddress.toLowerCase(), 
         batchMinterAddress.toLowerCase());
       console.log("Contract saved to DB");
+
+      // release Client.lock
+      await ClientService.updateClientLock(client.id, null);
 
       return {
         chainId: chainId,
