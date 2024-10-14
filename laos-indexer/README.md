@@ -22,7 +22,7 @@ A custom GraphQL API is provided for real-time data retrieval.
 
 ```bash
 # 1. Install @subsquid/cli globally (sqd command)
-npm i -g @subsquid/cli
+npm i -g @subsquid/cli@2.12.x
 
 # 2. Install dependencies
 npm ci
