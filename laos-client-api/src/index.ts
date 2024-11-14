@@ -18,7 +18,7 @@ dotenv.config();
 async function startServer() {
   const ipfsService = new IPFSService(process.env.PINATA_API_KEY!, process.env.PINATA_API_SECRET!);
   const schema = await buildSchema({
-    resolvers: [MintResolver, EvolveResolver, CreateCollectionResolver],
+    resolvers: [MintResolver, EvolveResolver, CreateCollectionResolver, BroadcastResolver],
     container: {
       get(someClass: any) {
         if (someClass === BroadcastResolver) {
