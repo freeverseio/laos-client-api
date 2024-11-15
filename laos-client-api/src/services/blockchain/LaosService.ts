@@ -252,7 +252,6 @@ export class LaosService {
       console.log('tokenUri:', tokenUri);
       console.log("Evolving NFT with tokenId:", params.tokenId, "nonce:", nonce);
       tx = await contract
-        // .evolveWithExternalURI(params.tokenId, tokenUri, { nonce, gasLimit: 1_000_000 })
         .evolveWithExternalURI(params.tokenId, tokenUri, { nonce })
         .catch((error: Error) => {
           console.error(
@@ -360,7 +359,6 @@ export class LaosService {
       const wallet = new ethers.Wallet(minterPvk, this.provider);
       const contract = this.getEthersContract({laosContractAddress: batchMinterAddress, abi: BatchMinterAbi, wallet});
       
-      // const tx = await contract.setPrecompileAddress(precompileAddress, {gasLimit: 1_000_000});
       const tx = await contract.setPrecompileAddress(precompileAddress);
       console.log('Transaction sent, waiting for confirmation...');
       const receipt = await tx.wait();
@@ -393,7 +391,6 @@ export class LaosService {
       console.log('Creating a collection with owner = ', wallet.address);
 
       // Send the transaction to create the collection
-      // const tx = await contract.createCollection(wallet.address, {gasLimit: 500_000});
       const tx = await contract.createCollection(wallet.address);
       console.log('Transaction sent, waiting for confirmation...');
       console.log('Transaction hash:', tx.hash);
