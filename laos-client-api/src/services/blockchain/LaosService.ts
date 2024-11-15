@@ -171,7 +171,6 @@ export class LaosService {
         // recipients, randoms, uris, options
         const tx = await contract.mintWithExternalURIBatch(recipients, randoms, tokenUris, {
           nonce: nonce,
-          //gasLimit: gasLimit
         });
   
         console.log(`Mint successful on attempt ${attempt}`);
@@ -182,8 +181,6 @@ export class LaosService {
           console.log(`Nonce error detected [${nonce}], retrieveing new nonce`);
           nonce = await wallet.getNonce();
         } else if (errorMessage.includes("replacement transaction underpriced") || errorMessage.includes("REPLACEMENT_UNDERPRICED") || errorMessage.includes("intrinsic gas too low")) {
-          //console.log(`Underpriced error detected [${gasLimit}], increasing gas limit [${gasLimit+20_000}]`);
-          //gasLimit += 20_000;
           console.log(`Underpriced error detected [${gasLimit}]`);
         } else {
           console.error(
