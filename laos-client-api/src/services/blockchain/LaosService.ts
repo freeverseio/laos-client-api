@@ -44,8 +44,7 @@ export class LaosService {
       try {
         console.log("Minting NFT to:", params.to, "nonce:", nonce);
         const tx = await contract.mintWithExternalURI(params.to, random, tokenUri, {
-          nonce: nonce,
-          gasLimit: gasLimit
+          nonce: nonce
         });
   
         console.log(`Mint successful on attempt ${attempt}`);
