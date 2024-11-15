@@ -171,7 +171,6 @@ export class LaosService {
         // recipients, randoms, uris, options
         const tx = await contract.mintWithExternalURIBatch(recipients, randoms, tokenUris, {
           nonce: nonce,
-          gasLimit: gasLimit
         });
   
         console.log(`Mint successful on attempt ${attempt}`);
@@ -182,8 +181,7 @@ export class LaosService {
           console.log(`Nonce error detected [${nonce}], retrieveing new nonce`);
           nonce = await wallet.getNonce();
         } else if (errorMessage.includes("replacement transaction underpriced") || errorMessage.includes("REPLACEMENT_UNDERPRICED") || errorMessage.includes("intrinsic gas too low")) {
-          console.log(`Underpriced error detected [${gasLimit}], increasing gas limit [${gasLimit+20_000}]`);
-          gasLimit += 20_000;
+          console.log(`Underpriced error detected [${gasLimit}]`);
         } else {
           console.error(
             `Mint Failed, attempt: ${attempt}, nonce:`,
@@ -254,7 +252,7 @@ export class LaosService {
       console.log('tokenUri:', tokenUri);
       console.log("Evolving NFT with tokenId:", params.tokenId, "nonce:", nonce);
       tx = await contract
-        .evolveWithExternalURI(params.tokenId, tokenUri, { nonce, gasLimit: 1_000_000 })
+        .evolveWithExternalURI(params.tokenId, tokenUri, { nonce })
         .catch((error: Error) => {
           console.error(
             "Evolve Failed, nonce:",
@@ -361,7 +359,7 @@ export class LaosService {
       const wallet = new ethers.Wallet(minterPvk, this.provider);
       const contract = this.getEthersContract({laosContractAddress: batchMinterAddress, abi: BatchMinterAbi, wallet});
       
-      const tx = await contract.setPrecompileAddress(precompileAddress, {gasLimit: 1_000_000});
+      const tx = await contract.setPrecompileAddress(precompileAddress);
       console.log('Transaction sent, waiting for confirmation...');
       const receipt = await tx.wait();
       console.log("Transaction successful! Hash:", receipt.hash);
@@ -393,7 +391,7 @@ export class LaosService {
       console.log('Creating a collection with owner = ', wallet.address);
 
       // Send the transaction to create the collection
-      const tx = await contract.createCollection(wallet.address, {gasLimit: 500_000});
+      const tx = await contract.createCollection(wallet.address);
       console.log('Transaction sent, waiting for confirmation...');
       console.log('Transaction hash:', tx.hash);
 
@@ -429,14 +427,8 @@ export class LaosService {
     } catch (error) {
       console.error('Error creating collection:', error);
       throw error;
-    }
-
-    
+    }    
   }
-  
-
-
-
 
 }
 

@@ -32,7 +32,7 @@ export class OwnershipChainService {
     try {     
       console.log("Broadcasting tokenId:", params.tokenId);
       tx = await contract
-        .broadcastSelfTransfer(params.tokenId, { nonce, gasLimit: 1000000 })
+        .broadcastSelfTransfer(params.tokenId, { nonce })
         .catch((error: Error) => {
           console.error(
             "broadcastSelfTransfer Failed, nonce:",
