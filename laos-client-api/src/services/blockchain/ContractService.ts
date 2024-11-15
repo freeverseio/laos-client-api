@@ -21,7 +21,8 @@ export class ContractService {
 
     try {
       // Deploy the contract with constructor arguments
-      const contract  = await factory.deploy(...constructorArgs, {gasLimit: 3_000_000});
+      // const contract  = await factory.deploy(...constructorArgs, {gasLimit: 3_000_000});
+      const contract  = await factory.deploy(...constructorArgs);
       if(!contract){
         throw new Error("Failed to deploy contract, tx null.");
       }
@@ -56,7 +57,8 @@ export class ContractService {
     const contract = new ethers.Contract(contractAddress, abi, this.wallet);
 
     try {
-      const tx = await contract.transferOwnership(newOwnerAddress, {gasLimit: 1_000_000});
+      // const tx = await contract.transferOwnership(newOwnerAddress, {gasLimit: 1_000_000});
+      const tx = await contract.transferOwnership(newOwnerAddress);
       console.log(`Ownership transfer transaction sent: ${tx.hash}`);
 
       // Wait for the transaction to be mined

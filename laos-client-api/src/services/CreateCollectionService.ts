@@ -99,7 +99,7 @@ export class CreateCollectionService {
         success: true,
       };
     } catch (error) {
-      console.error(error);
+      console.error('ERROR in createCollection: ', error);
       throw new Error(error as string);
     }
   }
