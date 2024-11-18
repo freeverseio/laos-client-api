@@ -56,23 +56,11 @@ export class ContractService {
     const contract = new ethers.Contract(contractAddress, abi, this.wallet);
   
     try {
-      // Get gas fee data
-      const feeData = await this.wallet.provider!.getFeeData();
-      let transactionOverrides: any = {};
-  
-      if (feeData.maxPriorityFeePerGas && feeData.maxFeePerGas) {
-        transactionOverrides = {
-          maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
-          maxFeePerGas: feeData.maxFeePerGas,
-        };
-      } else if (feeData.gasPrice) {
-        transactionOverrides = {
-          gasPrice: feeData.gasPrice, // Legacy gas price fallback
-        };
-      } else {
-        throw new Error("Unable to retrieve gas fee data from the network");
-      }
-  
+      let transactionOverrides: any = {
+        maxPriorityFeePerGas: 1000000000n,
+        maxFeePerGas: 1000000000n,
+        // gasPrice: 500000000n,
+      };
       console.log("Transaction overrides:", transactionOverrides);
       const tx = await contract.transferOwnership(newOwnerAddress, transactionOverrides);
       console.log(`Ownership transfer transaction sent: ${tx.hash}`);

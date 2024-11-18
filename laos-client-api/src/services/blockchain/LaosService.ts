@@ -346,7 +346,13 @@ export class LaosService {
       const wallet = new ethers.Wallet(minterPvk, this.provider);
       const contract = this.getEthersContract({laosContractAddress: batchMinterAddress, abi: BatchMinterAbi, wallet});
       
-      const tx = await contract.setPrecompileAddress(precompileAddress);
+      let transactionOverrides: any = {
+        maxPriorityFeePerGas: 1000000000n,
+        maxFeePerGas: 1000000000n,
+        //gasPrice: 500000000n,
+      };      
+      console.log("Transaction overrides:", transactionOverrides);
+      const tx = await contract.setPrecompileAddress(precompileAddress, transactionOverrides);
       console.log('Transaction sent, waiting for confirmation...');
       const receipt = await tx.wait();
       console.log("Transaction successful! Hash:", receipt.hash);
@@ -377,8 +383,14 @@ export class LaosService {
 
       console.log('Creating a collection with owner = ', wallet.address);
 
-      // Send the transaction to create the collection
-      const tx = await contract.createCollection(wallet.address);
+      // Send the transaction to create the collection            
+      let transactionOverrides: any = {
+        maxPriorityFeePerGas: 1000000000n,
+        maxFeePerGas: 1000000000n,
+        //gasPrice: 500000000n,
+      };  
+      console.log("Transaction overrides:", transactionOverrides);
+      const tx = await contract.createCollection(wallet.address, transactionOverrides);
       console.log('Transaction sent, waiting for confirmation...');
       console.log('Transaction hash:', tx.hash);
 
