@@ -349,7 +349,6 @@ export class LaosService {
       let transactionOverrides: any = {
         maxPriorityFeePerGas: 1000000000n,
         maxFeePerGas: 1000000000n,
-        //gasPrice: 500000000n,
       };      
       console.log("Transaction overrides:", transactionOverrides);
       const tx = await contract.setPrecompileAddress(precompileAddress, transactionOverrides);
@@ -387,7 +386,6 @@ export class LaosService {
       let transactionOverrides: any = {
         maxPriorityFeePerGas: 1000000000n,
         maxFeePerGas: 1000000000n,
-        //gasPrice: 500000000n,
       };  
       console.log("Transaction overrides:", transactionOverrides);
       const tx = await contract.createCollection(wallet.address, transactionOverrides);

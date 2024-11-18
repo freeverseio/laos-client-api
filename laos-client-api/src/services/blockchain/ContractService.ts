@@ -59,7 +59,6 @@ export class ContractService {
       let transactionOverrides: any = {
         maxPriorityFeePerGas: 1000000000n,
         maxFeePerGas: 1000000000n,
-        // gasPrice: 500000000n,
       };
       console.log("Transaction overrides:", transactionOverrides);
       const tx = await contract.transferOwnership(newOwnerAddress, transactionOverrides);
