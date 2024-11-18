@@ -32,11 +32,9 @@ export class LaosService {
     params: { to: string },
     ipfsCid: string,
     wallet: ethers.Wallet,
-    initialGasLimit: number,
     maxRetries: number
   ): Promise<any> {
     let nonce = await wallet.getNonce();
-    let gasLimit = initialGasLimit;
     const random = this.randomUint96();
     const tokenUri = `ipfs://${ipfsCid}`;
   
@@ -44,8 +42,7 @@ export class LaosService {
       try {
         console.log("Minting NFT to:", params.to, "nonce:", nonce);
         const tx = await contract.mintWithExternalURI(params.to, random, tokenUri, {
-          nonce: nonce,
-          gasLimit: gasLimit
+          nonce: nonce
         });
   
         console.log(`Mint successful on attempt ${attempt}`);
@@ -57,15 +54,13 @@ export class LaosService {
           nonce = await wallet.getNonce();
 
         } else if (errorMessage.includes("replacement transaction underpriced") || errorMessage.includes("REPLACEMENT_UNDERPRICED") || errorMessage.includes("intrinsic gas too low")) {
-          console.log(`Underpriced error detected [${gasLimit}], increasing gas limit [${gasLimit+20_000}]`);
-          gasLimit += 20_000;
+          console.log(`Underpriced error detected`);
+          throw error;
 
         } else {
           console.error(
             `Mint Failed, attempt: ${attempt}, nonce:`,
             nonce,
-            "gasLimit:",
-            gasLimit,
             "error: ",
             errorMessage
           );
@@ -93,7 +88,7 @@ export class LaosService {
     const ipfsCid = await this.ipfsService.uploadAssetMetadataToIPFS(assetJson, params.assetMetadata.name);
     let tx: any;
     try {
-      tx = await this.mintNFTWithRetries(contract, params, ipfsCid, wallet, 500_000, 5);
+      tx = await this.mintNFTWithRetries(contract, params, ipfsCid, wallet, 5);
       
       const receipt = await this.retryOperation(
         () => this.provider.waitForTransaction(tx.hash, 1, 14000),
@@ -143,11 +138,9 @@ export class LaosService {
     contract: any,
     tokens: {tokenUri: string, mintTo: string}[],    
     wallet: ethers.Wallet,
-    initialGasLimit: number,
     maxRetries: number
   ): Promise<any> {
     let nonce = await wallet.getNonce();
-    let gasLimit = initialGasLimit;
     const randoms = Array.from({ length: tokens.length }, () => this.randomUint96());
 
     const { tokenUris, recipients } = tokens.reduce<{ tokenUris: string[], recipients: string[] }>((acc, token) => {
@@ -158,11 +151,6 @@ export class LaosService {
 
     if (tokenUris.length > 700) {
       throw new Error("Cannot mint more than 700 assets at a time");
-    }
-
-    gasLimit = 20_000 * tokenUris.length + initialGasLimit;
-    if (gasLimit > 13_000_000) {
-      gasLimit = 13_000_000;
     }
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -181,13 +169,12 @@ export class LaosService {
           console.log(`Nonce error detected [${nonce}], retrieveing new nonce`);
           nonce = await wallet.getNonce();
         } else if (errorMessage.includes("replacement transaction underpriced") || errorMessage.includes("REPLACEMENT_UNDERPRICED") || errorMessage.includes("intrinsic gas too low")) {
-          console.log(`Underpriced error detected [${gasLimit}]`);
+          console.log(`Underpriced error detected`);
+          throw error;
         } else {
           console.error(
             `Mint Failed, attempt: ${attempt}, nonce:`,
             nonce,
-            "gasLimit:",
-            gasLimit,
             "error: ",
             errorMessage
           );
@@ -208,7 +195,7 @@ export class LaosService {
     const contract = this.getEthersContract({laosContractAddress: params.laosBatchMinterContractAddress, abi: BatchMinterAbi, wallet});
     let tx: any;
     try {
-      tx = await this.batchMintNFTWithRetries(contract, params.tokens, wallet, 50_000, 5);
+      tx = await this.batchMintNFTWithRetries(contract, params.tokens, wallet, 5);
       
       const receipt = await this.retryOperation(
         () => this.provider.waitForTransaction(tx.hash, 1, 14000),
