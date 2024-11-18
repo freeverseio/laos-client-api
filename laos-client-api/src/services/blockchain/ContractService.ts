@@ -2,6 +2,10 @@
 import { ethers } from "ethers";
 import { DeploymentResult } from "../../types";
 
+export const laosTransactionOverrides = {
+  gasPrice:5000000000n,
+  gas: 10000000n
+};
 
 export class ContractService {
   private provider: ethers.JsonRpcProvider;
@@ -15,13 +19,19 @@ export class ContractService {
   public async deployContract(
     abi: any,
     bytecode: string,
-    constructorArgs: any[]
+    constructorArgs: any[],
+    transactionOverrides: any | undefined,
   ): Promise<DeploymentResult> {
     const factory = new ethers.ContractFactory(abi, bytecode, this.wallet);
 
     try {
-      // Deploy the contract with constructor arguments
-      const contract  = await factory.deploy(...constructorArgs);
+      // Deploy the contract with constructor arguments      
+      let contract;
+      if(transactionOverrides){
+        contract  = await factory.deploy(...constructorArgs, transactionOverrides);
+      }else{
+        contract  = await factory.deploy(...constructorArgs);        
+      }
       if(!contract){
         throw new Error("Failed to deploy contract, tx null.");
       }
@@ -54,19 +64,20 @@ export class ContractService {
     newOwnerAddress: string
   ): Promise<ethers.TransactionReceipt> {
     const contract = new ethers.Contract(contractAddress, abi, this.wallet);
-
+  
     try {
-      const tx = await contract.transferOwnership(newOwnerAddress);
+      const tx = await contract.transferOwnership(newOwnerAddress, laosTransactionOverrides);
       console.log(`Ownership transfer transaction sent: ${tx.hash}`);
-
+  
       // Wait for the transaction to be mined
       const receipt = await tx.wait();
       console.log(`Ownership transferred to ${newOwnerAddress}`);
-
+  
       return receipt;
     } catch (error) {
       console.error("Error transferring ownership:", error);
       throw error;
     }
   }
-}
+
+}  

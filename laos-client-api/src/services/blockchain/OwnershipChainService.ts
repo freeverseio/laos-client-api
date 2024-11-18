@@ -104,7 +104,8 @@ export class OwnershipChainService {
       const deploymentResult: DeploymentResult = await deployer.deployContract(
         ERC721UniversalAbi,
         ERC721UniversalBytecode,
-        [wallet.address, name, symbol, baseURI]
+        [wallet.address, name, symbol, baseURI],
+        null
       );
 
       return deploymentResult.contractAddress;
