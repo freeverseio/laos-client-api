@@ -17,7 +17,7 @@ export class BroadcastingService {
   }
 
   public async broadcast(input: BroadcastInput, apiKey: string): Promise<BroadcastResponse> {
-    const { tokenId, chainId, ownershipContractAddress } = input;
+    const { tokenId, chainId, ownershipContractAddress, type } = input;
     try {
       // Check the client exists an is active
       const client = await ClientService.getClientByKey(apiKey);
@@ -32,7 +32,8 @@ export class BroadcastingService {
         ownershipContractAddress: ownershipContractAddress!,
       };
     
-      const result: BroadcastResult = await this.ownershipChainService.broadcast(params, apiKey);
+      const result: BroadcastResult = await this.ownershipChainService.broadcast(params, apiKey, type );
+
       if (result.status === "success") {
         return { tokenId: result.tokenId!, success: true };
       } else {
