@@ -99,6 +99,7 @@ export type BroadcastResponse = {
 };
 
 export type BroadcastInput = {
+  type?: InputMaybe<Scalars['String']['input']>;
   tokenId: Scalars['String']['input'];
   chainId: Scalars['String']['input'];
   ownershipContractAddress: Scalars['String']['input'];
