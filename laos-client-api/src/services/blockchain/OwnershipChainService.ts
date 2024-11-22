@@ -1,48 +1,46 @@
 import { ethers } from "ethers";
 import { BroadcastResult, OwnershipChainConfig, BroadcastParams } from "../../types";
 import ERC721UniversalAbi from '../../abi/contracts/ERC721Universal.json';
-import { ERC721UniversalBytecode }from '../../abi/contracts/ERC721UniversalBytecode';
+import { ERC721UniversalBytecode } from '../../abi/contracts/ERC721UniversalBytecode';
 import { ContractService } from "./ContractService";
 import { DeploymentResult } from "../../types";
+import { BroadcastType } from "../../types/graphql/inputs/BroadcastInput";
 export class OwnershipChainService {
   private pvks: string = '';
 
   constructor(config: OwnershipChainConfig) {
-    const { pvks} = config;
+    const { pvks } = config;
     if (!pvks) {
       throw new Error('Private keys not found in environment variables');
     }
     this.pvks = pvks;
   }
 
-  public async broadcast(params: BroadcastParams, apiKey: string): Promise<BroadcastResult> {
+  public async broadcast(params: BroadcastParams, apiKey: string, type: BroadcastType = BroadcastType.SELF): Promise<BroadcastResult> {
     const pvk = JSON.parse(this.pvks || '{}')[apiKey];
     if (!pvk) {
       throw new Error('Private key not found for API key');
     }
-    let tx: any;
     const rpcOwnershipChain = this.getChainRpcbyChainId(params.chainId);
     const ownershipChainContract = params.ownershipContractAddress;
     const provider = new ethers.JsonRpcProvider(rpcOwnershipChain);
     const wallet = new ethers.Wallet(pvk, provider);
     const contract = new ethers.Contract(ownershipChainContract, ERC721UniversalAbi, wallet);
-
     const nonce = await wallet.getNonce();
-
-    try {     
+    let tx: any;
+    try {
       console.log("Broadcasting tokenId:", params.tokenId);
-      tx = await contract
-        .broadcastSelfTransfer(params.tokenId, { nonce })
-        .catch((error: Error) => {
-          console.error(
-            "broadcastSelfTransfer Failed, nonce:",
-            nonce,
-            "error: ",
-            error.message
-          );
-          throw error;
-        });
-
+      if (type === BroadcastType.MINT) {
+        tx = await contract.broadcastMint(params.tokenId, { nonce })
+          .catch((error: Error) => {
+            return this.broadcastError(error, tx);
+          });
+      } else {
+        tx = await contract.broadcastSelfTransfer(params.tokenId, { nonce })
+          .catch((error: Error) => {
+            return this.broadcastError(error, tx);
+          });
+      }
       const receipt = await this.retryOperation(
         () => provider.waitForTransaction(tx.hash, 1, 14000),
         20
@@ -63,6 +61,15 @@ export class OwnershipChainService {
     }
   }
 
+  private broadcastError(error: any, tx: any) {
+    console.error("BroadcastSelfTransfer Failed:", error.message);
+    return {
+      status: "failed",
+      tx: tx?.hash,
+      error: error.message,
+    };
+  }
+
   private async retryOperation(operation: () => Promise<any>, maxRetries: number): Promise<any> {
     try {
       return await operation();
@@ -78,8 +85,8 @@ export class OwnershipChainService {
 
   private getChainRpcbyChainId(chainId: string): string {
     const chains = [
-        { chainId: "1", rpcUrl: process.env.API_RPC_ETHEREUM || "https://ethereum-rpc.publicnode.com" },
-        { chainId: "137", rpcUrl: process.env.API_RPC_POLYGON || "https://polygon-rpc.com/" },
+      { chainId: "1", rpcUrl: process.env.API_RPC_ETHEREUM || "https://ethereum-rpc.publicnode.com" },
+      { chainId: "137", rpcUrl: process.env.API_RPC_POLYGON || "https://polygon-rpc.com/" },
     ];
 
     const chain = chains.find(c => c.chainId === chainId);
@@ -91,7 +98,7 @@ export class OwnershipChainService {
     }
   }
 
-  public async deployNewErc721universal( chainId: string, name: string, symbol: string, baseURI: string, apiKey: string): Promise<any> {
+  public async deployNewErc721universal(chainId: string, name: string, symbol: string, baseURI: string, apiKey: string): Promise<any> {
     const pvk = JSON.parse(this.pvks || '{}')[apiKey];
     if (!pvk) {
       throw new Error('Private key not found for API key');
@@ -115,6 +122,6 @@ export class OwnershipChainService {
     }
   }
 
- 
+
 
 }
