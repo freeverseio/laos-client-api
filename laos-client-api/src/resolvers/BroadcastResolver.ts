@@ -1,7 +1,7 @@
 import { Resolver, Ctx, Mutation, Arg } from "type-graphql";
 import { BroadcastingService } from "../services/BroadcastingService";
-import { BroadcastInput } from "../types/graphql/inputs/BroadcastInput";
-import { BroadcastResponse } from "../types/graphql/outputs/BroadcastOutput";
+import { BroadcastBatchInput, BroadcastInput } from "../types/graphql/inputs/BroadcastInput";
+import { BroadcastResponse, BroadcastBatchResponse } from "../types/graphql/outputs/BroadcastOutput";
 
 interface Context {
   headers: any;
@@ -18,4 +18,13 @@ export class BroadcastResolver {
     apiKey = apiKey.replace('API-KEY ', '');
     return this.broadcastService.broadcast(input, apiKey);
   }
+  @Mutation(() => BroadcastBatchResponse)
+  async broadcastBatch(@Arg("input") input: BroadcastBatchInput, @Ctx() context: Context): Promise<BroadcastBatchResponse> {
+    let apiKey = context.headers['authorization'];
+    //remove the API-KEY prefix
+    apiKey = apiKey.replace('API-KEY ', '');
+    return this.broadcastService.broadcastBatch(input, apiKey);
+  }
+
+
 }

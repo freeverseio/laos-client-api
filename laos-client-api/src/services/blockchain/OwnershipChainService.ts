@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { BroadcastResult, OwnershipChainConfig, BroadcastParams } from "../../types";
+import { BroadcastResult, OwnershipChainConfig, BroadcastParams, BroadcastBatchParams, BroadcastBatchResult } from "../../types";
 import ERC721UniversalAbi from '../../abi/contracts/ERC721Universal.json';
 import { ERC721UniversalBytecode } from '../../abi/contracts/ERC721UniversalBytecode';
 import { ContractService } from "./ContractService";
@@ -49,6 +49,51 @@ export class OwnershipChainService {
       return {
         status: "success",
         tokenId: params.tokenId,
+        tx: tx?.hash,
+      };
+    } catch (error: any) {
+      console.error("BroadcastSelfTransfer Failed:", error.message);
+      return {
+        status: "failed",
+        tx: tx?.hash,
+        error: error.message,
+      };
+    }
+  }
+
+  public async broadcastBatch(params: BroadcastBatchParams, apiKey: string, type: BroadcastType = BroadcastType.SELF): Promise<BroadcastBatchResult> {
+    const pvk = JSON.parse(this.pvks || '{}')[apiKey];
+    if (!pvk) {
+      throw new Error('Private key not found for API key');
+    }
+    const rpcOwnershipChain = this.getChainRpcbyChainId(params.chainId);
+    const ownershipChainContract = params.ownershipContractAddress;
+    const provider = new ethers.JsonRpcProvider(rpcOwnershipChain);
+    const wallet = new ethers.Wallet(pvk, provider);
+    const contract = new ethers.Contract(ownershipChainContract, ERC721UniversalAbi, wallet);
+    const nonce = await wallet.getNonce();
+    let tx: any;
+    try {
+      console.log("Broadcasting tokenId:", params.tokenIds);
+      if (type === BroadcastType.MINT) {
+        tx = await contract.broadcastMintBatch(params.tokenIds, { nonce })
+          .catch((error: Error) => {
+            return this.broadcastError(error, tx);
+          });
+      } else {
+        tx = await contract.broadcastSelfTransferBatch(params.tokenIds, { nonce })
+          .catch((error: Error) => {
+            return this.broadcastError(error, tx);
+          });
+      }
+      const receipt = await this.retryOperation(
+        () => provider.waitForTransaction(tx.hash, 1, 14000),
+        20
+      );
+
+      return {
+        status: "success",
+        tokenIds: params.tokenIds,
         tx: tx?.hash,
       };
     } catch (error: any) {

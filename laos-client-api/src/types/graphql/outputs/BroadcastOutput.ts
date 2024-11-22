@@ -8,3 +8,13 @@ export class BroadcastResponse {
   @Field()
   success!: boolean;
 }
+
+@ObjectType()
+export class BroadcastBatchResponse {
+  
+  @Field(() => [String], { nullable: true })
+  tokenIds!: string[];
+
+  @Field()
+  success!: boolean;
+}
