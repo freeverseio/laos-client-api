@@ -33,6 +33,7 @@ async function startServer() {
         return undefined;
       },
     },
+    validate: true,
   });
 
   const server = new ApolloServer({
