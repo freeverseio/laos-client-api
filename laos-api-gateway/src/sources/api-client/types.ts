@@ -28,6 +28,7 @@ export type Mutation = {
   mint: MintResponse;
   evolve: EvolveResponse;
   broadcast: BroadcastResponse;
+  broadcastBatch: BroadcastBatchResponse;
   createCollection: CreateCollectionResponse;
 };
 
@@ -44,6 +45,11 @@ export type MutationevolveArgs = {
 
 export type MutationbroadcastArgs = {
   input: BroadcastInput;
+};
+
+
+export type MutationbroadcastBatchArgs = {
+  input: BroadcastBatchInput;
 };
 
 
@@ -105,6 +111,18 @@ export type BroadcastInput = {
   ownershipContractAddress: Scalars['String']['input'];
 };
 
+export type BroadcastBatchResponse = {
+  tokenIds?: Maybe<Array<Scalars['String']['output']>>;
+  success: Scalars['Boolean']['output'];
+};
+
+export type BroadcastBatchInput = {
+  type?: InputMaybe<Scalars['String']['input']>;
+  tokenIds: Array<Scalars['String']['input']>;
+  chainId: Scalars['String']['input'];
+  ownershipContractAddress: Scalars['String']['input'];
+};
+
 export type CreateCollectionResponse = {
   chainId: Scalars['String']['output'];
   name: Scalars['String']['output'];
@@ -133,6 +151,8 @@ export type CreateCollectionInput = {
   evolve: InContextSdkMethod<Mutation['evolve'], MutationevolveArgs, MeshContext>,
   /** null **/
   broadcast: InContextSdkMethod<Mutation['broadcast'], MutationbroadcastArgs, MeshContext>,
+  /** null **/
+  broadcastBatch: InContextSdkMethod<Mutation['broadcastBatch'], MutationbroadcastBatchArgs, MeshContext>,
   /** null **/
   createCollection: InContextSdkMethod<Mutation['createCollection'], MutationcreateCollectionArgs, MeshContext>
   };
