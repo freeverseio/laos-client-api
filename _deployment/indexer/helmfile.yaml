@@ -47,6 +47,12 @@ helmfiles:
       - laosPalletInstance: {{ $.Values.laosPalletInstance }}
       - startingBlockOwnership: {{ .startingBlockOwnership }}
       - startingBlockLaos: {{ .startingBlockLaos }}
+      {{- if hasKey . "maxBatchCallSizeOwnership" }}  
+      - maxBatchCallSizeOwnership: {{ .maxBatchCallSizeOwnership }}
+      {{- end }}
+      {{- if hasKey . "rpcRateLimitOwnership" }}
+      - rpcRateLimitOwnership: {{ .rpcRateLimitOwnership }}
+      {{- end }}
       - command: "process:prod:ownership_chain"
   - path: 'charts/processor/helmfile.yaml'
     values:

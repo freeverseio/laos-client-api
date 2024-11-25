@@ -23,6 +23,8 @@ indexerInstances:
     host: polygon-indexer.laosnetwork.io
     gqlPort: 4000
     rpcRateLimit: 40
+    maxBatchCallSizeOwnership: 300
+    rpcRateLimitOwnership: 10
   - dbPodName: indexer-db-ethereum
     postgresDb: squid-ethereum
     postgresPassword: postgres
@@ -42,3 +44,5 @@ indexerInstances:
     host: ethereum-indexer.laosnetwork.io
     gqlPort: 4000
     rpcRateLimit: 40
+    maxBatchCallSizeOwnership: 100
+    rpcRateLimitOwnership: 10
