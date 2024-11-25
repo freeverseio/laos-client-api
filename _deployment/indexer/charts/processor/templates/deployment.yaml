@@ -67,4 +67,12 @@ spec:
             - name: RPC_RATE_LIMIT
               value: {{ .Values.rpcRateLimit | quote }}
             {{- end }}
+            {{- if hasKey .Values "maxBatchCallSizeOwnership" }}
+            - name: MAX_BATCH_CALL_SIZE_OWNERSHIP
+              value: {{ .Values.maxBatchCallSizeOwnership | quote }}
+            {{- end }}
+            {{- if hasKey .Values "rpcRateLimitOwnership" }}
+            - name: RPC_RATE_LIMIT_OWNERSHIP
+              value: {{ .Values.rpcRateLimitOwnership | quote }}
+            {{- end }}
           command: ["sqd", {{ .Values.command }}]

@@ -11,8 +11,12 @@ import * as ERC721UniversalContract from '../abi/UniversalContract'
 
 export const processor = new EvmBatchProcessor()
     .setGateway(process.env.GATEWAY_ENDPOINT!)
-    .setDataSource({
-        chain: process.env.RPC_ENDPOINT!,
+    .setRpcEndpoint({
+      url: process.env.RPC_ENDPOINT!,
+      capacity: 10,
+      ...(process.env.MAX_BATCH_CALL_SIZE_OWNERSHIP ? { maxBatchCallSize: Number(process.env.MAX_BATCH_CALL_SIZE_OWNERSHIP) } : {}),
+      ...(process.env.RPC_RATE_LIMIT_OWNERSHIP ? { rateLimit: Number(process.env.RPC_RATE_LIMIT_OWNERSHIP) } : {}),
+      requestTimeout: 15_000,
     })
     .setFinalityConfirmation(200)
     .setBlockRange({        

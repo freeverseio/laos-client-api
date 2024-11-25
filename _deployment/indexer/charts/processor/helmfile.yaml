@@ -22,3 +22,9 @@ releases:
       {{- if hasKey .Values "rpcRateLimit" }}
       - rpcRateLimit: {{ .Values.rpcRateLimit }}
       {{- end }}
+      {{- if hasKey .Values "maxBatchCallSizeOwnership" }}
+      - maxBatchCallSizeOwnership: {{ .Values.maxBatchCallSizeOwnership }}
+      {{- end }}
+      {{- if hasKey .Values "rpcRateLimitOwnership" }}
+      - rpcRateLimitOwnership: {{ .Values.rpcRateLimitOwnership }}
+      {{- end }}

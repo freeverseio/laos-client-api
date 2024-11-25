@@ -40,6 +40,8 @@ indexerInstances:
     apiProcessor: indexer-laos-ethereum-api
     host: testnet.ethereum-indexer.laosnetwork.io
     gqlPort: 4000
+    maxBatchCallSizeOwnership: 200
+    rpcRateLimitOwnership: 10
   - dbPodName: indexer-db-hedera
     postgresDb: squid-hedera
     postgresPassword: postgres
@@ -58,3 +60,5 @@ indexerInstances:
     apiProcessor: indexer-laos-hedera-api
     host: testnet.hedera-indexer.laosnetwork.io
     gqlPort: 4000
+    maxBatchCallSizeOwnership: 100
+    rpcRateLimitOwnership: 10
