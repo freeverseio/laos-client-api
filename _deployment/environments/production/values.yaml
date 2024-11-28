@@ -2,7 +2,7 @@ namespace: protostar
 host: api.laosnetwork.io
 playgroundHost: playground.laosnetwork.io
 graphqlEndpoint: https://api.laosnetwork.io/graphql
-postgresHost: db-postgresql-ams3-prod-do-user-4813238-0.b.db.ondigitalocean.com
+postgresHost: pro-db-do-user-4813238-0.h.db.ondigitalocean.com
 postgresDb: protostardb
 postgresPort: "25060"
 postgresUser: "protostar"
